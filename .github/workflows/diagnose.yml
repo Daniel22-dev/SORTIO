@@ -9,7 +9,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  issues: write
 
 jobs:
   diagnose:
@@ -27,6 +28,7 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Run diagnostic commands
+        id: diagnostic
         shell: bash
         run: |
           set +e
@@ -64,17 +66,37 @@ jobs:
             echo
             echo '## Log tail'
             echo '```text'
-            tail -n 350 ci-diagnostic.log
+            tail -n 300 ci-diagnostic.log
             echo '```'
           } > CI-DIAGNOSTIC.md
 
-      - name: Publish diagnostic branch
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git switch --orphan ci-diagnostics
-          git rm -rf . >/dev/null 2>&1 || true
-          git add -f CI-DIAGNOSTIC.md
-          git commit -m "SORTIO CI diagnostic"
-          git push --force origin ci-diagnostics
+      - name: Publish diagnostic issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('CI-DIAGNOSTIC.md', 'utf8');
+            const title = 'SORTIO CI diagnostic';
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-diagnostic'
+            });
+            if (issues.length) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues[0].number,
+                title,
+                body
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['ci-diagnostic']
+              });
+            }
