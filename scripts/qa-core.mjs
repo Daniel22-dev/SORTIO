@@ -198,10 +198,9 @@ export async function startStaticServer(rootDir) {
 }
 
 export async function setLocalDocument(page, rootDir, urlPath, baseUrl) {
-  const clean =
-    String(urlPath || "/index.html")
-      .split("?")[0]
-      .replace(/^\/+/, "") || "index.html";
+  const requested = new URL(String(urlPath || "/index.html"), "http://qa.local");
+  const hash = requested.hash || "";
+  const clean = requested.pathname.replace(/^\/+/, "") || "index.html";
   let target = path.join(rootDir, clean);
   if ((await stat(target)).isDirectory())
     target = path.join(target, "index.html");
@@ -263,6 +262,12 @@ export async function setLocalDocument(page, rootDir, urlPath, baseUrl) {
     }
   });
   await page.setContent(html, { waitUntil: "load", timeout: 20000 });
+  if (hash) {
+    await page.evaluate((routeHash) => {
+      if (window.location.hash !== routeHash) window.location.hash = routeHash;
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    }, hash);
+  }
   return target;
 }
 
