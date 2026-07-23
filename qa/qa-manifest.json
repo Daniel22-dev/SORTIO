@@ -9,7 +9,6 @@
   "installCommand": "npm ci --no-fund",
   "buildCommand": "npm run build",
   "testCommand": "npm test && npm run test:domain && npm run test:package3 && npm run test:package4 && npm run test:package5 && npm run test:internal",
-  "headlessCommand": "npm run test:headless",
   "auditCommand": "npm audit --audit-level=high",
   "features": {
     "pwa": true,
