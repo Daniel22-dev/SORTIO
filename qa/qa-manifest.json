@@ -1,0 +1,85 @@
+{
+  "standard": "GHRAB-QA-1.0.2",
+  "appId": "sortio",
+  "appName": "SORTIO – Organizátor třídy",
+  "appVersion": "1.0.1",
+  "entryPoint": "dist/index.html",
+  "serveRoot": "dist",
+  "buildRoot": "dist",
+  "installCommand": "npm ci --no-fund",
+  "buildCommand": "npm run build",
+  "testCommand": "npm test && npm run test:domain && npm run test:package3 && npm run test:package4 && npm run test:package5 && npm run test:internal",
+  "headlessCommand": "npm run test:headless",
+  "auditCommand": "npm audit --audit-level=high",
+  "features": {
+    "pwa": true,
+    "ai": false,
+    "centralAccessGuard": true,
+    "fileExport": true,
+    "studentRuntime": false,
+    "teacherRuntime": true,
+    "localStorage": true,
+    "serviceWorker": true
+  },
+  "requiredViewports": [
+    {
+      "width": 360,
+      "height": 800
+    },
+    {
+      "width": 412,
+      "height": 915
+    },
+    {
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "width": 1366,
+      "height": 768
+    },
+    {
+      "width": 1920,
+      "height": 1080
+    }
+  ],
+  "versionChecks": [
+    {
+      "file": "package.json",
+      "regex": "\\\"version\\\"\\s*:\\s*\\\"([0-9.]+)\\\"",
+      "expected": "1.0.1"
+    },
+    {
+      "file": "dist/studio-manifest.json",
+      "regex": "\\\"version\\\"\\s*:\\s*\\\"([0-9.]+)\\\"",
+      "expected": "1.0.1"
+    },
+    {
+      "file": "dist/sw.js",
+      "regex": "sortio-v([0-9.]+)",
+      "expected": "1.0.1"
+    }
+  ],
+  "pwaTargets": [
+    {
+      "id": "sortio",
+      "root": "dist",
+      "manifest": "manifest.webmanifest",
+      "serviceWorker": "sw.js",
+      "cachePrefix": "sortio-v"
+    }
+  ],
+  "security": {
+    "allowedEmails": [
+      "balaz@ghrabuvka.cz"
+    ],
+    "requiresCsvFormulaProtection": false,
+    "validator": "qa/security-validator.mjs"
+  },
+  "compatibility": {
+    "runtimeSourceRoots": [
+      "src"
+    ],
+    "disallowRegexLookbehind": true
+  }
+}

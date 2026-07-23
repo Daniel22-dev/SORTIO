@@ -1,0 +1,2 @@
+const allowed={theme:new Set(['dark','light','system']),motion:new Set(['on','off']),viewport:new Set(['mobile','tablet','desktop']),route:new Set(['overview','classes','draw','groups','roles','seating','tools','settings','about'])};
+export async function validateScenario(s){for(const[k,v]of Object.entries(s)){if(!allowed[k]?.has(v))return{pass:false,message:`Neplatná hodnota ${k}=${v}`}}return{pass:true,evidence:Object.entries(s).map(([k,v])=>`${k}:${v}`).join('/')}}

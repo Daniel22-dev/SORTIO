@@ -1,0 +1,68 @@
+{
+  "parameters": {
+    "theme": [
+      "dark",
+      "light",
+      "system"
+    ],
+    "motion": [
+      "on",
+      "off"
+    ],
+    "viewport": [
+      "mobile",
+      "tablet",
+      "desktop"
+    ],
+    "route": [
+      "overview",
+      "classes",
+      "draw",
+      "groups",
+      "roles",
+      "seating",
+      "tools",
+      "settings",
+      "about"
+    ]
+  },
+  "criticalTriples": [
+    {
+      "theme": "dark",
+      "motion": "off",
+      "viewport": "mobile"
+    },
+    {
+      "theme": "light",
+      "motion": "on",
+      "route": "roles"
+    },
+    {
+      "theme": "dark",
+      "viewport": "desktop",
+      "route": "groups"
+    },
+    {
+      "theme": "light",
+      "viewport": "tablet",
+      "route": "seating"
+    },
+    {
+      "theme": "dark",
+      "motion": "on",
+      "route": "tools"
+    }
+  ],
+  "fixedScenarios": [
+    {
+      "theme": "dark",
+      "motion": "on",
+      "viewport": "desktop",
+      "route": "overview"
+    }
+  ],
+  "validator": "qa/combinatorial-validator.mjs",
+  "limitations": [
+    "Matice ověřuje technické režimy a hlavní trasy produkční verze 1.0. Doménové algoritmy a bezpečné oddělení projekce pokrývají samostatné testy."
+  ]
+}

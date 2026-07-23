@@ -1,0 +1,173 @@
+{
+  "scenarios": [
+    {
+      "id": "sortio-home",
+      "name": "Prémiový přehled SORTIO",
+      "url": "/index.html",
+      "expectedText": "Rozdělit.",
+      "mustVisible": [
+        ".brand",
+        ".sortio-stage",
+        ".hero-copy"
+      ],
+      "viewports": [
+        {
+          "width": 360,
+          "height": 800
+        },
+        {
+          "width": 768,
+          "height": 1024
+        },
+        {
+          "width": 1366,
+          "height": 768
+        },
+        {
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "steps": [
+        {
+          "action": "wait",
+          "ms": 500
+        }
+      ]
+    },
+    {
+      "id": "sortio-classes",
+      "name": "Správa tříd bez dat",
+      "url": "/index.html#classes",
+      "expectedText": "Jednou vložit",
+      "mustVisible": [
+        "#classRail",
+        "#classWorkspace"
+      ],
+      "viewports": [
+        {
+          "width": 412,
+          "height": 915
+        },
+        {
+          "width": 1366,
+          "height": 768
+        }
+      ]
+    },
+    {
+      "id": "sortio-groups",
+      "name": "Chytré skupiny bez aktivní třídy",
+      "url": "/index.html#groups",
+      "expectedText": "Chybí aktivní třída",
+      "mustVisible": [
+        "#groupsWorkspace"
+      ],
+      "viewports": [
+        {
+          "width": 412,
+          "height": 915
+        },
+        {
+          "width": 1366,
+          "height": 768
+        }
+      ]
+    },
+    {
+      "id": "sortio-roles",
+      "name": "Role bez aktivní třídy",
+      "url": "/index.html#roles",
+      "expectedText": "Chybí aktivní třída",
+      "mustVisible": [
+        "#rolesWorkspace"
+      ],
+      "viewports": [
+        {
+          "width": 412,
+          "height": 915
+        },
+        {
+          "width": 1366,
+          "height": 768
+        }
+      ]
+    },
+    {
+      "id": "sortio-seating",
+      "name": "Místa bez aktivní třídy",
+      "url": "/index.html#seating",
+      "expectedText": "Chybí aktivní třída",
+      "mustVisible": [
+        "#seatingWorkspace"
+      ],
+      "viewports": [
+        {
+          "width": 412,
+          "height": 915
+        },
+        {
+          "width": 1366,
+          "height": 768
+        }
+      ]
+    },
+    {
+      "id": "sortio-tools",
+      "name": "Třídní nástroje bez aktivní třídy",
+      "url": "/index.html#tools",
+      "expectedText": "Chybí aktivní třída",
+      "mustVisible": [
+        "#toolsWorkspace"
+      ],
+      "viewports": [
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 1366,
+          "height": 768
+        }
+      ]
+    },
+    {
+      "id": "sortio-manual",
+      "name": "Manuál produkční verze 1.0",
+      "url": "/manual/index.html",
+      "expectedText": "Bezpečná projekce",
+      "mustVisible": [
+        ".toc"
+      ],
+      "viewports": [
+        {
+          "width": 360,
+          "height": 800
+        },
+        {
+          "width": 1366,
+          "height": 768
+        }
+      ]
+    },
+    {
+      "id": "sortio-tests",
+      "name": "Interní testovací centrum",
+      "url": "/tests/index.html",
+      "expectedText": "Produkční kontrola SORTIO",
+      "mustVisible": [
+        "#runBtn"
+      ],
+      "viewports": [
+        {
+          "width": 412,
+          "height": 915
+        },
+        {
+          "width": 1920,
+          "height": 1080
+        }
+      ]
+    }
+  ]
+}

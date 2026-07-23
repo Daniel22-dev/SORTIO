@@ -1,0 +1,199 @@
+<a class="skip-link" href="#mainContent">Přeskočit na hlavní obsah</a>
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="#overview" data-route="overview" aria-label="SORTIO – přehled">
+      <img class="brand-mark" src="./assets/sortio-mark.svg" alt="">
+      <span><strong>SORTIO</strong><small>organizátor třídy</small></span>
+    </a>
+    <div class="release-pill"><span></span> SORTIO 1.0 · produkční verze</div>
+    <div class="top-actions">
+      <a class="icon-button studio-link" href="/AI-Studio-GHRAB/" title="Zpět do AI Studia"><span>✦</span><b>Studio</b></a>
+      <button class="icon-button" id="motionToggle" type="button" title="Pohybové efekty"><span>◎</span><b>Pohyb</b></button>
+      <button class="icon-button" id="themeToggle" type="button" title="Světlý nebo tmavý režim"><span>◐</span><b>Motiv</b></button>
+      <button class="icon-button projection-launch" id="projectionBtn" type="button" title="Bezpečný projekční režim"><span>▣</span><b>Projekce</b></button>
+      <button class="icon-button" id="keyboardHelpBtn" type="button" title="Klávesové zkratky" aria-controls="keyboardDialog"><span>?</span><b>Zkratky</b></button><button class="icon-button" id="fullscreenBtn" type="button" title="Celá obrazovka"><span>⛶</span><b>Celá obrazovka</b></button>
+    </div>
+  </header>
+
+  <aside class="sidebar" aria-label="Hlavní navigace">
+    <nav>
+      <button class="nav-item active" type="button" data-route="overview"><span>◉</span><b>Přehled</b></button>
+      <button class="nav-item" type="button" data-route="classes"><span>⌁</span><b>Třídy</b></button>
+      <button class="nav-item" type="button" data-route="draw"><span>◎</span><b>Losování</b></button>
+      <button class="nav-item" type="button" data-route="groups"><span>◌</span><b>Skupiny</b></button>
+      <button class="nav-item" type="button" data-route="roles"><span>◇</span><b>Role</b></button>
+      <button class="nav-item" type="button" data-route="seating"><span>▦</span><b>Místa</b></button>
+      <button class="nav-item" type="button" data-route="tools"><span>◫</span><b>Nástroje</b></button>
+      <button class="nav-item" type="button" data-route="settings"><span>⚙</span><b>Nastavení</b></button>
+      <button class="nav-item" type="button" data-route="about"><span>ⓘ</span><b>O aplikaci</b></button>
+    </nav>
+    <div class="side-status">
+      <img src="./assets/school-logo.png" alt="Logo Gymnázia, Ostrava-Hrabůvka">
+      <div><b>Školní projekt</b><small>AI Studio GHRAB</small></div>
+    </div>
+  </aside>
+
+  <main class="main-content" id="mainContent" tabindex="-1">
+    <section class="view active" data-view="overview" id="overview">
+      <div class="hero-grid dashboard-hero">
+        <article class="hero-copy glass-panel">
+          <div class="eyebrow"><span></span> Organizace třídy bez zdržování</div>
+          <h1>Rozdělit.<br><em>Vybrat. Začít.</em></h1>
+          <p>Vložte skupinu z interního systému, označte nepřítomné a během několika sekund vylosujte studenta nebo vytvořte použitelné skupiny.</p>
+          <div class="hero-actions">
+            <button class="primary-button" type="button" data-action="open-import">Vložit skupinu z IS <span>→</span></button>
+            <button class="secondary-button" type="button" data-route="draw">Rychlé losování</button>
+          </div>
+          <div class="privacy-inline"><span>✓</span><p>E-maily se používají jen při importu. Do uložených dat se nepřenášejí.</p></div>
+        </article>
+        <article class="sortio-stage">
+          <div class="stage-grid"></div>
+          <div class="floating-card card-a"><i>01</i><b>Třídy</b><span data-stat="classCount">0</span></div>
+          <div class="floating-card card-b"><i>02</i><b>Studenti</b><span data-stat="studentCount">0</span></div>
+          <div class="floating-card card-c"><i>03</i><b>Dnešní losování</b><span data-stat="drawCount">0</span></div>
+          <div class="sortio-core"><img src="./assets/sortio-mark.svg" alt=""><strong>SORTIO</strong><small>jádro __APP_VERSION__</small></div>
+          <div class="flow-line line-a"></div><div class="flow-line line-b"></div><div class="flow-line line-c"></div>
+          <div class="stage-caption"><span>LOCAL-FIRST</span><b>Data zůstávají v tomto prohlížeči</b></div>
+        </article>
+      </div>
+
+      <div class="stat-grid">
+        <article><span>TŘÍDY</span><strong data-stat="classCount">0</strong><small>aktivní seznamy</small></article>
+        <article><span>STUDENTI</span><strong data-stat="studentCount">0</strong><small>bez uložených e-mailů</small></article>
+        <article><span>AKTIVNÍ TŘÍDA</span><strong class="text-stat" data-stat="activeClass">—</strong><small><b data-stat="activePresent">0</b> z <b data-stat="activeTotal">0</b> přítomných</small></article>
+        <article><span>DNES</span><strong data-stat="drawCount">0</strong><small>provedených výběrů</small></article>
+      </div>
+
+      <article class="active-class-panel" id="activeClassPanel"></article>
+
+      <div class="section-heading"><div><span>RYCHLÝ PRACOVNÍ TOK</span><h2>Od IS ke skupinám za tři kroky</h2></div><p>SORTIO je navrženo pro minimum klikání před hodinou i během ní.</p></div>
+      <div class="workflow-grid">
+        <article><i>1</i><div><span>IMPORT</span><h3>Vložte e-maily z IS</h3><p>Aplikace rozpozná jména, odstraní duplicity a nabídne kontrolní náhled.</p></div><button data-action="open-import">Otevřít</button></article>
+        <article><i>2</i><div><span>DOCHÁZKA</span><h3>Označte nepřítomné</h3><p>Losování i skupiny automaticky pracují pouze s přítomnými studenty.</p></div><button data-route="classes">Otevřít</button></article>
+        <article><i>3</i><div><span>AKCE</span><h3>Losujte nebo rozdělte</h3><p>Výběr bez opakování a skupiny s rozumným rozdělením zbytku.</p></div><button data-route="groups">Otevřít</button></article>
+      </div>
+
+      <div class="section-heading compact-heading"><div><span>MODULÁRNÍ VÝVOJ</span><h2>Co je aktivní a co přijde dál</h2></div></div>
+      <div class="roadmap-grid" id="roadmapGrid"></div>
+    </section>
+
+    <section class="view" data-view="classes" id="classes">
+      <div class="page-title"><div><span>TŘÍDY A DOCHÁZKA</span><h1>Jednou vložit, potom používat</h1><p>Seznamy se ukládají lokálně. E-mailové adresy jsou pouze dočasným vstupem pro rozpoznání jména a příjmení.</p></div><button class="primary-button" data-action="open-import">Importovat z IS</button></div>
+      <div class="classes-layout">
+        <aside class="class-rail" id="classRail"></aside>
+        <section class="class-workspace" id="classWorkspace"></section>
+      </div>
+    </section>
+
+    <section class="view" data-view="draw" id="draw">
+      <div class="page-title"><div><span>NÁHODNÝ VÝBĚR</span><h1>Spravedlivé losování</h1><p>Jeden student, více studentů nebo celé pořadí. Režim bez opakování hlídá, aby se třída nejprve vystřídala.</p></div><div class="page-badge accent">SORTIO 1.0</div></div>
+      <div id="drawWorkspace"></div>
+    </section>
+
+    <section class="view" data-view="groups" id="groups">
+      <div class="page-title"><div><span>CHYTRÁ TVORBA SKUPIN</span><h1>Skupiny podle vašich pravidel</h1><p>Náhodně, vyváženě, podle podobné úrovně nebo s omezením opakovaných kombinací. Pravidla „spolu“ a „od sebe“ jsou závazná.</p></div><div class="page-badge accent">SORTIO 1.0</div></div>
+      <div id="groupsWorkspace"></div>
+    </section>
+
+
+    <section class="view" data-view="roles" id="roles">
+      <div class="page-title"><div><span>ROLE, TÉMATA A ÚKOLY</span><h1>Každý ví, co má dělat</h1><p>Přidělte členům skupin role se spravedlivou rotací a rozdělte témata, otázky nebo stanoviště.</p></div><div class="page-badge accent">SORTIO 1.0</div></div>
+      <div id="rolesWorkspace"></div>
+    </section>
+
+    <section class="view" data-view="seating" id="seating">
+      <div class="page-title"><div><span>ZASEDACÍ POŘÁDEK</span><h1>Učebna pod kontrolou</h1><p>Řady, dvojice, ostrůvky nebo uspořádání do U. SORTIO respektuje přední místa, uzamčené pozice a pravidla „od sebe“.</p></div><div class="page-badge accent">SORTIO 1.0</div></div>
+      <div id="seatingWorkspace"></div>
+    </section>
+
+
+    <section class="view" data-view="tools" id="tools">
+      <div class="page-title"><div><span>NÁSTROJE PRO ŽIVOU VÝUKU</span><h1>Hodina pod kontrolou</h1><p>Časovač, stopky, rychlé rozhodování, týmové skóre a spravedlivé zapojování na jednom místě.</p></div><div class="page-badge accent">SORTIO 1.0</div></div>
+      <div id="toolsWorkspace"></div>
+    </section>
+
+    <section class="view" data-view="settings" id="settings">
+      <div class="page-title"><div><span>ZAŘÍZENÍ A DATA</span><h1>Nastavení aplikace</h1><p>Všechny třídy, jména, docházka a historie jsou uloženy pouze v tomto prohlížeči.</p></div><div class="page-badge">LOKÁLNĚ</div></div>
+      <div class="settings-grid">
+        <article class="settings-card"><div><h3>Vzhled</h3><p>Zvolte výchozí barevný režim.</p></div><div class="segmented" id="themeSegment"><button data-value="dark">Tmavý</button><button data-value="light">Světlý</button><button data-value="system">Systém</button></div></article>
+        <article class="settings-card"><div><h3>Pohybové efekty</h3><p>Vypnutí omezí animace losování a přechody.</p></div><label class="switch"><input type="checkbox" id="motionSetting" checked><span></span></label></article>
+        <article class="settings-card"><div><h3>Potvrzovat mazání</h3><p>Chrání před nechtěným odstraněním třídy nebo všech dat.</p></div><label class="switch"><input type="checkbox" id="confirmSetting" checked><span></span></label></article>
+      </div>
+      <div class="data-summary-grid">
+        <article><span>Aktivní třídy</span><b data-data-stat="storedClasses">0</b></article><article><span>Archivované</span><b data-data-stat="archivedClasses">0</b></article><article><span>Studenti</span><b data-data-stat="storedStudents">0</b></article><article><span>Losování</span><b data-data-stat="storedDraws">0</b></article><article><span>Sady skupin</span><b data-data-stat="storedGroups">0</b></article><article><span>Přidělené role</span><b data-data-stat="storedRoles">0</b></article><article><span>Zasedací plány</span><b data-data-stat="storedSeating">0</b></article><article><span>Zapojení</span><b data-data-stat="storedEngagement">0</b></article>
+      </div>
+      <section class="production-console" aria-labelledby="productionTitle">
+        <div class="production-console-head"><div><span>PRODUKČNÍ KONTROLA</span><h2 id="productionTitle">Stav aplikace a dat</h2><p>Kontrola probíhá lokálně a diagnostika neobsahuje jména studentů ani e-mailové adresy.</p></div><button class="primary-button compact" id="runProductionChecks">Spustit kontrolu</button></div>
+        <div class="production-console-grid"><article id="productionHealth" class="production-health"></article><article class="production-results"><h3>Výsledky kontrol</h3><div id="productionCheckResults"></div></article></div>
+      </section>
+      <div class="settings-grid data-actions-grid">
+        <article class="settings-card"><div><h3>Záloha SORTIO</h3><p>Stáhne kontrolovanou zálohu včetně kontrolního součtu. Neobsahuje e-mailové adresy.</p></div><button class="small-button" id="exportBackup">Stáhnout zálohu</button></article>
+        <article class="settings-card"><div><h3>Obnovit zálohu</h3><p>Soubor se nejprve ověří. Aktuální data se uloží jako vratný stav před importem.</p></div><label class="small-button file-button">Vybrat soubor<input type="file" id="backupFile" accept="application/json,.json"></label></article>
+        <article class="settings-card"><div><h3>Vrátit stav před importem</h3><p>Jednorázově obnoví data, která byla aktivní před posledním importem zálohy.</p></div><button class="small-button" id="restoreRecovery" disabled>Obnovit předchozí stav</button></article>
+        <article class="settings-card"><div><h3>Anonymní ukázková třída</h3><p>Vytvoří 24 smyšlených studentů pro bezpečné vyzkoušení všech funkcí.</p></div><button class="small-button" id="createDemoClass">Vytvořit ukázku</button></article>
+        <article class="settings-card"><div><h3>Interní testovací centrum</h3><p>Podrobná sada testů importu, algoritmů, dat, PWA, přístupnosti a soukromí.</p></div><a class="small-button" href="./tests/">Otevřít testy</a></article>
+        <article class="settings-card"><div><h3>Diagnostika pro správce</h3><p>Stáhne nebo zkopíruje technický protokol bez osobních údajů studentů.</p></div><div class="dual-actions"><button class="small-button" id="downloadDiagnostic">Stáhnout</button><button class="small-button" id="copyDiagnostic">Kopírovat</button></div></article>
+        <article class="settings-card danger-zone"><div><h3>Vymazat všechna data</h3><p>Odstraní třídy, historii, bezpečné kopie i stav před importem.</p></div><button class="small-button danger" id="clearAllData">Vymazat data</button></article>
+        <article class="settings-card"><div><h3>Vymazat pouze preference</h3><p>Obnoví motiv a pohybové efekty. Třídy zůstanou zachovány.</p></div><button class="small-button" id="resetSettings">Obnovit preference</button></article>
+      </div>
+    </section>
+
+    <section class="view" data-view="about" id="about">
+      <div class="page-title"><div><span>IDENTITA A VLASTNICTVÍ</span><h1>O aplikaci</h1><p>Školní aplikace pro rychlou organizaci živé výuky, vyvíjená modulárně jako součást AI Studia GHRAB.</p></div><div class="page-badge accent">v__APP_VERSION__</div></div>
+      <div class="about-layout">
+        <article class="about-brand glass-panel"><img src="./assets/sortio-mark.svg" alt="Značka SORTIO"><span>SORTIO</span><h2>Organizátor třídy</h2><p>Import z IS, chytré skupiny, role, projekční režim, třídní nástroje a tiskové výstupy.</p></article>
+        <div class="about-details">
+          <article><span>AUTOR A VÝVOJOVÝ GARANT</span><h3>Daniel Baláž</h3><p>Koncepce, návrh funkcí, metodické vedení a vývoj aplikace.</p></article>
+          <article><span>ŠKOLNÍ PROJEKT</span><h3>Gymnázium, Ostrava-Hrabůvka</h3><p>Aplikace je připravována pro interní školní využití v rámci AI Studia GHRAB.</p></article>
+          <article><span>OCHRANA DAT</span><h3>Local-first architektura</h3><p>Jména a historie zůstávají v konkrétním prohlížeči. Importované e-mailové adresy se po vytvoření náhledu neukládají.</p></article>
+          <article><span>TECHNICKÝ STAV</span><h3>1.0.1 · Produkční školní verze</h3><p>Odolné ukládání dat, bezpečné zálohy, diagnostika, ukázková třída, klávesové ovládání a kompletní testovací sada.</p></article>
+        </div>
+      </div>
+      <article class="privacy-card"><span>PRAVIDLO PRO TESTOVÁNÍ</span><h3>Do veřejného repozitáře ani screenshotů nevkládat skutečné seznamy studentů.</h3><p>Pro vývojové testy jsou v balíčku použity pouze smyšlené adresy a jména. Při sdílení diagnostiky se osobní údaje automaticky nevypisují.</p></article>
+      <footer class="legal-footer"><img src="./assets/school-logo.png" alt=""><p><b>Autor a vývojový garant: Daniel Baláž</b><br>Školní projekt Gymnázia, Ostrava-Hrabůvka · Součást AI Studia GHRAB</p><span>© 2026</span></footer>
+    </section>
+  </main>
+</div>
+
+<dialog id="classDialog" class="sortio-dialog">
+  <form id="classForm" method="dialog">
+    <header><div><span>TŘÍDA</span><h2 id="classDialogTitle">Nová třída</h2></div><button type="button" data-action="close-dialog" aria-label="Zavřít">×</button></header>
+    <input type="hidden" id="classDialogMode" value="new">
+    <label>Název třídy nebo skupiny<input id="classNameInput" required placeholder="např. 2.A – angličtina"></label>
+    <label>Školní rok<input id="schoolYearInput" placeholder="2026/2027"></label>
+    <footer><button type="button" class="secondary-button" data-action="close-dialog">Zrušit</button><button type="submit" class="primary-button">Uložit třídu</button></footer>
+  </form>
+</dialog>
+
+<dialog id="importDialog" class="sortio-dialog import-dialog">
+  <div class="dialog-content">
+    <header><div><span>IMPORT Z INTERNÍHO SYSTÉMU</span><h2 id="importDialogTitle">Importovat třídu</h2></div><button type="button" data-action="close-dialog" aria-label="Zavřít">×</button></header>
+    <input type="hidden" id="importMode" value="new">
+    <div class="import-meta"><label>Název třídy<input id="importClassName" placeholder="např. 2.A – španělština"></label><label>Školní rok<input id="importSchoolYear" placeholder="2026/2027"></label></div>
+    <label class="paste-label">Seznam e-mailů z IS<textarea id="isPaste" rows="5" placeholder="jmeno.prijmeni@example.com, dalsi.student@example.com, …"></textarea><small>Podporujeme čárky, středníky, mezery i nové řádky.</small></label>
+    <div class="import-actions"><button class="primary-button compact" type="button" data-action="parse-import">Rozpoznat jména</button><span>Rozpoznáno: <b id="importCount">0</b></span></div>
+    <div id="importWarnings" class="import-warnings" hidden></div>
+    <div id="importPreview" class="import-preview"></div>
+    <label class="replace-row" id="importReplaceRow" hidden><input type="checkbox" id="replaceRoster"><span><b>Nahradit aktuální seznam</b><small>Studenti, kteří v novém seznamu chybí, se přesunou do archivu. Historie zůstane zachována.</small></span></label>
+    <footer><button type="button" class="secondary-button" data-action="close-dialog">Zrušit</button><button type="button" class="primary-button" id="saveImport" data-action="save-import" disabled>Uložit třídu</button></footer>
+  </div>
+</dialog>
+
+
+<dialog id="projectionDialog" class="projection-dialog">
+  <div class="projection-shell">
+    <header><div><span>BEZPEČNÁ PROJEKCE</span><h2 id="projectionTitle">SORTIO</h2></div><div><select id="projectionMode" aria-label="Obsah projekce"><option value="auto">Aktuální obsah</option><option value="groups">Skupiny</option><option value="seating">Zasedací pořádek</option><option value="draw">Poslední losování</option><option value="tools">Třídní nástroje</option></select><button type="button" data-action="projection-fullscreen">Celá obrazovka</button><button type="button" data-action="close-projection" aria-label="Zavřít projekci">×</button></div></header>
+    <main id="projectionContent" class="projection-content"></main>
+    <footer><span>Na projekci nejsou zobrazeny interní úrovně, pravidla ani poznámky učitele.</span><b>SORTIO · Gymnázium, Ostrava-Hrabůvka</b></footer>
+  </div>
+</dialog>
+
+<dialog id="keyboardDialog" class="sortio-dialog keyboard-dialog">
+  <div class="dialog-content">
+    <header><div><span>RYCHLÉ OVLÁDÁNÍ</span><h2>Klávesové zkratky</h2></div><button type="button" data-action="close-dialog" aria-label="Zavřít">×</button></header>
+    <div class="shortcut-grid"><span><kbd>Alt</kbd> + <kbd>1–9</kbd><b>Přepnutí hlavních modulů</b></span><span><kbd>Alt</kbd> + <kbd>I</kbd><b>Import z IS</b></span><span><kbd>Alt</kbd> + <kbd>P</kbd><b>Bezpečná projekce</b></span><span><kbd>?</kbd><b>Tato nápověda</b></span><span><kbd>Esc</kbd><b>Zavření dialogu nebo projekce</b></span></div>
+    <footer><button type="button" class="primary-button" data-action="close-dialog">Rozumím</button></footer>
+  </div>
+</dialog>
+
+<div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>

@@ -1,0 +1,33 @@
+{
+  "name": "sortio-organizator-tridy",
+  "version": "1.0.1",
+  "private": true,
+  "description": "SORTIO – produkční local-first organizátor třídy s odolným ukládáním, diagnostikou, projekcí a tiskem",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node scripts/test.mjs && npm run build",
+    "test:domain": "node scripts/domain-tests.mjs",
+    "test:headless": "node scripts/headless-check.mjs",
+    "qa:technical": "node scripts/qa-technical.mjs",
+    "qa:security": "node scripts/qa-security.mjs",
+    "qa:pwa": "node scripts/qa-pwa.mjs",
+    "qa:critical": "node scripts/qa-critical.mjs",
+    "qa:visual": "node scripts/qa-visual.mjs",
+    "qa:report": "node scripts/qa-report.mjs",
+    "qa:approve": "node scripts/qa-approve.mjs",
+    "qa:release": "node scripts/qa-release.mjs",
+    "qa:combinatorial": "node scripts/qa-combinatorial.mjs",
+    "test:package3": "node scripts/package3-runtime-tests.mjs",
+    "test:package4": "node scripts/package4-runtime-tests.mjs",
+    "test:package5": "node scripts/package5-runtime-tests.mjs",
+    "test:internal": "node scripts/package5-internal-tests.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.1",
+    "pngjs": "^7.0.0"
+  }
+}

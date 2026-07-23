@@ -1,0 +1,103 @@
+{
+  "schema": "ai-studio-app-manifest-v1",
+  "id": "sortio",
+  "name": {
+    "cs": "SORTIO – Organizátor třídy",
+    "en": "SORTIO – Classroom Organiser"
+  },
+  "version": "__APP_VERSION__",
+  "status": {
+    "cs": "Produkční školní verze · SORTIO 1.0.1",
+    "en": "Production school release · SORTIO 1.0.1"
+  },
+  "description": {
+    "cs": "Produkční local-first organizátor třídy: import z IS, losování, chytré skupiny, role, zasedací pořádek, bezpečná projekce, třídní nástroje, spravedlivá historie, tisk/PDF, odolné zálohy a diagnostika bez osobních údajů.",
+    "en": "A production local-first classroom organiser with school-system import, random selection, smart groups, roles, seating, safe projection, classroom tools, fair engagement history, print/PDF, resilient backups and privacy-safe diagnostics."
+  },
+  "launchUrl": "https://daniel22-dev.github.io/SORTIO/",
+  "manualUrl": "https://daniel22-dev.github.io/SORTIO/manual/",
+  "repository": "daniel22-dev/SORTIO",
+  "icon": "assets/apps/sortio.png",
+  "accent": "#5EE7FF",
+  "tags": [
+    {
+      "cs": "Organizace třídy",
+      "en": "Classroom organisation"
+    },
+    {
+      "cs": "Chytré skupiny",
+      "en": "Smart groups"
+    },
+    {
+      "cs": "Role a zasedací pořádek",
+      "en": "Roles and seating"
+    },
+    {
+      "cs": "Local-first",
+      "en": "Local-first"
+    }
+  ],
+  "capabilities": [
+    "modular-core",
+    "class-roster-management",
+    "school-email-name-import",
+    "attendance-filter",
+    "non-repeating-random-selection",
+    "multi-selection-and-order",
+    "balanced-group-generation",
+    "locked-group-reroll",
+    "manual-group-moves",
+    "random-spokesperson",
+    "local-backup",
+    "anonymous-output-telemetry",
+    "premium-design-system",
+    "dark-light-theme",
+    "reduced-motion",
+    "pwa",
+    "complete-in-app-manual",
+    "internal-self-tests",
+    "ghrab-qa-1.0.2",
+    "studio-access-guard",
+    "constraint-aware-group-generation",
+    "balanced-level-groups",
+    "homogeneous-level-groups",
+    "history-aware-groups",
+    "must-together-rules",
+    "must-separate-rules",
+    "group-pinning",
+    "fair-role-rotation",
+    "topic-assignment",
+    "seating-layouts",
+    "front-seat-preferences",
+    "locked-seats",
+    "safe-projection-mode",
+    "classroom-timer",
+    "stopwatch",
+    "team-scoreboard",
+    "fair-engagement-tracking",
+    "decision-tools",
+    "print-and-pdf-exports",
+    "resilient-local-storage",
+    "last-known-good-recovery",
+    "validated-backup-import",
+    "backup-integrity-checksum",
+    "production-diagnostics",
+    "anonymous-demo-class",
+    "keyboard-shortcuts",
+    "accessibility-audit",
+    "large-class-performance-tested"
+  ],
+  "privacy": {
+    "storage": "local-only",
+    "storesEmailAddresses": false,
+    "externalStudentDataTransfer": false,
+    "diagnosticsContainStudentNames": false
+  },
+  "compatibility": {
+    "studioMinVersion": "0.18.3",
+    "materialSchema": "ghrab-material-v1",
+    "studioBridge": "1.1",
+    "dataSchema": "sortio-data-v5"
+  },
+  "publishedAt": "__BUILD_TIME__"
+}
