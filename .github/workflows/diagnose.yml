@@ -1,0 +1,80 @@
+name: SORTIO CI Diagnostic
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/diagnose.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Run diagnostic commands
+        shell: bash
+        run: |
+          set +e
+          : > ci-diagnostic.log
+          : > ci-status.env
+
+          run_step() {
+            label="$1"
+            shift
+            echo "===== ${label} =====" | tee -a ci-diagnostic.log
+            "$@" 2>&1 | tee -a ci-diagnostic.log
+            code=${PIPESTATUS[0]}
+            key=$(echo "$label" | tr '[:lower:] -' '[:upper:]__' | tr -cd 'A-Z0-9_')
+            echo "${key}=${code}" >> ci-status.env
+            echo "exit=${code}" | tee -a ci-diagnostic.log
+            return 0
+          }
+
+          run_step "npm ci" npm ci --no-fund
+          if grep -q '^NPM_CI=0$' ci-status.env; then
+            run_step "playwright install" npx playwright install --with-deps chromium
+            run_step "build" npm run build
+            run_step "qa release" npm run qa:release
+          fi
+
+          {
+            echo '# SORTIO CI diagnostic'
+            echo
+            echo 'Commit: `'$GITHUB_SHA'`'
+            echo
+            echo '## Exit codes'
+            echo '```text'
+            cat ci-status.env
+            echo '```'
+            echo
+            echo '## Log tail'
+            echo '```text'
+            tail -n 350 ci-diagnostic.log
+            echo '```'
+          } > CI-DIAGNOSTIC.md
+
+      - name: Publish diagnostic branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch --orphan ci-diagnostics
+          git rm -rf . >/dev/null 2>&1 || true
+          git add -f CI-DIAGNOSTIC.md
+          git commit -m "SORTIO CI diagnostic"
+          git push --force origin ci-diagnostics
