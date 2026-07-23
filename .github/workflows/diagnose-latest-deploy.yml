@@ -68,12 +68,12 @@ jobs:
             try {
               const pages = await github.request('GET /repos/{owner}/{repo}/pages', { owner, repo });
               report.push('\n## GitHub Pages');
-              report.push(`Status: configured`);
+              report.push('Status: configured');
               report.push(`Build type: ${pages.data.build_type || 'unknown'}`);
               report.push(`URL: ${pages.data.html_url || 'unknown'}`);
             } catch (error) {
               report.push('\n## GitHub Pages');
-              report.push(`Status: unavailable`);
+              report.push('Status: unavailable');
               report.push(`HTTP: ${error.status || 'unknown'}`);
               report.push(`Message: ${error.message}`);
             }
