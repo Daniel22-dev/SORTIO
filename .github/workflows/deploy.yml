@@ -1,9 +1,12 @@
-name: SORTIO QA and Deploy
+name: Deploy SORTIO to GitHub Pages
 
 on:
   push:
     branches:
       - main
+    paths:
+      - dist/**
+      - .github/workflows/deploy.yml
   workflow_dispatch:
 
 permissions:
@@ -13,17 +16,36 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  certify:
-    name: Test, build and package
+  deploy:
+    name: Publish prepared SORTIO build
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with
+      - name: Verify prepared build
+        shell: bash
+        run: |
+          test -f dist/index.html
+          test -f dist/manifest.webmanifest
+          test -f dist/sw.js
+          test -f dist/.nojekyll
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
