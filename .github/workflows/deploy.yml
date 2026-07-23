@@ -1,6 +1,10 @@
-name: Deploy SORTIO to GitHub Pages
+name: SORTIO QA and Deploy
 
 on:
+  push:
+    branches:
+      - main
+      - master
   workflow_dispatch:
 
 permissions:
@@ -14,7 +18,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build SORTIO
+    name: Test and build SORTIO
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -29,19 +33,24 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        run: npm ci --no-fund
+        run: npm ci --no-fund --no-audit
         env:
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org
 
-      - name: Build application
-        run: npm run build
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
 
-      - name: Verify prepared build
+      - name: Run complete GHRAB release QA
+        run: npm run qa:release
+
+      - name: Verify prepared build and AI Studio manifest
         shell: bash
         run: |
           test -f dist/index.html
           test -f dist/manifest.webmanifest
           test -f dist/sw.js
+          test -f dist/studio-manifest.json
+          node -e "const m=require('./dist/studio-manifest.json'); if(m.id!=='sortio'||m.version!=='1.0.1'||!m.launchUrl) process.exit(1)"
           touch dist/.nojekyll
 
       - name: Configure GitHub Pages
