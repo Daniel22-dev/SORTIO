@@ -7,14 +7,8 @@
       "url": "/index.html",
       "expectedText": "Rozdělit.",
       "steps": [
-        {
-          "action": "assertVisible",
-          "selector": ".sortio-stage"
-        },
-        {
-          "action": "assertVisible",
-          "selector": "[data-action=\"open-import\"]"
-        }
+        { "action": "assertVisible", "selector": ".sortio-stage" },
+        { "action": "assertVisible", "selector": "[data-action=\"open-import\"]" }
       ]
     },
     {
@@ -22,39 +16,15 @@
       "name": "Import smyšlené skupiny z IS",
       "type": "browser",
       "url": "/index.html",
-      "expectedText": "Alex Novak",
+      "expectedText": "Alex Novák",
       "steps": [
-        {
-          "action": "click",
-          "selector": "[data-action=\"open-import\"]"
-        },
-        {
-          "action": "fill",
-          "selector": "#importClassName",
-          "value": "QA skupina"
-        },
-        {
-          "action": "fill",
-          "selector": "#isPaste",
-          "value": "alex.novak@example.com,bara.svobodova@example.com,cyril.dlouhy@example.com"
-        },
-        {
-          "action": "click",
-          "selector": "[data-action=\"parse-import\"]"
-        },
-        {
-          "action": "assertVisible",
-          "selector": ".import-preview-row"
-        },
-        {
-          "action": "click",
-          "selector": "[data-action=\"save-import\"]"
-        },
-        {
-          "action": "assertText",
-          "selector": "body",
-          "text": "Alex Novak"
-        }
+        { "action": "click", "selector": "[data-action=\"open-import\"]" },
+        { "action": "fill", "selector": "#importClassName", "value": "QA skupina" },
+        { "action": "fill", "selector": "#isPaste", "value": "alex.novak@example.com,bara.svobodova@example.com,cyril.dlouhy@example.com" },
+        { "action": "click", "selector": "[data-action=\"parse-import\"]" },
+        { "action": "assertVisible", "selector": ".import-preview-row" },
+        { "action": "click", "selector": "[data-action=\"save-import\"]" },
+        { "action": "assertText", "selector": "body", "text": "Alex Novák" }
       ]
     },
     {
@@ -63,12 +33,7 @@
       "type": "browser",
       "url": "/index.html#groups",
       "expectedText": "Skupiny podle vašich pravidel",
-      "steps": [
-        {
-          "action": "assertVisible",
-          "selector": "#groupsWorkspace"
-        }
-      ]
+      "steps": [{ "action": "assertVisible", "selector": "#groupsWorkspace" }]
     },
     {
       "id": "SORTIO-ROLES",
@@ -76,12 +41,7 @@
       "type": "browser",
       "url": "/index.html#roles",
       "expectedText": "Každý ví, co má dělat",
-      "steps": [
-        {
-          "action": "assertVisible",
-          "selector": "#rolesWorkspace"
-        }
-      ]
+      "steps": [{ "action": "assertVisible", "selector": "#rolesWorkspace" }]
     },
     {
       "id": "SORTIO-SEATING",
@@ -89,12 +49,7 @@
       "type": "browser",
       "url": "/index.html#seating",
       "expectedText": "Učebna pod kontrolou",
-      "steps": [
-        {
-          "action": "assertVisible",
-          "selector": "#seatingWorkspace"
-        }
-      ]
+      "steps": [{ "action": "assertVisible", "selector": "#seatingWorkspace" }]
     },
     {
       "id": "SORTIO-TOOLS",
@@ -102,28 +57,15 @@
       "type": "browser",
       "url": "/index.html#tools",
       "expectedText": "Hodina pod kontrolou",
-      "steps": [
-        {
-          "action": "assertVisible",
-          "selector": "#toolsWorkspace"
-        }
-      ]
+      "steps": [{ "action": "assertVisible", "selector": "#toolsWorkspace" }]
     },
     {
       "id": "SORTIO-PROJECTION",
       "name": "Bezpečný projekční režim",
       "type": "static",
       "assertions": [
-        {
-          "file": "src/js/85-projection.js",
-          "regex": "function openProjection",
-          "message": "Chybí projekční režim."
-        },
-        {
-          "file": "src/js/85-projection.js",
-          "notRegex": "groupLevel|frontPreference|groupRules",
-          "message": "Projekce používá neveřejná učitelská pole."
-        }
+        { "file": "src/js/85-projection.js", "regex": "function openProjection", "message": "Chybí projekční režim." },
+        { "file": "src/js/85-projection.js", "notRegex": "groupLevel|frontPreference|groupRules", "message": "Projekce používá neveřejná učitelská pole." }
       ]
     },
     {
@@ -132,12 +74,7 @@
       "type": "browser",
       "url": "/manual/index.html",
       "expectedText": "Bezpečná projekce",
-      "steps": [
-        {
-          "action": "assertVisible",
-          "selector": ".toc"
-        }
-      ]
+      "steps": [{ "action": "assertVisible", "selector": ".toc" }]
     },
     {
       "id": "SORTIO-TESTS",
@@ -145,23 +82,14 @@
       "type": "browser",
       "url": "/tests/index.html",
       "expectedText": "Produkční kontrola SORTIO",
-      "steps": [
-        {
-          "action": "assertVisible",
-          "selector": "#runBtn"
-        }
-      ]
+      "steps": [{ "action": "assertVisible", "selector": "#runBtn" }]
     },
     {
       "id": "SORTIO-CACHE-ISOLATION",
       "name": "Service worker nemaže cizí cache",
       "type": "static",
       "assertions": [
-        {
-          "file": "src/sw.js",
-          "regex": "startsWith\\(CACHE_PREFIX\\)",
-          "message": "Aktivace service workeru není omezena na vlastní prefix."
-        }
+        { "file": "src/sw.js", "regex": "startsWith\\(CACHE_PREFIX\\)", "message": "Aktivace service workeru není omezena na vlastní prefix." }
       ]
     },
     {
@@ -169,21 +97,9 @@
       "name": "E-maily se neukládají ani neposílají",
       "type": "static",
       "assertions": [
-        {
-          "file": "src/js/95-diagnostics.js",
-          "regex": "emailDataStored:false",
-          "message": "Diagnostika nepotvrzuje neukládání e-mailů."
-        },
-        {
-          "file": "src/js/95-diagnostics.js",
-          "regex": "externalDataTransfer:false",
-          "message": "Diagnostika nepotvrzuje nulový externí přenos."
-        },
-        {
-          "file": "src/body.html",
-          "notRegex": "@ghrabuvka\\.cz|tobias\\.baran",
-          "message": "Ve zdrojích je skutečný studentský seznam."
-        }
+        { "file": "src/js/95-diagnostics.js", "regex": "emailDataStored:false", "message": "Diagnostika nepotvrzuje neukládání e-mailů." },
+        { "file": "src/js/95-diagnostics.js", "regex": "externalStudentDataTransfer:false", "message": "Diagnostika nepotvrzuje nulový externí přenos." },
+        { "file": "src/body.html", "notRegex": "@ghrabuvka\\.cz|tobias\\.baran", "message": "Ve zdrojích je skutečný studentský seznam." }
       ]
     }
   ]
