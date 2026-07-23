@@ -16,7 +16,7 @@
       "name": "Import smyšlené skupiny z IS",
       "type": "browser",
       "url": "/index.html",
-      "expectedText": "Alex Novák",
+      "expectedText": "Alex Novak",
       "steps": [
         { "action": "click", "selector": "[data-action=\"open-import\"]" },
         { "action": "fill", "selector": "#importClassName", "value": "QA skupina" },
@@ -24,7 +24,7 @@
         { "action": "click", "selector": "[data-action=\"parse-import\"]" },
         { "action": "assertVisible", "selector": ".import-preview-row" },
         { "action": "click", "selector": "[data-action=\"save-import\"]" },
-        { "action": "assertText", "selector": "body", "text": "Alex Novák" }
+        { "action": "assertText", "selector": "body", "text": "Alex Novak" }
       ]
     },
     {
