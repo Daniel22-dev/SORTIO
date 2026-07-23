@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - dist/**
-      - .github/workflows/deploy.yml
   workflow_dispatch:
 
 permissions:
@@ -19,16 +16,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    name: Publish prepared SORTIO build
+  build:
+    name: Build SORTIO
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci --no-fund
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org
+
+      - name: Build application
+        run: npm run build
 
       - name: Verify prepared build
         shell: bash
@@ -36,16 +45,27 @@ jobs:
           test -f dist/index.html
           test -f dist/manifest.webmanifest
           test -f dist/sw.js
-          test -f dist/.nojekyll
+          touch dist/.nojekyll
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist
 
+  deploy:
+    name: Publish SORTIO
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 10
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
