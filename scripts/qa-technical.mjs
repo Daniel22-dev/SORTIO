@@ -227,26 +227,43 @@ else {
     "npm run qa:combinatorial",
     "npm run test:headless",
   ];
+  const deterministicCiCommands = [
+    "node scripts/verify-structure.mjs",
+    "node scripts/domain-tests.mjs",
+    "node scripts/package3-runtime-tests.mjs",
+    "node scripts/package4-runtime-tests.mjs",
+    "node scripts/package5-runtime-tests.mjs",
+    "node scripts/package5-internal-tests.mjs",
+    "node scripts/build.mjs",
+    "node scripts/qa-technical.mjs",
+    "node scripts/qa-security.mjs",
+    "node scripts/qa-pwa.mjs",
+    "node scripts/qa-combinatorial.mjs",
+  ];
   const hasReleaseWrapper = /npm run qa:release/.test(all);
   const hasExplicitReleaseSuite = explicitCiCommands.every((command) =>
     all.includes(command),
   );
-  if (!hasReleaseWrapper && !hasExplicitReleaseSuite)
+  const deterministicMode = /SORTIO_CI_MODE:\s*deterministic/.test(all);
+  const hasDeterministicSuite =
+    deterministicMode &&
+    deterministicCiCommands.every((command) => all.includes(command));
+  if (!hasReleaseWrapper && !hasExplicitReleaseSuite && !hasDeterministicSuite)
     f.push(
       finding(
         "technical",
         "MAJOR",
         "CI_NO_RELEASE_SUITE",
-        "GitHub Actions nespouští ani qa:release, ani úplnou explicitní sadu produkčních kontrol.",
+        "GitHub Actions nespouští qa:release, úplnou npm sadu ani deklarovanou deterministickou produkční sadu.",
       ),
     );
-  if (!/playwright install/.test(all))
+  if (!/playwright install/.test(all) && !deterministicMode)
     f.push(
       finding(
         "technical",
         "MAJOR",
         "CI_NO_CHROMIUM",
-        "GitHub Actions neinstaluje Playwright Chromium.",
+        "GitHub Actions neinstaluje Playwright Chromium a není deklarován deterministický CI režim.",
       ),
     );
 }
