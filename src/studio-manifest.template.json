@@ -7,8 +7,8 @@
   },
   "version": "__APP_VERSION__",
   "status": {
-    "cs": "Produkční školní verze · SORTIO 1.0.1",
-    "en": "Production school release · SORTIO 1.0.1"
+    "cs": "Produkční školní verze · SORTIO 1.0.2",
+    "en": "Production school release · SORTIO 1.0.2"
   },
   "description": {
     "cs": "Produkční local-first organizátor třídy: import z IS, losování, chytré skupiny, role, zasedací pořádek, bezpečná projekce, třídní nástroje, spravedlivá historie, tisk/PDF, odolné zálohy a diagnostika bez osobních údajů.",

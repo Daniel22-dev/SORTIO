@@ -7,5 +7,6 @@ const diagnostics=await readFile(new URL('../src/js/95-diagnostics.js',import.me
 for(const marker of ["DATA_KEY='sortio.data.v5'","LAST_GOOD_KEY='sortio.data.v5.last-good'","RECOVERY_KEY='sortio.data.v5.pre-import'","schema:'sortio-data-v5'",'validateBackupPayload','checksumText','MAX_BACKUP_BYTES'])assert.ok(storage.includes(marker),`Chybí ${marker}`);
 for(const marker of ['createDemoClass','runProductionChecks','Výkon skupin pro 120 studentů','diagnosticReport','diagnosticContainsStudentNames:false'])assert.ok(production.includes(marker)||diagnostics.includes(marker),`Chybí ${marker}`);
 for(const marker of ['event.altKey','openProjection','open-import','KEYBOARD_ROUTES'])assert.ok(keyboard.includes(marker),`Chybí ${marker}`);
+const init=await readFile(new URL('../src/js/99-init.js',import.meta.url),'utf8');assert.ok(init.includes("document.readyState==='loading'")&&init.includes('else init()'),'Inicializace musí fungovat i po DOMContentLoaded.');
 assert.equal(/@ghrabuvka\.cz|tobias\.baran/i.test([storage,production,keyboard,diagnostics].join('\n')),false,'Produkční moduly obsahují skutečné studentské údaje.');
 console.log('[package5] Odolnost dat, bezpečné zálohy, anonymní demo, diagnostika a klávesové ovládání prošly.');

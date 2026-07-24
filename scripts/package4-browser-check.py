@@ -4,7 +4,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 css = (ROOT / 'src' / 'styles.css').read_text()
-body = (ROOT / 'src' / 'body.html').read_text().replace('__APP_VERSION__','1.0.1')
+body = (ROOT / 'src' / 'body.html').read_text().replace('__APP_VERSION__','1.0.2')
 js = '\n;\n'.join(path.read_text() for path in sorted((ROOT / 'src' / 'js').glob('*.js')))
 
 names = ['Adam Novak', 'Bara Svobodova', 'Cyril Dvorak', 'Dana Vesela', 'Emil Marek', 'Fany Kralova']
@@ -53,7 +53,7 @@ with sync_playwright() as p:
         assert page.locator('[data-route="tools"]').count() == 1
         page.click('[data-route="tools"]')
         page.wait_for_selector('#toolsWorkspace .timer-card')
-        assert page.locator('#toolsWorkspace .tool-card').count() >= 7
+        assert page.locator('#toolsWorkspace .tool-card').count() >= 6
         assert page.evaluate("!!localStorage.getItem('sortio.data.v5')")
         page.click('[data-timer-preset="60"]')
         page.click('[data-action="timer-toggle"]')

@@ -1,4 +1,5 @@
 function activeRosterStats(classItem=getSelectedClass()){const all=classStudents(classItem);const present=all.filter(s=>s.present);return{all:all.length,present:present.length,absent:all.length-present.length}}
 function totalStudentCount(){return getClasses().reduce((sum,item)=>sum+classStudents(item).length,0)}
-function drawsToday(){const day=new Date().toISOString().slice(0,10);return getClasses({includeArchived:true}).reduce((sum,item)=>sum+item.drawHistory.filter(entry=>String(entry.createdAt).startsWith(day)).length,0)}
+function localDateKey(value=new Date()){const date=value instanceof Date?value:new Date(value);if(Number.isNaN(date.getTime()))return'';const year=date.getFullYear();const month=String(date.getMonth()+1).padStart(2,'0');const day=String(date.getDate()).padStart(2,'0');return`${year}-${month}-${day}`}
+function drawsToday(){const day=localDateKey();return getClasses({includeArchived:true}).reduce((sum,item)=>sum+item.drawHistory.filter(entry=>localDateKey(entry.createdAt)===day).length,0)}
 function ensureSelectedClass(){if(getSelectedClass())return getSelectedClass();const first=getClasses()[0]||null;if(first){App.data.selectedClassId=first.id;saveData({render:false,event:'class_auto_select'})}return first}

@@ -1,4 +1,4 @@
-# Architektura SORTIO 1.0.1
+# Architektura SORTIO 1.0.2
 
 SORTIO je modulární local-first PWA. Uživatelské rozhraní, doménové algoritmy, datová vrstva, projekce, tisk a diagnostika jsou oddělené tak, aby šly samostatně testovat.
 
@@ -25,11 +25,15 @@ SORTIO je modulární local-first PWA. Uživatelské rozhraní, doménové algor
 - lokální kopie poškozeného primárního zápisu: `sortio.data.v5.corrupt`;
 - automatická migrace z `sortio.data.v2`, `v3` a `v4`;
 - limity délky textů, počtu studentů, míst a historie při sanitizaci;
-- atomické zápisy localStorage a zachování poslední bezpečné kopie;
+- dvoukrokové ukládání s předchozím ověřeným stavem v `last-good` (localStorage neposkytuje transakce);
 - záloha `sortio-backup-v4` s kontrolním součtem FNV-1a pro detekci náhodného poškození;
 - maximální importovaný soubor 5 MB.
 
 Kontrolní součet není elektronický podpis. Chrání proti náhodnému poškození, nikoli proti úmyslné změně souboru.
+
+## PWA a přístupová brána
+
+Service worker ukládá vlastní prostředky SORTIO pro rychlé načítání a instalaci aplikace. Samotné spuštění však zůstává bezpečně uzavřené: centrální brána AI Studia musí ověřit přístup online. Plnohodnotný offline start bude možné doplnit až tehdy, pokud centrální brána vydá časově omezený a kryptograficky ověřitelný token; obyčejný záznam v `localStorage` se jako oprávnění nepoužívá.
 
 ## Soukromí
 
@@ -41,7 +45,7 @@ Produkční kontrola ověřuje rozdělení 120 smyšlených studentů do 30 čtv
 
 ## Moduly
 
-Verze 1.0.1 obsahuje 30 JavaScriptových modulů v `src/js/`. Produkční vrstvu tvoří zejména:
+Verze 1.0.2 obsahuje 30 JavaScriptových modulů v `src/js/`. Produkční vrstvu tvoří zejména:
 
 - `20-state-storage.js` – datový trezor v5;
 - `92-production-tools.js` – demo, kontrola a diagnostický export;

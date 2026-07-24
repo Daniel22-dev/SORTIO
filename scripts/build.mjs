@@ -30,6 +30,19 @@ const body = readFileSync(join(DIST, "body.html"), "utf8");
 const jsFiles = readdirSync(join(DIST, "js"))
   .filter((name) => name.endsWith(".js"))
   .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+const functionDeclarations = new Map();
+for (const name of jsFiles) {
+  const source = readFileSync(join(DIST, "js", name), "utf8");
+  for (const match of source.matchAll(/(?:^|[;}\s])(?:async\s+)?function\s+([A-Za-z0-9_$]+)\s*\(/g)) {
+    const functionName = match[1];
+    if (functionDeclarations.has(functionName)) {
+      throw new Error(
+        `Duplicitní deklarace ${functionName}: ${functionDeclarations.get(functionName)} × ${name}`,
+      );
+    }
+    functionDeclarations.set(functionName, name);
+  }
+}
 const js = jsFiles
   .map((name) => readFileSync(join(DIST, "js", name), "utf8"))
   .join("\n;\n");

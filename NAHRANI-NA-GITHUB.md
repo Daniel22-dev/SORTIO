@@ -1,14 +1,14 @@
-# SORTIO 1.0.1 – nahrání na GitHub
+# SORTIO 1.0.2 – nahrání na GitHub
 
 Balík obsahuje kompletní repozitář. Starší verze ani předchozí balíčky se nenahrávají.
 
 ## Nahrání
 
 1. Otevřete repozitář `SORTIO`.
-2. Rozbalte `01-SORTIO-v1.0.1-GITHUB-READY.zip`.
+2. Rozbalte `SORTIO-1.0.2-GITHUB-READY.zip`.
 3. Nahrajte celý obsah rozbalené složky přímo do kořene repozitáře.
 4. Potvrďte přepsání starších souborů.
-5. Commit pojmenujte například `SORTIO 1.0.1 – produkční školní verze`.
+5. Commit pojmenujte například `SORTIO 1.0.2 – produkční školní verze`.
 6. V GitHub Actions počkejte na zelené workflow **SORTIO QA and Deploy**.
 7. V Settings → Pages ponechte zdroj **GitHub Actions**.
 
@@ -22,7 +22,7 @@ Balík obsahuje kompletní repozitář. Starší verze ani předchozí balíčky
 6. Stáhněte zálohu a znovu ji načtěte.
 7. Ověřte tlačítko „Vrátit stav před importem“.
 8. Vyzkoušejte tisk kartiček a uložení jako PDF.
-9. Po druhém načtení ověřte offline/PWA provoz.
+9. Ověřte nabídku instalace PWA a načtení cachovaných prostředků; nové spuštění aplikace stále vyžaduje online ověření přes AI Studio.
 
 ## AI Studio
 

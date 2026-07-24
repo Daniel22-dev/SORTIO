@@ -1,6 +1,6 @@
 # SORTIO – Organizátor třídy
 
-**Verze 1.0.1 · produkční školní verze**
+**Verze 1.0.2 · produkční školní verze**
 
 SORTIO je local-first aplikace pro rychlou organizaci třídy: import seznamu z IS, docházka, losování, chytré skupiny, role, zasedací pořádek, bezpečná projekce, třídní nástroje, historie zapojování a tiskové/PDF výstupy.
 
@@ -27,7 +27,7 @@ SORTIO je local-first aplikace pro rychlou organizaci třídy: import seznamu z 
 - datový trezor v5, záchrannou kopii a vratný stav před importem;
 - anonymní ukázkovou třídu;
 - produkční diagnostiku a interní testovací centrum;
-- PWA a offline provoz;
+- instalovatelnou PWA s lokálně cachovanými prostředky; při novém spuštění je kvůli centrální přístupové bráně vyžadováno online ověření;
 - klávesové zkratky, viditelný fokus a omezení animací.
 
 ## Vývoj a QA
@@ -35,10 +35,7 @@ SORTIO je local-first aplikace pro rychlou organizaci třídy: import seznamu z 
 ```bash
 npm ci
 npm test
-npm run test:domain
-npm run test:package3
-npm run test:package4
-npm run test:package5
+npm run test:internal
 npm run build
 npm run qa:release
 ```

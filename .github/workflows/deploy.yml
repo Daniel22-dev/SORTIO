@@ -43,6 +43,14 @@ jobs:
       - name: Run complete GHRAB release QA
         run: npm run qa:release
 
+      - name: Upload QA results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-results
+          path: qa-results
+          if-no-files-found: warn
+
       - name: Verify prepared build and AI Studio manifest
         shell: bash
         run: |
@@ -50,7 +58,7 @@ jobs:
           test -f dist/manifest.webmanifest
           test -f dist/sw.js
           test -f dist/studio-manifest.json
-          node -e "const m=require('./dist/studio-manifest.json'); if(m.id!=='sortio'||m.version!=='1.0.1'||!m.launchUrl) process.exit(1)"
+          node -e "const p=require('./package.json'); const m=require('./dist/studio-manifest.json'); if(m.id!=='sortio'||m.version!==p.version||!m.launchUrl) process.exit(1)"
           touch dist/.nojekyll
 
       - name: Configure GitHub Pages

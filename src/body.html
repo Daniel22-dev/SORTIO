@@ -131,6 +131,7 @@
         <article class="settings-card"><div><h3>Obnovit zálohu</h3><p>Soubor se nejprve ověří. Aktuální data se uloží jako vratný stav před importem.</p></div><label class="small-button file-button">Vybrat soubor<input type="file" id="backupFile" accept="application/json,.json"></label></article>
         <article class="settings-card"><div><h3>Vrátit stav před importem</h3><p>Jednorázově obnoví data, která byla aktivní před posledním importem zálohy.</p></div><button class="small-button" id="restoreRecovery" disabled>Obnovit předchozí stav</button></article>
         <article class="settings-card"><div><h3>Anonymní ukázková třída</h3><p>Vytvoří 24 smyšlených studentů pro bezpečné vyzkoušení všech funkcí.</p></div><button class="small-button" id="createDemoClass">Vytvořit ukázku</button></article>
+        <article class="settings-card" id="installPwaCard" hidden><div><h3>Nainstalovat SORTIO</h3><p>Přidá aplikaci do zařízení a umožní rychlé spuštění bez adresního řádku.</p></div><button class="small-button" id="installPwaButton">Nainstalovat aplikaci</button></article>
         <article class="settings-card"><div><h3>Interní testovací centrum</h3><p>Podrobná sada testů importu, algoritmů, dat, PWA, přístupnosti a soukromí.</p></div><a class="small-button" href="./tests/">Otevřít testy</a></article>
         <article class="settings-card"><div><h3>Diagnostika pro správce</h3><p>Stáhne nebo zkopíruje technický protokol bez osobních údajů studentů.</p></div><div class="dual-actions"><button class="small-button" id="downloadDiagnostic">Stáhnout</button><button class="small-button" id="copyDiagnostic">Kopírovat</button></div></article>
         <article class="settings-card danger-zone"><div><h3>Vymazat všechna data</h3><p>Odstraní třídy, historii, bezpečné kopie i stav před importem.</p></div><button class="small-button danger" id="clearAllData">Vymazat data</button></article>
@@ -146,7 +147,7 @@
           <article><span>AUTOR A VÝVOJOVÝ GARANT</span><h3>Daniel Baláž</h3><p>Koncepce, návrh funkcí, metodické vedení a vývoj aplikace.</p></article>
           <article><span>ŠKOLNÍ PROJEKT</span><h3>Gymnázium, Ostrava-Hrabůvka</h3><p>Aplikace je připravována pro interní školní využití v rámci AI Studia GHRAB.</p></article>
           <article><span>OCHRANA DAT</span><h3>Local-first architektura</h3><p>Jména a historie zůstávají v konkrétním prohlížeči. Importované e-mailové adresy se po vytvoření náhledu neukládají.</p></article>
-          <article><span>TECHNICKÝ STAV</span><h3>1.0.1 · Produkční školní verze</h3><p>Odolné ukládání dat, bezpečné zálohy, diagnostika, ukázková třída, klávesové ovládání a kompletní testovací sada.</p></article>
+          <article><span>TECHNICKÝ STAV</span><h3>1.0.2 · Produkční školní verze</h3><p>Bezpečná docházka bez ztráty práce, funkční obnova dat, skutečné regresní testy, odolnější import a přístupnost.</p></article>
         </div>
       </div>
       <article class="privacy-card"><span>PRAVIDLO PRO TESTOVÁNÍ</span><h3>Do veřejného repozitáře ani screenshotů nevkládat skutečné seznamy studentů.</h3><p>Pro vývojové testy jsou v balíčku použity pouze smyšlené adresy a jména. Při sdílení diagnostiky se osobní údaje automaticky nevypisují.</p></article>
@@ -169,7 +170,7 @@
   <div class="dialog-content">
     <header><div><span>IMPORT Z INTERNÍHO SYSTÉMU</span><h2 id="importDialogTitle">Importovat třídu</h2></div><button type="button" data-action="close-dialog" aria-label="Zavřít">×</button></header>
     <input type="hidden" id="importMode" value="new">
-    <div class="import-meta"><label>Název třídy<input id="importClassName" placeholder="např. 2.A – španělština"></label><label>Školní rok<input id="importSchoolYear" placeholder="2026/2027"></label></div>
+    <div class="import-meta"><label>Název třídy<input id="importClassName" placeholder="např. 2.A – španělština"></label><label>Školní rok<input id="importSchoolYear" placeholder="2026/2027"></label><label>Pořadí v e-mailu<select id="importNameOrder"><option value="first-last">jméno.příjmení</option><option value="last-first">příjmení.jméno</option></select></label></div>
     <label class="paste-label">Seznam e-mailů z IS<textarea id="isPaste" rows="5" placeholder="jmeno.prijmeni@example.com, dalsi.student@example.com, …"></textarea><small>Podporujeme čárky, středníky, mezery i nové řádky.</small></label>
     <div class="import-actions"><button class="primary-button compact" type="button" data-action="parse-import">Rozpoznat jména</button><span>Rozpoznáno: <b id="importCount">0</b></span></div>
     <div id="importWarnings" class="import-warnings" hidden></div>
@@ -191,7 +192,7 @@
 <dialog id="keyboardDialog" class="sortio-dialog keyboard-dialog">
   <div class="dialog-content">
     <header><div><span>RYCHLÉ OVLÁDÁNÍ</span><h2>Klávesové zkratky</h2></div><button type="button" data-action="close-dialog" aria-label="Zavřít">×</button></header>
-    <div class="shortcut-grid"><span><kbd>Alt</kbd> + <kbd>1–9</kbd><b>Přepnutí hlavních modulů</b></span><span><kbd>Alt</kbd> + <kbd>I</kbd><b>Import z IS</b></span><span><kbd>Alt</kbd> + <kbd>P</kbd><b>Bezpečná projekce</b></span><span><kbd>?</kbd><b>Tato nápověda</b></span><span><kbd>Esc</kbd><b>Zavření dialogu nebo projekce</b></span></div>
+    <div class="shortcut-grid"><span><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>1–9</kbd><b>Přepnutí hlavních modulů</b></span><span><kbd>Alt</kbd> + <kbd>I</kbd><b>Import z IS</b></span><span><kbd>Alt</kbd> + <kbd>P</kbd><b>Bezpečná projekce</b></span><span><kbd>?</kbd><b>Tato nápověda</b></span><span><kbd>Esc</kbd><b>Zavření dialogu nebo projekce</b></span></div>
     <footer><button type="button" class="primary-button" data-action="close-dialog">Rozumím</button></footer>
   </div>
 </dialog>

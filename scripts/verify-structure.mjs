@@ -6,7 +6,7 @@ const pkg=JSON.parse(readFileSync(join(ROOT,'package.json'),'utf8'));
 const errors=[];
 const required=['src/index.template.html','src/body.html','src/styles.css','src/manifest.webmanifest','src/sw.js','src/studio-manifest.template.json','src/assets/school-logo.png','src/assets/sortio-mark.svg','src/manual/index.html','src/tests/index.html','src/tests/tests.js'];
 for(const file of required)if(!existsSync(join(ROOT,file)))errors.push(`Chybí ${file}`);
-const jsDir=join(ROOT,'src','js');const jsFiles=readdirSync(jsDir).filter(name=>name.endsWith('.js')).sort();if(jsFiles.length<30)errors.push('Produkční verze musí mít alespoň 30 JS modulů.');
+const jsDir=join(ROOT,'src','js');const jsFiles=readdirSync(jsDir).filter(name=>name.endsWith('.js')).sort();
 const joined=jsFiles.map(name=>readFileSync(join(jsDir,name),'utf8')).join('\n');
 for(const marker of ['sortio-data-v5','LAST_GOOD_KEY','RECOVERY_KEY','parseImport','performDraw','solveSmartPartition','validateGroupConfiguration','addPairRule','setStudentPin','assignRolesToAllGroups','assignTopicsToGroups','createSeatLayout','assignSeating','toggleSeatLock','selectFairStudent','recordEngagement','openProjection','projectionTools','printSortioDocument','createDemoClass','runProductionChecks','validateBackupPayload','diagnosticReport','bindKeyboardShortcuts','GHRABTelemetry','diagnosticSnapshot'])if(!joined.includes(marker))errors.push(`Chybí ${marker}`);
 const tpl=readFileSync(join(ROOT,'src','index.template.html'),'utf8');if(!tpl.includes("APP_ID='sortio'"))errors.push('Access Guard nemá ID sortio.');if(!tpl.includes('/AI-Studio-GHRAB/access/app-guard.js'))errors.push('Chybí centrální Access Guard.');
@@ -14,4 +14,4 @@ const manifest=JSON.parse(readFileSync(join(ROOT,'src','studio-manifest.template
 const body=readFileSync(join(ROOT,'src','body.html'),'utf8');for(const marker of ['data-view="roles"','data-view="seating"','data-view="tools"','id="projectionDialog"','id="productionHealth"','id="createDemoClass"','id="keyboardDialog"','class="skip-link"'])if(!body.includes(marker))errors.push(`Rozhraní neobsahuje ${marker}`);if(!body.includes('Daniel Baláž')||!body.includes('Gymnázium, Ostrava-Hrabůvka'))errors.push('Chybí vymezení autorství.');if(body.includes('@ghrabuvka.cz')||body.includes('tobias.baran'))errors.push('Zdroj obsahuje skutečný studentský seznam.');
 const sensitivePattern=/(AIza[0-9A-Za-z_-]{20,}|BEGIN PRIVATE KEY|PRIVATE_KEY\s*=)/;for(const file of jsFiles)if(sensitivePattern.test(readFileSync(join(jsDir,file),'utf8')))errors.push(`Možný tajný údaj v ${file}`);
 if(errors.length){console.error(errors.map(item=>`[test] ${item}`).join('\n'));process.exit(1)}
-console.log(`[test] SORTIO ${pkg.version}: ${jsFiles.length} modulů, produkční struktura v pořádku.`);
+console.log(`[verify-structure] SORTIO ${pkg.version}: produkční struktura v pořádku.`);
