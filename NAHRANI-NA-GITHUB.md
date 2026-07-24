@@ -1,29 +1,11 @@
-# SORTIO 1.0.2 – nahrání na GitHub
+# Nahrání SORTIO 1.0.2 na GitHub
 
-Balík obsahuje kompletní repozitář. Starší verze ani předchozí balíčky se nenahrávají.
+1. Použijte čerstvě naklonovaný repozitář `Daniel22-dev/SORTIO`.
+2. V jeho složce ponechte pouze skrytou složku `.git`.
+3. Do kořene vložte celý obsah tohoto ZIPu.
+4. Ověřte, že v `.github/workflows` je pouze soubor `deploy.yml`.
+5. V GitHub Desktop vytvořte commit `SORTIO 1.0.2 – oprava GitHub Actions`.
+6. Klikněte na **Push origin**.
+7. V GitHub Actions sledujte pouze workflow **SORTIO QA and Deploy**.
 
-## Nahrání
-
-1. Otevřete repozitář `SORTIO`.
-2. Rozbalte `SORTIO-1.0.2-GITHUB-READY.zip`.
-3. Nahrajte celý obsah rozbalené složky přímo do kořene repozitáře.
-4. Potvrďte přepsání starších souborů.
-5. Commit pojmenujte například `SORTIO 1.0.2 – produkční školní verze`.
-6. V GitHub Actions počkejte na zelené workflow **SORTIO QA and Deploy**.
-7. V Settings → Pages ponechte zdroj **GitHub Actions**.
-
-## Povinná kontrola po nasazení
-
-1. Otevřete `/tests/` a ověřte, že všechny testy prošly.
-2. V Nastavení vytvořte anonymní ukázkovou třídu.
-3. Spusťte produkční kontrolu – všech osm položek musí být zelených.
-4. Vytvořte skupiny, role a zasedací pořádek.
-5. Otevřete bezpečnou projekci a ověřte, že neukazuje interní profily.
-6. Stáhněte zálohu a znovu ji načtěte.
-7. Ověřte tlačítko „Vrátit stav před importem“.
-8. Vyzkoušejte tisk kartiček a uložení jako PDF.
-9. Ověřte nabídku instalace PWA a načtení cachovaných prostředků; nové spuštění aplikace stále vyžaduje online ověření přes AI Studio.
-
-## AI Studio
-
-Tento balík AI Studio neaktualizuje. SORTIO se do Studia doplní až nad aktuální stabilní verzí po dokončení ACTIVA.
+V repozitáři nesmí zůstat složky `.sortio-update`, `.sortio-final`, `.sortio-v2`, `.sortio-direct` ani pomocné workflow `apply-*.yml`.

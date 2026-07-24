@@ -20,7 +20,7 @@ jobs:
   build:
     name: Test and build SORTIO
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -37,11 +37,29 @@ jobs:
         env:
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org
 
+      - name: Run production and domain tests
+        run: npm test
+
+      - name: Run internal regression suite
+        run: npm run test:internal
+
+      - name: Build production files
+        run: npm run build
+
+      - name: Run deterministic QA gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run qa:technical
+          npm run qa:security
+          npm run qa:pwa
+          npm run qa:combinatorial
+
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run complete GHRAB release QA
-        run: npm run qa:release
+      - name: Run browser smoke test
+        run: npm run test:headless
 
       - name: Upload QA results
         if: always()
@@ -54,6 +72,7 @@ jobs:
       - name: Verify prepared build and AI Studio manifest
         shell: bash
         run: |
+          set -euo pipefail
           test -f dist/index.html
           test -f dist/manifest.webmanifest
           test -f dist/sw.js

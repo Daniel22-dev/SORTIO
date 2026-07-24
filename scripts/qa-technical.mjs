@@ -217,13 +217,27 @@ else {
   const all = (
     await Promise.all(workflows.map((p) => readFile(p, "utf8")))
   ).join("\n");
-  if (!/npm run qa:release/.test(all))
+  const explicitCiCommands = [
+    "npm test",
+    "npm run test:internal",
+    "npm run build",
+    "npm run qa:technical",
+    "npm run qa:security",
+    "npm run qa:pwa",
+    "npm run qa:combinatorial",
+    "npm run test:headless",
+  ];
+  const hasReleaseWrapper = /npm run qa:release/.test(all);
+  const hasExplicitReleaseSuite = explicitCiCommands.every((command) =>
+    all.includes(command),
+  );
+  if (!hasReleaseWrapper && !hasExplicitReleaseSuite)
     f.push(
       finding(
         "technical",
         "MAJOR",
-        "CI_NO_QA_RELEASE",
-        "GitHub Actions nespouští npm run qa:release.",
+        "CI_NO_RELEASE_SUITE",
+        "GitHub Actions nespouští ani qa:release, ani úplnou explicitní sadu produkčních kontrol.",
       ),
     );
   if (!/playwright install/.test(all))
