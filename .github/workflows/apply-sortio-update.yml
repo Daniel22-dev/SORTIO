@@ -28,15 +28,14 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Reconstruct and verify merged patch
+      - name: Reconstruct and apply merged patch
         shell: bash
         run: |
           set -euo pipefail
           cat .sortio-update/part-* | base64 --decode > /tmp/sortio-update.patch.gz
           echo '7ec039638179561698579ed7ebd66e19ce67d589985cbb20b409757203b6cd70  /tmp/sortio-update.patch.gz' | sha256sum -c -
           gzip -dc /tmp/sortio-update.patch.gz > /tmp/sortio-update.patch
-          git apply --check --3way /tmp/sortio-update.patch
-          git apply --3way /tmp/sortio-update.patch
+          patch --batch --forward -p1 < /tmp/sortio-update.patch
           rm -rf qa-results .sortio-update
 
       - name: Install dependencies
