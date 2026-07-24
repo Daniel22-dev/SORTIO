@@ -32,7 +32,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .sortio-v2/part-* | base64 --decode > /tmp/sortio-final.patch.gz
+          ARCHIVE_COMMIT='81e0929ae40b8311142b48476332696da4307a11'
+          : > /tmp/sortio-final.patch.b64
+          for part in $(seq -w 0 12); do
+            git show "${ARCHIVE_COMMIT}:.sortio-v2/part-${part}" >> /tmp/sortio-final.patch.b64
+          done
+          tr -d '[:space:]' < /tmp/sortio-final.patch.b64 | base64 --decode > /tmp/sortio-final.patch.gz
           echo '85ec0e94e2ce0c155ae640a9c77ee6390aae0e4e219c32bf98229b06fb06c5f1  /tmp/sortio-final.patch.gz' | sha256sum -c -
           gzip -dc /tmp/sortio-final.patch.gz > /tmp/sortio-final.patch
           git apply --check --3way /tmp/sortio-final.patch
@@ -41,10 +46,12 @@ jobs:
       - name: Remove temporary publication files
         shell: bash
         run: |
-          rm -rf .sortio-v2 .sortio-final .sortio-update
+          rm -rf .sortio-v2 .sortio-final .sortio-update .sortio-direct .sortio-direct-v4
+          rm -f scripts/test.mjs AUDIT-IMPLEMENTACE-1.0.2.md
           rm -f .github/workflows/apply-sortio-update.yml
           rm -f .github/workflows/apply-final-sortio.yml
           rm -f .github/workflows/apply-v2-sortio.yml
+          rm -f .github/workflows/apply-direct-sortio.yml
 
       - name: Install dependencies
         run: npm ci --no-fund --no-audit
