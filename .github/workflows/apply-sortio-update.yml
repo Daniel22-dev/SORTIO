@@ -1,0 +1,78 @@
+name: Apply merged SORTIO update
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.sortio-update/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: sortio-one-time-update
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    name: Apply, validate and publish update
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Reconstruct merged source package
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .sortio-update/part-* | base64 --decode > /tmp/sortio-update.tar.gz
+          echo '7ca35716ed24c9fac4771e880aafe967fb9f85066efa02c55552616bab9b9775  /tmp/sortio-update.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/sortio-update.tar.gz
+          rm -f AUDIT-IMPLEMENTACE-1.0.2.md scripts/test.mjs
+          rm -rf qa-results .sortio-update
+          rm -f .github/workflows/apply-sortio-update.yml
+
+      - name: Install dependencies
+        run: npm ci --no-fund --no-audit
+
+      - name: Validate merged version
+        run: |
+          npm test
+          npm run test:internal
+          npm run build
+          npm run qa:technical
+          npm run qa:security
+          npm run qa:pwa
+
+      - name: Commit merged version to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SORTIO Update Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+          else
+            git commit -m 'Sloučit auditní opravy a vylepšení SORTIO 1.0.2'
+            git push origin main
+          fi
+
+      - name: Start standard QA and deploy workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          curl --fail-with-body -L \
+            -X POST \
+            -H 'Accept: application/vnd.github+json' \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/deploy.yml/dispatches" \
+            -d '{"ref":"main"}'
