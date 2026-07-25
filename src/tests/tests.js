@@ -3,7 +3,7 @@ function groupLengths(total,mode='size',value=4){if(total<=0)return[];value=Math
 const groups=[
 {id:'core',title:'Verze, manifest a identita',tests:[
  ['manifest',async()=>{const j=await json('../studio-manifest.json');return j.id==='sortio'&&j.version==='1.0.2'?'Manifest SORTIO 1.0.2 je platný.':false}],
- ['production-status',async()=>{const j=await json('../studio-manifest.json');return j.status?.cs?.includes('Produkční')?'Manifest označuje produkční školní verzi.':false}],
+ ['studio-status',async()=>{const j=await json('../studio-manifest.json');const status=`${j.status?.cs||''} ${j.status?.en||''}`.toLowerCase();return /pilot/.test(status)&&!/produk|production/.test(status)?'Stav manifestu je kompatibilní s řízeným pilotem AI Studia.':false}],
  ['ownership',async()=>text('../index.html').then(t=>t.includes('Daniel Baláž')&&t.includes('Gymnázium, Ostrava-Hrabůvka')?'Autorství a školní projekt jsou uvedeny.':false)],
  ['pwa-manifest',async()=>{const j=await json('../manifest.webmanifest');return j.short_name==='SORTIO'&&j.icons.length>=3?'PWA manifest obsahuje název a ikony.':false}],
  ['service-worker',async()=>text('../sw.js').then(t=>t.includes('sortio-v1.0.2')&&t.includes('startsWith(CACHE_PREFIX)')?'Service worker má verzi 1.0.2 a izolaci cache.':false)]

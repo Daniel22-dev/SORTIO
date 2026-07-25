@@ -1,15 +1,16 @@
-# SORTIO 1.0.2 – oprava publikace manifestu
+# SORTIO 1.0.2 – finální oprava synchronizace manifestu
 
-## Příčina selhání
+## Skutečná příčina
 
-GitHub Actions správně sestavil produkční soubory, ale interní regresní test následně odmítl vytvořený `dist/studio-manifest.json`.
+První chyba byla v interním testu SORTIO, který vyžadoval slovo `Produkční`. Po jeho splnění sice workflow SORTIO prošlo, ale vznikl opačný problém: AI Studio GHRAB má bezpečnostní pravidlo, které před schválením školy odmítá `produkční` nebo `production` přímo v poli `status` manifestu.
 
-Test `core/production-status` vyžaduje, aby český stav manifestu obsahoval výraz `Produkční`. Zdrojová šablona však uváděla `Připraveno k řízenému pilotu`, a proto workflow skončil s `exit code 1`. Kroky pro nahrání a nasazení GitHub Pages se už nespustily. AI Studio proto nedokázalo načíst novou živou verzi manifestu a použilo starší záznam ze záložního registru.
+Výsledkem bylo úspěšné nasazení SORTIO, ale neúspěšná synchronizace do AI Studia a použití staršího záložního záznamu.
 
-## Provedená oprava
+## Finální řešení
 
-- `status.cs` změněn na `Produkční školní verze`;
-- `status.en` změněn na `Production school version`;
-- do `verify-structure.mjs` byla přidána časná kontrola produkčního stavu, aby se stejný nesoulad příště odhalil už v prvním kroku workflow a s jasnou chybovou zprávou.
-
-Hodnota `__APP_VERSION__` v souboru `src/studio-manifest.template.json` je správně. Jde o buildovací značku, kterou `scripts/build.mjs` při publikaci nahradí verzí z `package.json`.
+- `status.cs`: `Připraveno k řízenému pilotu`;
+- `status.en`: `Ready for controlled pilot`;
+- interní test SORTIO nyní ověřuje kompatibilitu s řízeným pilotem;
+- časná kontrola struktury kopíruje pravidlo AI Studia a zakazuje produkční tvrzení pouze v poli `status`;
+- uživatelské označení školního stavu bylo sjednoceno s řízeným pilotem;
+- po nasazení SORTIO je nutné ručně spustit synchronizační workflow AI Studia, protože registr se vytváří při buildu AI Studia.

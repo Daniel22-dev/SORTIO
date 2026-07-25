@@ -1,6 +1,6 @@
 # SORTIO – Organizátor třídy
 
-**Verze 1.0.2 · produkční školní verze**
+**Verze 1.0.2 · technicky dokončené sestavení pro řízený školní pilot**
 
 SORTIO je local-first aplikace pro rychlou organizaci třídy: import seznamu z IS, docházka, losování, chytré skupiny, role, zasedací pořádek, bezpečná projekce, třídní nástroje, historie zapojování a tiskové/PDF výstupy.
 
