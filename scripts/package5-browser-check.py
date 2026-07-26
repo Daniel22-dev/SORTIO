@@ -3,7 +3,7 @@ import json, sys
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
 css=(ROOT/'src/styles.css').read_text()
-body=(ROOT/'src/body.html').read_text().replace('__APP_VERSION__','1.0.2')
+body=(ROOT/'src/body.html').read_text().replace('__APP_VERSION__','1.0.3')
 js='\n;\n'.join(path.read_text() for path in sorted((ROOT/'src/js').glob('*.js')))
 legacy={'schema':'sortio-data-v4','version':4,'selectedClassId':'legacy','classes':[{'id':'legacy','name':'Původní třída','schoolYear':'2025/2026','students':[{'id':f's{i}','firstName':f'Test{i+1}','lastName':'Student','present':True,'archived':False} for i in range(12)]}],'aliases':{}}
 legacy_json=json.dumps(json.dumps(legacy,ensure_ascii=False))

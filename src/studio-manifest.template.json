@@ -94,7 +94,7 @@
     "diagnosticsContainStudentNames": false
   },
   "compatibility": {
-    "studioMinVersion": "0.18.3",
+    "studioMinVersion": "0.18.5",
     "materialSchema": "ghrab-material-v1",
     "studioBridge": "1.1",
     "dataSchema": "sortio-data-v5"

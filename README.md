@@ -1,6 +1,6 @@
 # SORTIO – Organizátor třídy
 
-**Verze 1.0.2 · technicky dokončené sestavení pro řízený školní pilot**
+**Verze 1.0.3 · technicky dokončené sestavení pro řízený školní pilot**
 
 SORTIO je local-first aplikace pro rychlou organizaci třídy: import seznamu z IS, docházka, losování, chytré skupiny, role, zasedací pořádek, bezpečná projekce, třídní nástroje, historie zapojování a tiskové/PDF výstupy.
 
@@ -46,4 +46,4 @@ GitHub Actions automaticky instalují Chromium, spouštějí úplnou GHRAB QA br
 
 Obsah ZIPu nahrajte do kořene samostatného repozitáře `SORTIO`. GitHub Pages musí používat **GitHub Actions**, nikoli nasazení z větve.
 
-**AI Studio není součástí tohoto balíčku.** Integrace SORTIO proběhne později nad nejnovější stabilní verzí AI Studia po dokončení ACTIVA.
+**AI Studio není součástí tohoto balíčku.** SORTIO 1.0.3 je telemetricky kompatibilní s AI Studiem GHRAB 0.18.5+.
