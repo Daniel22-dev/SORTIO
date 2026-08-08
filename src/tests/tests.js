@@ -6,7 +6,7 @@ const groups=[
  ['studio-status',async()=>{const j=await json('../studio-manifest.json');const status=`${j.status?.cs||''} ${j.status?.en||''}`.toLowerCase();return /pilot/.test(status)&&!/produk|production/.test(status)?'Stav manifestu je kompatibilní s řízeným pilotem AI Studia.':false}],
  ['ownership',async()=>text('../index.html').then(t=>t.includes('Daniel Baláž')&&t.includes('Gymnázium, Ostrava-Hrabůvka')?'Autorství a školní projekt jsou uvedeny.':false)],
  ['pwa-manifest',async()=>{const j=await json('../manifest.webmanifest');return j.short_name==='SORTIO'&&j.icons.length>=3?'PWA manifest obsahuje název a ikony.':false}],
- ['service-worker',async()=>text('../sw.js').then(t=>t.includes('sortio-v1.0.11')&&t.includes('startsWith(CACHE_PREFIX)')?'Service worker má verzi 1.0.11 a izolaci cache.':false)]
+ ['service-worker',async()=>text('../sw.js').then(t=>t.includes('ghrab-sortio-v1.0.11')&&t.includes('CACHE_PREFIXES')&&t.includes('CACHE_PREFIXES.some')&&t.includes('key !== CACHE_NAME')?'Service worker má verzi 1.0.11 a izolaci cache.':false)]
 ]},
 {id:'data',title:'Datový trezor, migrace a zálohy',tests:[
  ['schema-v5',async()=>text('../index.html').then(t=>t.includes("DATA_KEY='sortio.data.v5'")&&t.includes("schema:'sortio-data-v5'")?'Datový model v5 je aktivní.':false)],
