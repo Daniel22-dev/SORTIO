@@ -2,14 +2,14 @@
   "standard": "GHRAB-QA-1.0.2",
   "appId": "sortio",
   "appName": "SORTIO – Organizátor třídy",
-  "appVersion": "1.0.3",
+  "appVersion": "1.0.11",
   "entryPoint": "dist/index.html",
   "serveRoot": "dist",
   "buildRoot": "dist",
   "installCommand": "npm ci --no-fund",
   "buildCommand": "npm run build",
   "testCommand": "npm test && npm run test:internal",
-  "auditCommand": "npm audit --audit-level=high",
+  "auditCommand": "npm audit --omit=dev --audit-level=high",
   "features": {
     "pwa": true,
     "ai": false,
@@ -46,17 +46,17 @@
     {
       "file": "package.json",
       "regex": "\\\"version\\\"\\s*:\\s*\\\"([0-9.]+)\\\"",
-      "expected": "1.0.3"
+      "expected": "1.0.11"
     },
     {
       "file": "dist/studio-manifest.json",
       "regex": "\\\"version\\\"\\s*:\\s*\\\"([0-9.]+)\\\"",
-      "expected": "1.0.3"
+      "expected": "1.0.11"
     },
     {
       "file": "dist/sw.js",
-      "regex": "sortio-v([0-9.]+)",
-      "expected": "1.0.3"
+      "regex": "ghrab-sortio-v([0-9.]+)",
+      "expected": "1.0.11"
     }
   ],
   "pwaTargets": [
@@ -65,11 +65,13 @@
       "root": "dist",
       "manifest": "manifest.webmanifest",
       "serviceWorker": "sw.js",
-      "cachePrefix": "sortio-v"
+      "cachePrefix": "ghrab-sortio-v"
     }
   ],
   "security": {
-    "allowedEmails": [],
+    "allowedEmails": [
+      "balaz@ghrabuvka.cz"
+    ],
     "requiresCsvFormulaProtection": false,
     "validator": "qa/security-validator.mjs"
   },
@@ -78,5 +80,6 @@
       "src"
     ],
     "disallowRegexLookbehind": true
-  }
+  },
+  "deploymentBasePath": "/SORTIO/"
 }

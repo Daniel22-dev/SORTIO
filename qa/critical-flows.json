@@ -89,7 +89,7 @@
       "name": "Service worker nemaže cizí cache",
       "type": "static",
       "assertions": [
-        { "file": "src/sw.js", "regex": "startsWith\\(CACHE_PREFIX\\)", "message": "Aktivace service workeru není omezena na vlastní prefix." }
+        { "file": "src/sw.js", "regex": "CACHE_PREFIXES\\.some\\(\\(prefix\\)\\s*=>\\s*key\\.startsWith\\(prefix\\)\\)", "message": "Aktivace service workeru není omezena na vlastní cache prefixy." }
       ]
     },
     {

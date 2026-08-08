@@ -1,0 +1,122 @@
+{
+  "schema": "ghrab-platform-consumer-v1",
+  "appId": "sortio",
+  "appName": "SORTIO · Organizátor třídy",
+  "appVersion": "1.0.11",
+  "platform": {
+    "version": "1.1.0",
+    "contract": "ghrab-platform-v1",
+    "requiredRange": ">=1.1.0 <2.0.0",
+    "compatibilityWindow": [
+      "1.1.x",
+      "1.2.x"
+    ]
+  },
+  "brand": {
+    "version": "1.0.0",
+    "logo": "assets/brand/school-logo.png",
+    "footerContract": "ghrab-footer-v1"
+  },
+  "theme": {
+    "supported": [
+      "light",
+      "dark",
+      "system"
+    ],
+    "default": "dark",
+    "systemFallback": "dark"
+  },
+  "storageMigration": {
+    "id": "p2-storage-namespace-v1",
+    "backup": "full",
+    "mappings": [
+      {
+        "legacyPrefix": "sortio.",
+        "canonicalPrefix": "ghrab.sortio."
+      }
+    ]
+  },
+  "bridge": {
+    "contract": "ghrab-studio-handoff-v2",
+    "acceptsLegacy": "ghrab-handoff-v1",
+    "maxBytes": 500000
+  },
+  "artifact": {
+    "schema": "ghrab-artifact-envelope-v1",
+    "checksum": "SHA-256",
+    "exports": [
+      "sortio-backup"
+    ],
+    "imports": [
+      "sortio-backup"
+    ],
+    "acceptsLegacyJson": true,
+    "nativeFormats": [
+      "json",
+      "csv",
+      "pdf"
+    ]
+  },
+  "cache": {
+    "name": "ghrab-sortio-v1.0.11",
+    "updateMessage": "GHRAB_SKIP_WAITING"
+  },
+  "html": {
+    "exclude": [
+      "tests/"
+    ],
+    "noFooter": [
+      "tests/"
+    ]
+  },
+  "quality": {
+    "schema": "ghrab-quality-consumer-v1",
+    "accessibilityContract": "ghrab-a11y-v1",
+    "performanceContract": "ghrab-performance-v1",
+    "moduleContract": "ghrab-lazy-modules-v1",
+    "requireBudget": true,
+    "performanceBudget": {
+      "distBytes": 900000,
+      "entryHtmlBytes": 270000,
+      "entryCriticalBytes": 450000,
+      "largestInlineScriptBytes": 170000,
+      "precacheBytes": 680000,
+      "largestFileBytes": 270000,
+      "duplicateLargeBytes": 140000
+    },
+    "modules": {
+      "required": []
+    },
+    "referenceProfile": {
+      "cpuSlowdown": 4,
+      "viewport": "1366x768",
+      "memoryClassGb": 4,
+      "viewportWidths": [
+        1280,
+        390,
+        320
+      ]
+    },
+    "stage": "P4",
+    "a11yContract": "ghrab-a11y-v1",
+    "requireRuntimeBudget": true,
+    "runtimeBudget": {
+      "maxDomNodes": 1000,
+      "maxRenderReadyMs": 2500,
+      "maxJsHeapUsedBytes": 8000000,
+      "maxLayoutDurationMs": 1800,
+      "maxTaskDurationMs": 2500
+    },
+    "finalRelease": true,
+    "cleanInstallRequired": true,
+    "a11yGate": "ghrab-p4-a11y-v1",
+    "releaseGate": "ghrab-p4-release-v1"
+  },
+  "performance": {
+    "stage": "P5",
+    "a11yGate": "ghrab-p5-accessibility-acceptance-v1",
+    "releaseGate": "ghrab-p5-acceptance-v1",
+    "finalRelease": false,
+    "preProductionAccepted": true
+  }
+}

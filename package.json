@@ -1,13 +1,13 @@
 {
   "name": "sortio-organizator-tridy",
-  "version": "1.0.3",
+  "version": "1.0.11",
   "private": true,
   "description": "SORTIO – produkční local-first organizátor třídy s odolným ukládáním, diagnostikou, projekcí a tiskem",
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
     "verify:structure": "node scripts/verify-structure.mjs",
-    "test": "npm run verify:structure && npm run test:domain && npm run test:package3 && npm run test:package4 && npm run test:package5",
+    "test": "npm run build && npm run verify:structure && npm run test:domain && npm run test:package3 && npm run test:package4 && npm run test:package5",
     "test:domain": "node scripts/domain-tests.mjs",
     "test:headless": "node scripts/headless-check.mjs",
     "qa:technical": "node scripts/qa-technical.mjs",
@@ -22,13 +22,38 @@
     "test:package3": "node scripts/package3-runtime-tests.mjs",
     "test:package4": "node scripts/package4-runtime-tests.mjs",
     "test:package5": "node scripts/package5-runtime-tests.mjs",
-    "test:internal": "node scripts/package5-internal-tests.mjs"
+    "test:internal": "node scripts/package5-internal-tests.mjs",
+    "test:reporter": "node scripts/test-error-reporter.mjs",
+    "build:school-server": "npm run build && node scripts/build-school-profile.mjs",
+    "verify:platform": "node scripts/ghrab-platform-conformance.mjs",
+    "postbuild": "node scripts/ghrab-platform-conformance.mjs",
+    "qa:platform": "node scripts/ghrab-platform-conformance.mjs",
+    "test:p2": "npm run build && npm run qa:platform",
+    "qa:quality": "node scripts/qa-p3-quality.mjs",
+    "qa:p3": "npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:reflow && npm run qa:axe",
+    "test:p3": "npm run build && npm run qa:p3",
+    "qa:browser": "node scripts/qa-p3-browser.mjs",
+    "qa:axe": "node scripts/qa-p5-axe-runtime.mjs",
+    "qa:reflow": "node scripts/qa-p5-runtime.mjs",
+    "qa:p3:ci": "npm run verify:platform && npm run qa:quality && npm run qa:reflow && npm run qa:browser && AXE_REQUIRED=1 npm run qa:axe",
+    "qa:a11y": "node scripts/qa-p5-runtime.mjs",
+    "qa:p4": "npm run qa:p5",
+    "qa:p4:ci": "npm run qa:p5:ci",
+    "qa:p5": "npm run qa:lock && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs",
+    "qa:p5:ci": "npm run qa:lock && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe && AXE_REQUIRED=1 node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs",
+    "test:p5": "npm run qa:p5",
+    "qa:runtime": "node scripts/qa-p5-runtime.mjs",
+    "qa:xss": "node scripts/qa-p5-xss-sinks.mjs",
+    "qa:lock": "node scripts/qa-p5-lock.mjs",
+    "pretest:reporter": "npm run build"
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
-    "playwright": "^1.61.1",
-    "pngjs": "^7.0.0"
-  }
+    "axe-core": "4.12.1",
+    "playwright": "1.61.1",
+    "pngjs": "7.0.0"
+  },
+  "dependencies": {}
 }

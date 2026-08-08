@@ -1,4 +1,4 @@
-# Architektura SORTIO 1.0.3
+# Architektura SORTIO 1.0.6
 
 SORTIO je modulární local-first PWA. Uživatelské rozhraní, doménové algoritmy, datová vrstva, projekce, tisk a diagnostika jsou oddělené tak, aby šly samostatně testovat.
 
@@ -45,7 +45,7 @@ Produkční kontrola ověřuje rozdělení 120 smyšlených studentů do 30 čtv
 
 ## Moduly
 
-Verze 1.0.3 obsahuje 30 JavaScriptových modulů v `src/js/`. Produkční vrstvu tvoří zejména:
+Verze 1.0.6 obsahuje 30 JavaScriptových modulů v `src/js/`. Produkční vrstvu tvoří zejména:
 
 - `20-state-storage.js` – datový trezor v5;
 - `92-production-tools.js` – demo, kontrola a diagnostický export;

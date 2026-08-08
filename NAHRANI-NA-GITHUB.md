@@ -1,4 +1,4 @@
-# Nahrání opraveného SORTIO 1.0.3 na GitHub
+# Nahrání opraveného SORTIO 1.0.6 na GitHub
 
 ## Proč předchozí zelené nasazení nestačilo
 
@@ -11,7 +11,7 @@ SORTIO se sice úspěšně nasadilo, ale jeho manifest uváděl stav `Produkčn�
 1. Otevřete čerstvě naklonovaný repozitář `Daniel22-dev/SORTIO`.
 2. V jeho složce ponechte skrytou složku `.git`.
 3. Rozbalte ZIP a vložte **obsah složky `SORTIO-main`** přímo do kořene repozitáře.
-4. Commit například: `SORTIO 1.0.3 – kompatibilní stav manifestu pro AI Studio`.
+4. Commit například: `SORTIO 1.0.6 – kompatibilní stav manifestu pro AI Studio`.
 5. Pushněte změny.
 6. Počkejte, až workflow **SORTIO Verify and Deploy** skončí celé zeleně včetně kroku **Deploy to GitHub Pages**.
 
@@ -28,7 +28,7 @@ SORTIO se sice úspěšně nasadilo, ale jeho manifest uváděl stav `Produkčn�
 V přehledu zdrojů se u SORTIO zobrazí:
 
 - výsledek `Ověřeno`,
-- načtená verze `1.0.3`,
+- načtená verze `1.0.6`,
 - bez použití záložního registru.
 
 Hodnota `__APP_VERSION__` ve zdrojové šabloně je správně. Build ji nahradí verzí z `package.json`.

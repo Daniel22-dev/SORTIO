@@ -128,7 +128,7 @@ function clearAllData(){
 }
 function checksumText(text){let hash=0x811c9dc5;for(let i=0;i<text.length;i++){hash^=text.charCodeAt(i);hash=Math.imul(hash,0x01000193)}return(hash>>>0).toString(16).padStart(8,'0')}
 function buildBackupPayload(data=App.data){const clean=sanitizeData(data);const dataText=JSON.stringify(clean);return{schema:'sortio-backup-v4',appVersion:SORTIO_VERSION,exportedAt:nowIso(),integrity:{algorithm:'fnv1a-32',checksum:checksumText(dataText)},summary:{classes:clean.classes.length,students:clean.classes.reduce((sum,item)=>sum+item.students.length,0)},data:clean}}
-function exportBackup(){const payload=buildBackupPayload();downloadText(`SORTIO-zaloha-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(payload,null,2))}
+async function exportBackup(){const payload=buildBackupPayload();if(window.GHRABArtifact?.download)return window.GHRABArtifact.download({appId:'sortio',appVersion:SORTIO_VERSION,artifactType:'sortio-backup',sensitivity:'restricted',contentManifest:[{kind:'backup',schema:payload.schema,containsStudentNames:true}],payload,filename:`SORTIO-zaloha-${new Date().toISOString().slice(0,10)}.ghrab.json`});downloadText(`SORTIO-zaloha-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(payload,null,2));return null}
 function validateBackupPayload(payload,{allowChecksumMismatch=false}={}){
   if(!payload||typeof payload!=='object'||!['sortio-backup-v1','sortio-backup-v2','sortio-backup-v3','sortio-backup-v4'].includes(payload.schema)||!payload.data)throw new Error('Soubor není platná záloha SORTIO.');
   if(payload.integrity?.checksum){
@@ -145,7 +145,7 @@ async function importBackup(file){
   if(!file)throw new Error('Nebyl vybrán žádný soubor.');
   if(file.size>MAX_BACKUP_BYTES)throw new Error('Záloha je příliš velká. Maximální podporovaná velikost je 5 MB.');
   let payload;
-  try{payload=JSON.parse(await file.text())}catch(_){throw new Error('Soubor není platný JSON.')}
+  try{const raw=await file.text();payload=window.GHRABArtifact?.unwrapMaybe?(await window.GHRABArtifact.unwrapMaybe(raw,{allowLegacy:true,expectedAppId:'sortio',verifyChecksum:true})).payload:JSON.parse(raw)}catch(_){throw new Error('Soubor není platný nebo má poškozený kontrolní součet.')}
   let incoming;
   try{incoming=validateBackupPayload(payload)}catch(error){
     if(error.code!=='BACKUP_CHECKSUM_MISMATCH')throw error;

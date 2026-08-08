@@ -17,7 +17,7 @@
   "launchUrl": "https://daniel22-dev.github.io/SORTIO/",
   "manualUrl": "https://daniel22-dev.github.io/SORTIO/manual/",
   "repository": "daniel22-dev/SORTIO",
-  "icon": "assets/apps/sortio.png",
+  "icon": "assets/apps/sortio.svg",
   "accent": "#5EE7FF",
   "tags": [
     {
@@ -85,7 +85,17 @@
     "anonymous-demo-class",
     "keyboard-shortcuts",
     "accessibility-audit",
-    "large-class-performance-tested"
+    "large-class-performance-tested",
+    "classroom-organisation",
+    "groups",
+    "seating",
+    "roles",
+    "local-first",
+    "print",
+    "ghrab-platform-v1",
+    "canonical-branding",
+    "storage-namespace-v1",
+    "artifact-envelope-v1"
   ],
   "privacy": {
     "storage": "local-only",
@@ -96,8 +106,34 @@
   "compatibility": {
     "studioMinVersion": "0.18.5",
     "materialSchema": "ghrab-material-v1",
-    "studioBridge": "1.1",
-    "dataSchema": "sortio-data-v5"
+    "studioBridge": "not-applicable",
+    "dataSchema": "sortio-data-v5",
+    "platformContract": "ghrab-platform-v1",
+    "platformRange": ">=1.1.0 <2.0.0"
   },
-  "publishedAt": "__BUILD_TIME__"
+  "publishedAt": "__BUILD_TIME__",
+  "aiCore": {
+    "schema": "ghrab-ai-app-integration-v1",
+    "status": "not-applicable",
+    "reason": "Aplikace nevola generativni AI."
+  },
+  "slug": "sortio",
+  "paths": {
+    "app": "https://daniel22-dev.github.io/SORTIO/",
+    "manual": "https://daniel22-dev.github.io/SORTIO/manual/",
+    "manifest": "https://daniel22-dev.github.io/SORTIO/studio-manifest.json"
+  },
+  "platform": {
+    "schema": "ghrab-platform-app-integration-v1",
+    "contract": "ghrab-platform-v1",
+    "requiredPlatformRange": ">=1.1.0 <2.0.0",
+    "platformVersion": "1.0.0",
+    "brandVersion": "1.0.0",
+    "themeContract": 1,
+    "swContract": 1,
+    "studioBridge": "not-applicable",
+    "artifactEnvelope": 1,
+    "storagePrefix": "ghrab.sortio.",
+    "cacheName": "ghrab-sortio-v1.0.11"
+  }
 }

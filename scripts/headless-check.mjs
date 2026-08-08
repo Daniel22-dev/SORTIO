@@ -4,13 +4,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { startStaticServer } from './qa-core.mjs';
 const ROOT=path.join(path.dirname(fileURLToPath(import.meta.url)),'..');
-const {server,baseUrl}=await startStaticServer(path.join(ROOT,'dist'));
+const {server,baseUrl}=await startStaticServer(path.join(ROOT,'dist'),{qaAppId:'sortio'});
 let executablePath=process.env.GHRAB_CHROMIUM_PATH||'';if(!executablePath){for(const candidate of [chromium.executablePath(),'/usr/bin/chromium','/usr/bin/google-chrome'])if(candidate&&existsSync(candidate)){executablePath=candidate;break}}
 let browser;try{
   browser=await chromium.launch({headless:true,...(executablePath?{executablePath}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
   await page.route('**/AI-Studio-GHRAB/access/app-guard.js',route=>route.fulfill({contentType:'text/javascript',body:"export async function protectApp(){document.documentElement.dataset.ghrabAccess='granted';return true}"}));
   await page.route('**/AI-Studio-GHRAB/access/access-gate.css',route=>route.fulfill({contentType:'text/css',body:''}));
+  await page.route('**/AI-Studio-GHRAB/config/support.json',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({administratorEmail:'balaz@ghrabuvka.cz'})}));
+  await page.route('**/AI-Studio-GHRAB/config/apps.generated.json',route=>route.fulfill({status:200,contentType:'application/json',body:'[]'}));
   const errors=[];page.on('pageerror',error=>errors.push(String(error)));
   await page.goto(`${baseUrl}/index.html`);await page.waitForSelector('.sortio-stage');await page.evaluate(()=>localStorage.clear());await page.reload();await page.waitForSelector('.sortio-stage');
   await page.locator('[data-action="open-import"]').first().click();await page.fill('#importClassName','Testovací skupina');await page.fill('#isPaste','alex.novak@example.com,bara.svobodova@example.com,cyril.dlouhy@example.com,dana.mala@example.com,erik.vesely@example.com,filip.kral@example.com,gabriela.nova@example.com,hana.sykorova@example.com');await page.click('[data-action="parse-import"]');if(await page.locator('.import-preview-row').count()!==8)throw new Error('Import nerozpoznal 8 smyšlených studentů.');await page.click('[data-action="save-import"]');await page.waitForSelector('.student-row');if(await page.locator('.student-row').count()!==8)throw new Error('Třída nemá 8 studentů.');

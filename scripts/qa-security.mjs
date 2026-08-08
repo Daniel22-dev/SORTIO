@@ -20,6 +20,7 @@ const files = (
     skip: [
       "node_modules",
       "dist",
+      "dist-school-server",
       "qa-results",
       ".git",
       "src/vendor",

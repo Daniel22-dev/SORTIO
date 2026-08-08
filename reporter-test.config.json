@@ -1,0 +1,33 @@
+{
+  "distEntry": "dist/index.html",
+  "appId": "sortio",
+  "appName": "SORTIO",
+  "version": "1.0.11",
+  "reporterPath": "src/access/error-reporter.js",
+  "stylePath": "src/access/error-reporter.css",
+  "adapterPath": "src/access/error-reporter-adapter.js",
+  "bootstrapPaths": [
+    "src/index.template.html"
+  ],
+  "manualPath": "src/manual/index.html",
+  "serviceWorkerPaths": [
+    "src/sw.js"
+  ],
+  "versionPaths": [
+    "src/body.html",
+    "src/manual/index.html",
+    "README.md",
+    "RELEASE-NOTES-1.0.11.md"
+  ],
+  "distCachePaths": [
+    "dist/access/error-reporter.js",
+    "dist/access/error-reporter.css",
+    "dist/access/error-reporter-adapter.js",
+    "dist/sw.js"
+  ],
+  "theme": {
+    "initial": "document.documentElement.dataset.theme='light';",
+    "light": "document.documentElement.dataset.theme='light';",
+    "dark": "document.documentElement.dataset.theme='dark';"
+  }
+}

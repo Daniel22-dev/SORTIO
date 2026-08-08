@@ -162,11 +162,69 @@ export function mimeFor(file) {
     }[ext] || "application/octet-stream"
   );
 }
-export async function startStaticServer(rootDir) {
+
+function stripStudioProtectionForQa(source) {
+  let html = String(source)
+    .replace(/\sdata-ghrab-access=["'](?:checking|granted|denied)["']/i, "")
+    .replace(/<link\s+[^>]*data-ghrab-access-gate-css[^>]*>\s*/i, "")
+    .replace(/<style\s+data-ghrab-access-style>[\s\S]*?<\/style>\s*/i, "")
+    .replace(/<noscript\s+data-ghrab-access-noscript>[\s\S]*?<\/noscript>\s*/i, "")
+    .replace(/<script\b(?=[^>]*data-ghrab-access-bootstrap)[^>]*>[\s\S]*?<\/script>\s*/gi, "");
+
+  html = html.replace(/<script\b([^>]*)type=["']application\/ghrab-protected["']([^>]*)>/gi, (_m, before, after) => {
+    const attrs = `${before}${after}`;
+    const originalType = attrs.match(/data-ghrab-original-type=["']([^"']+)["']/i)?.[1] || "";
+    const clean = attrs
+      .replace(/\s*data-ghrab-protected(?:=["'][^"']*["'])?/gi, "")
+      .replace(/\s*data-ghrab-original-type=["'][^"']*["']/gi, "");
+    const type = originalType ? ` type="${originalType}"` : "";
+    return `<script${type}${clean}>`;
+  });
+  return html;
+}
+
+export async function startStaticServer(rootDir, { deploymentBasePath = "", bypassStudioProtection = false, qaAppId = "" } = {}) {
+  const normalizedBasePath = String(deploymentBasePath || "")
+    .replace(/^\/+|\/+$/g, "");
   const server = createServer(async (req, res) => {
     try {
       const u = new URL(req.url, "http://localhost");
+      if (qaAppId) {
+        const pathname = decodeURIComponent(u.pathname);
+        const send = (status, contentType, body) => {
+          res.writeHead(status, {
+            "content-type": contentType,
+            "cache-control": "no-store",
+          });
+          return res.end(body);
+        };
+        if (pathname === "/AI-Studio-GHRAB/access/app-guard.js") {
+          return send(200, "text/javascript; charset=utf-8", `export async function protectApp(appId){document.documentElement.dataset.ghrabAccess='granted';document.documentElement.dataset.ghrabAccessMode='qa-harness';window.__GHRAB_STUDIO_ACCESS__={permit:{appId,role:'admin',apps:[appId],qa:true}};document.dispatchEvent(new CustomEvent('ghrab:app-access-granted',{detail:{permit:window.__GHRAB_STUDIO_ACCESS__.permit}}));return true}`);
+        }
+        if (pathname === "/AI-Studio-GHRAB/access/access-gate.css") {
+          return send(200, "text/css; charset=utf-8", "");
+        }
+        if (pathname === "/AI-Studio-GHRAB/config/support.json") {
+          return send(200, "application/json; charset=utf-8", JSON.stringify({ administratorEmail: "balaz@ghrabuvka.cz", supportEmail: "balaz@ghrabuvka.cz" }));
+        }
+        if (pathname === "/AI-Studio-GHRAB/config/apps.generated.json") {
+          return send(200, "application/json; charset=utf-8", JSON.stringify([{ id: qaAppId, name: { cs: "SORTIO", en: "SORTIO" } }]));
+        }
+        if (pathname === "/AI-Studio-GHRAB/manualy/error-report.html") {
+          return send(200, "text/html; charset=utf-8", "<!doctype html><title>QA report guide</title>");
+        }
+        if (pathname === "/AI-Studio-GHRAB/assets/brand/school-logo.png") {
+          const localLogo = path.resolve(rootDir, "assets/brand/school-logo.png");
+          if (await exists(localLogo)) {
+            res.writeHead(200, { "content-type": "image/png", "cache-control": "no-store" });
+            return res.end(await readFile(localLogo));
+          }
+        }
+      }
       let rel = decodeURIComponent(u.pathname).replace(/^\/+/, "");
+      if (normalizedBasePath && (rel === normalizedBasePath || rel.startsWith(`${normalizedBasePath}/`))) {
+        rel = rel.slice(normalizedBasePath.length).replace(/^\/+/, "");
+      }
       if (!rel) rel = "index.html";
       let target = path.resolve(rootDir, rel);
       if (!target.startsWith(path.resolve(rootDir))) {
@@ -184,8 +242,16 @@ export async function startStaticServer(rootDir) {
       res.writeHead(200, {
         "content-type": mimeFor(target),
         "cache-control": "no-store",
-        "access-control-allow-origin": "*",
       });
+      if (path.extname(target).toLowerCase() === ".html") {
+        let html = await readFile(target, "utf8");
+        if (bypassStudioProtection) html = stripStudioProtectionForQa(html);
+        html = html.replace(
+          /<meta[^>]+http-equiv=["']Content-Security-Policy["'][^>]*>/gi,
+          "",
+        );
+        return res.end(html);
+      }
       res.end(await readFile(target));
     } catch (e) {
       res.writeHead(500);
@@ -198,76 +264,50 @@ export async function startStaticServer(rootDir) {
 }
 
 export async function setLocalDocument(page, rootDir, urlPath, baseUrl) {
-  const requested = new URL(String(urlPath || "/index.html"), "http://qa.local");
-  const hash = requested.hash || "";
-  const clean = requested.pathname.replace(/^\/+/, "") || "index.html";
-  let target = path.join(rootDir, clean);
-  if ((await stat(target)).isDirectory())
-    target = path.join(target, "index.html");
-  let html = await readFile(target, "utf8");
-  html = html.replace(
-    /<meta[^>]+http-equiv=["']Content-Security-Policy["'][^>]*>/gi,
-    "",
-  );
-  const basePath = path.posix.dirname("/" + clean).replace(/\/$/, "") + "/";
-  const base = `<base href="${baseUrl}${basePath}">`;
-  html = /<head[^>]*>/i.test(html)
-    ? html.replace(/<head([^>]*)>/i, `<head$1>${base}`)
-    : base + html;
+  const raw = String(urlPath || "/index.html");
+  const hashAt = raw.indexOf("#");
+  const hash = hashAt >= 0 ? raw.slice(hashAt) : "";
+  const beforeHash = hashAt >= 0 ? raw.slice(0, hashAt) : raw;
+  const queryAt = beforeHash.indexOf("?");
+  const search = queryAt >= 0 ? beforeHash.slice(queryAt) : "";
+  const pathPart = queryAt >= 0 ? beforeHash.slice(0, queryAt) : beforeHash;
+  const clean = pathPart.replace(/^\/+/, "") || "index.html";
+  const resolvedRoot = path.resolve(rootDir);
+  let target = path.resolve(resolvedRoot, clean);
+  if (target !== resolvedRoot && !target.startsWith(resolvedRoot + path.sep)) {
+    throw new Error(`Local document path escapes serve root: ${urlPath}`);
+  }
+  if ((await stat(target)).isDirectory()) target = path.join(target, "index.html");
+  if (!(await exists(target))) throw new Error(`Chybí lokální dokument ${clean}`);
   await page.addInitScript(() => {
     const makeStorage = () => {
       const values = new Map();
       return {
-        get length() {
-          return values.size;
-        },
-        key(i) {
-          return [...values.keys()][i] ?? null;
-        },
-        getItem(k) {
-          return values.has(String(k)) ? values.get(String(k)) : null;
-        },
-        setItem(k, v) {
-          values.set(String(k), String(v));
-        },
-        removeItem(k) {
-          values.delete(String(k));
-        },
-        clear() {
-          values.clear();
-        },
+        get length() { return values.size; },
+        key(i) { return [...values.keys()][i] ?? null; },
+        getItem(k) { return values.has(String(k)) ? values.get(String(k)) : null; },
+        setItem(k, v) { values.set(String(k), String(v)); },
+        removeItem(k) { values.delete(String(k)); },
+        clear() { values.clear(); },
       };
     };
-    try {
-      Object.defineProperty(window, "localStorage", {
-        configurable: true,
-        value: makeStorage(),
-      });
-    } catch {}
-    try {
-      Object.defineProperty(window, "sessionStorage", {
-        configurable: true,
-        value: makeStorage(),
-      });
-    } catch {}
-    if (!navigator.serviceWorker) {
-      Object.defineProperty(navigator, "serviceWorker", {
-        configurable: true,
-        value: {
-          register: async () => ({ update: async () => {} }),
-          addEventListener() {},
-          ready: Promise.resolve({}),
-        },
-      });
+    try { Object.defineProperty(window, "localStorage", { configurable: true, value: makeStorage() }); } catch {}
+    try { Object.defineProperty(window, "sessionStorage", { configurable: true, value: makeStorage() }); } catch {}
+    let serviceWorkerAvailable = false;
+    try { serviceWorkerAvailable = Boolean(navigator.serviceWorker); } catch {}
+    if (!serviceWorkerAvailable) {
+      try {
+        Object.defineProperty(navigator, "serviceWorker", {
+          configurable: true,
+          value: { register: async () => ({ update: async () => {} }), addEventListener() {}, ready: Promise.resolve({}) },
+        });
+      } catch {}
     }
   });
-  await page.setContent(html, { waitUntil: "load", timeout: 20000 });
-  if (hash) {
-    await page.evaluate((routeHash) => {
-      if (window.location.hash !== routeHash) window.location.hash = routeHash;
-      window.dispatchEvent(new HashChangeEvent("hashchange"));
-    }, hash);
-  }
+  const url = new URL(`/${clean}`, baseUrl);
+  url.search = search;
+  url.hash = hash;
+  await page.goto(url.href, { waitUntil: "load", timeout: 20000 });
   return target;
 }
 

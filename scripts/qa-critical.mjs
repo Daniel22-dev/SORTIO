@@ -22,6 +22,7 @@ const findings = [];
 const matrix = [];
 const { server, baseUrl } = await startStaticServer(
   path.join(ROOT, manifest.serveRoot || "dist"),
+  { deploymentBasePath: manifest.deploymentBasePath || "", qaAppId: manifest.appId },
 );
 let browser;
 const guardJs = `export async function protectApp(appId){document.documentElement.dataset.ghrabAccess='granted';document.dispatchEvent(new CustomEvent('ghrab:app-access-granted',{detail:{permit:{appId,qa:true}}}));return true}`;
@@ -57,6 +58,26 @@ async function closeWithLimit(target, ms = 4000) {
     target.close().catch(() => {}),
     new Promise((resolve) => setTimeout(resolve, ms)),
   ]);
+}
+
+async function clickForQa(page, selector, timeout = 7000) {
+  await page.waitForFunction((sel) => {
+    const element = document.querySelector(sel);
+    if (!(element instanceof HTMLElement) || element.hidden) return false;
+    if (element instanceof HTMLButtonElement && element.disabled) return false;
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return style.visibility !== "hidden" && style.display !== "none" && rect.width > 0 && rect.height > 0;
+  }, selector, { timeout });
+  const clicked = await page.evaluate((sel) => {
+    const element = document.querySelector(sel);
+    if (!(element instanceof HTMLElement) || element.hidden) return false;
+    if (element instanceof HTMLButtonElement && element.disabled) return false;
+    if (element instanceof HTMLButtonElement && element.type === "submit" && element.form) element.form.requestSubmit(element);
+    else element.click();
+    return true;
+  }, selector);
+  if (!clicked) throw new Error(`QA click target není dostupný: ${selector}`);
 }
 try {
   browser = await launchBrowser();
@@ -110,6 +131,16 @@ try {
             body: "",
           }),
         );
+        await page.route("**/AI-Studio-GHRAB/config/support.json", (r) =>
+          r.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({ administratorEmail: "balaz@ghrabuvka.cz" }),
+          }),
+        );
+        await page.route("**/AI-Studio-GHRAB/config/apps.generated.json", (r) =>
+          r.fulfill({ status: 200, contentType: "application/json", body: "[]" }),
+        );
         const url =
           baseUrl + (flow.url.startsWith("/") ? flow.url : `/${flow.url}`);
         await setLocalDocument(
@@ -118,17 +149,23 @@ try {
           flow.url,
           baseUrl,
         );
+        await page.waitForFunction(
+          () => document.documentElement.dataset.ghrabAccess !== "checking",
+          null,
+          { timeout: 7000 },
+        );
+        const accessState = await page.locator("html").getAttribute("data-ghrab-access");
+        if (accessState === "denied") {
+          throw new Error("Přístupový bootstrap skončil stavem denied.");
+        }
         for (const step of flow.steps || []) {
           if (step.action === "wait") await page.waitForTimeout(step.ms || 500);
           if (step.action === "click")
-            await page
-              .locator(step.selector)
-              .first()
-              .click({ timeout: step.timeout || 7000 });
+            await clickForQa(page, step.selector, step.timeout || 7000);
           if (step.action === "clickIfVisible") {
             const target = page.locator(step.selector).first();
             if ((await target.count()) && (await target.isVisible()))
-              await target.click({ timeout: step.timeout || 7000 });
+              await clickForQa(page, step.selector, step.timeout || 7000);
           }
           if (step.action === "fill")
             await page

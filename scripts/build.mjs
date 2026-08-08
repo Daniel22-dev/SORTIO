@@ -89,3 +89,6 @@ if (!existsSync(join(DIST, "tests", "index.html"))) {
 console.log(
   `[build] SORTIO ${pkg.version}: ${jsFiles.length} JS modulů, dist připraven.`,
 );
+
+// P2: canonical cross-application platform post-processing.
+await import("./apply-ghrab-platform.mjs");

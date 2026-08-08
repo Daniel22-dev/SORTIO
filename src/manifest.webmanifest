@@ -1,6 +1,7 @@
 {
   "name": "SORTIO – Organizátor třídy",
   "short_name": "SORTIO",
+  "id": "./",
   "description": "Produkční organizátor třídy s chytrými skupinami, projekcí, diagnostikou a bezpečnými zálohami",
   "start_url": "./",
   "scope": "./",
@@ -25,5 +26,15 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "version": "1.0.11",
+  "ghrab_platform": {
+    "contract": "ghrab-platform-v1",
+    "version": "1.0.0",
+    "required_range": ">=1.0.0 <2.0.0",
+    "brand_version": "1.0.0",
+    "theme_contract": "ghrab-theme-v1",
+    "sw_contract": "ghrab-sw-v1",
+    "cache_name": "ghrab-sortio-v1.0.11"
+  }
 }

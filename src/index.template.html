@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-ghrab-access="checking" data-theme="dark">
+<html lang="cs" data-ghrab-access="checking" data-theme="dark" data-ghrab-app-id="sortio" data-ghrab-app-version="1.0.11">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -15,7 +15,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="/AI-Studio-GHRAB/access/access-gate.css">
+  <link rel="stylesheet" href="./access/access-gate.css">
   <style>html[data-ghrab-access="checking"] body{visibility:hidden}</style>
   <style>/*==SORTIO_STYLES==*/</style>
 </head>
@@ -23,23 +23,58 @@
   <!--==SORTIO_BODY==-->
   <script type="application/ghrab-protected" data-ghrab-protected>/*==SORTIO_JS==*/</script>
   <script type="module" data-ghrab-access-bootstrap>
-    const APP_ID='sortio';
-    function fail(title='Přístup nelze ověřit',message='Centrální přístupová služba není dostupná. Otevřete aplikaci znovu přes AI Studio GHRAB.'){
-      document.documentElement.dataset.ghrabAccess='denied';document.body.style.visibility='visible';
-      document.body.innerHTML='<main class="ghrab-access-gate"><div class="ghrab-access-gate-mark">◉</div><p class="ghrab-access-gate-eyebrow">AI STUDIO GHRAB</p><h1>'+title+'</h1><p>'+message+'</p><div class="ghrab-access-gate-actions"><a class="ghrab-access-gate-primary" href="/AI-Studio-GHRAB/">Otevřít AI Studio</a></div></main>';
-    }
-    try{
-      const {protectApp}=await import('/AI-Studio-GHRAB/access/app-guard.js');let permit=null;
-      document.addEventListener('ghrab:app-access-granted',event=>{permit=event.detail?.permit||null},{once:true});
-      const allowed=await protectApp(APP_ID,{studioUrl:'/AI-Studio-GHRAB/'});
-      if(!allowed) fail('Přístup nebyl povolen','SORTIO není pro tento účet nebo zařízení odemčena. Zkontrolujte oprávnění v AI Studiu.');
-      else{
-        window.__GHRAB_STUDIO_ACCESS__=Object.freeze({appId:APP_ID,permit});
-        for(const source of [...document.querySelectorAll('script[type="application/ghrab-protected"]')]){
-          const executable=document.createElement('script');executable.textContent=source.textContent;source.replaceWith(executable);
-        }
-      }
-    }catch(error){console.error('SORTIO access bootstrap failed',error);fail()}
-  </script>
+const APP_ID = 'sortio';
+let studioUrl = '/AI-Studio-GHRAB/';
+
+function showAccessBootstrapFailure(title = 'Přístup nelze ověřit', message = 'Centrální přístupová služba není dostupná. Zkontrolujte připojení a otevřete aplikaci znovu přes AI Studio.') {
+  document.documentElement.dataset.ghrabAccess = 'denied';
+  document.body.style.visibility = 'visible';
+  document.body.innerHTML = '<main class="ghrab-access-gate"><div class="ghrab-access-gate-mark">◉</div><p class="ghrab-access-gate-eyebrow">AI STUDIO GHRAB</p><h1></h1><p class="ghrab-access-gate-message"></p><div class="ghrab-access-gate-actions"><a class="ghrab-access-gate-primary" data-ghrab-studio-link>Otevřít AI Studio</a></div></main>';
+  document.querySelector('.ghrab-access-gate h1').textContent = title;
+  document.querySelector('.ghrab-access-gate-message').textContent = message;
+  const link = document.querySelector('[data-ghrab-studio-link]');
+  if (link) link.href = studioUrl;
+}
+
+function startLocalReporter(context) {
+  return import('./access/reporter-bootstrap.js')
+    .then((module) => module.startReporterBestEffort('./error-reporter-adapter.js', { context }))
+    .catch((error) => {
+      console.warn('Lokální bootstrap reportéru nebyl načten; aplikace pokračuje.', error);
+      return null;
+    });
+}
+
+function unlockProtectedScripts() {
+  const helper = window.GHRAB_PLATFORM?.unlockProtectedScripts;
+  if (typeof helper !== 'function') throw new Error('GHRAB platform unlock helper is unavailable.');
+  return helper();
+}
+
+async function boot() {
+  try {
+    const deploymentModule = await import('./access/deployment-config.js');
+    const deployment = await deploymentModule.loadDeploymentConfig({ appId: APP_ID });
+    const urls = deploymentModule.deploymentUrls(deployment);
+    studioUrl = urls.studioUrl;
+    const { protectApp } = await import(urls.guardUrl);
+    let grantedPermit = null;
+    document.addEventListener('ghrab:app-access-granted', (event) => {
+      grantedPermit = event.detail?.permit || null;
+    }, { once: true });
+    const allowed = await protectApp(APP_ID, { studioUrl, errorReporter: false });
+    if (!allowed) return;
+    window.__GHRAB_STUDIO_ACCESS__ = Object.freeze({ appId: APP_ID, permit: grantedPermit });
+    void startLocalReporter('sortio:granted');
+    unlockProtectedScripts();
+  } catch (error) {
+    console.error('SORTIO access bootstrap failed', error);
+    showAccessBootstrapFailure();
+    void startLocalReporter('sortio:bootstrap-failure');
+  }
+}
+
+void boot();
+</script>
   <noscript><style>html[data-ghrab-access="checking"] body{visibility:visible}</style><main style="max-width:42rem;margin:4rem auto;padding:1.5rem;font-family:system-ui">SORTIO vyžaduje JavaScript a platný přístup z AI Studia GHRAB.</main></noscript>
 </body></html>

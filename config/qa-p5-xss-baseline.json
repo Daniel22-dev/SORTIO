@@ -1,0 +1,13 @@
+{
+  "schema": "ghrab-p5-xss-baseline-v1",
+  "appId": "sortio",
+  "counts": {
+    "innerHTML": 29,
+    "insertAdjacentHTML": 0,
+    "outerHTML": 0,
+    "documentWrite": 1,
+    "eval": 0,
+    "newFunction": 0
+  },
+  "note": "P5 R2 baseline; increases fail. Existing sinks still require review and CSP hardening."
+}

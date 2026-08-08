@@ -23,7 +23,11 @@ const plan = await readJson(path.join(QA_DIR, "visual-plan.json"));
 const findings = [];
 const matrix = [];
 const serveRoot = path.join(ROOT, manifest.serveRoot || "dist");
-const { server, baseUrl } = await startStaticServer(serveRoot);
+const { server, baseUrl } = await startStaticServer(serveRoot, {
+  deploymentBasePath: manifest.deploymentBasePath || "",
+  bypassStudioProtection: true,
+  qaAppId: manifest.appId,
+});
 const guardJs = `export async function protectApp(appId){document.documentElement.dataset.ghrabAccess='granted';document.dispatchEvent(new CustomEvent('ghrab:app-access-granted',{detail:{permit:{appId,qa:true}}}));return true}`;
 
 function blankStats(buffer) {
@@ -53,6 +57,26 @@ function blankStats(buffer) {
     whiteRatio: nearWhite / n,
     blackRatio: nearBlack / n,
   };
+}
+
+async function clickForQa(page, selector, timeout = 5000) {
+  await page.waitForFunction((sel) => {
+    const element = document.querySelector(sel);
+    if (!(element instanceof HTMLElement) || element.hidden) return false;
+    if (element instanceof HTMLButtonElement && element.disabled) return false;
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return style.visibility !== "hidden" && style.display !== "none" && rect.width > 0 && rect.height > 0;
+  }, selector, { timeout });
+  const clicked = await page.evaluate((sel) => {
+    const element = document.querySelector(sel);
+    if (!(element instanceof HTMLElement) || element.hidden) return false;
+    if (element instanceof HTMLButtonElement && element.disabled) return false;
+    if (element instanceof HTMLButtonElement && element.type === "submit" && element.form) element.form.requestSubmit(element);
+    else element.click();
+    return true;
+  }, selector);
+  if (!clicked) throw new Error(`QA click target není dostupný: ${selector}`);
 }
 
 async function launchBrowser() {
@@ -378,6 +402,16 @@ async function runVisualCase(scenario, viewport) {
           body: "",
         }),
       );
+      await page.route("**/AI-Studio-GHRAB/config/support.json", (route) =>
+        route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ administratorEmail: "balaz@ghrabuvka.cz" }),
+        }),
+      );
+      await page.route("**/AI-Studio-GHRAB/config/apps.generated.json", (route) =>
+        route.fulfill({ status: 200, contentType: "application/json", body: "[]" }),
+      );
 
       if (scenario.id === "studio-home") {
         await page.addInitScript(
@@ -390,15 +424,20 @@ async function runVisualCase(scenario, viewport) {
         );
       }
       await setLocalDocument(page, serveRoot, scenario.url, baseUrl);
+      await page.waitForFunction(
+        () => document.documentElement.dataset.ghrabAccess !== "checking",
+        null,
+        { timeout: 7000 },
+      );
       for (const step of scenario.steps || []) {
         if (step.action === "wait") await page.waitForTimeout(step.ms || 500);
         if (step.action === "click") {
-          await page.locator(step.selector).first().click({ timeout: 5000 });
+          await clickForQa(page, step.selector, step.timeout || 5000);
         }
         if (step.action === "clickIfVisible") {
           const target = page.locator(step.selector).first();
           if ((await target.count()) && (await target.isVisible())) {
-            await target.click({ timeout: step.timeout || 5000 });
+            await clickForQa(page, step.selector, step.timeout || 5000);
           }
         }
         if (step.action === "fill") {
@@ -415,7 +454,6 @@ async function runVisualCase(scenario, viewport) {
       }
       await page.waitForTimeout(scenario.settleMs || 700);
       await waitForImages(page);
-      const checks = await inspectPage(page, scenario);
       const filename =
         `${scenario.id}__${viewport.width}x${viewport.height}.png`.replace(
           /[^a-zA-Z0-9_.-]/g,
@@ -426,6 +464,9 @@ async function runVisualCase(scenario, viewport) {
         path: path.join(SCREEN_DIR, filename),
         fullPage: false,
       });
+      // Inspect the rendered state after evidence capture so a transient rerender
+      // cannot make the recorded screenshot and the DOM verdict disagree.
+      const checks = await inspectPage(page, scenario);
       const pixels = blankStats(buffer);
       const problems = [];
       if (checks.htmlHidden || checks.bodyHidden)
