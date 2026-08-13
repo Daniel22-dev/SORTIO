@@ -27,7 +27,7 @@
       "purpose": "maskable"
     }
   ],
-  "version": "1.0.11",
+  "version": "1.0.12",
   "ghrab_platform": {
     "contract": "ghrab-platform-v1",
     "version": "1.0.0",
@@ -35,6 +35,6 @@
     "brand_version": "1.0.0",
     "theme_contract": "ghrab-theme-v1",
     "sw_contract": "ghrab-sw-v1",
-    "cache_name": "ghrab-sortio-v1.0.11"
+    "cache_name": "ghrab-sortio-v1.0.12"
   }
 }

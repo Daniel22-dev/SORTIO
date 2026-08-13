@@ -1,6 +1,6 @@
 {
   "name": "sortio-organizator-tridy",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "private": true,
   "description": "SORTIO – produkční local-first organizátor třídy s odolným ukládáním, diagnostikou, projekcí a tiskem",
   "type": "module",

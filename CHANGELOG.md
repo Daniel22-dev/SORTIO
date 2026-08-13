@@ -1,3 +1,10 @@
+## 1.0.12 — sjednocení reportéru (2026-08-13)
+
+- Reportér používá dvoukrokové vytvoření a skutečné stažení diagnostického ZIPu; Gmail je dostupný až po kliknutí na stažení.
+- Rozhraní i e-mail vyžadují ruční přiložení ZIPu a pomocné video je bezpečně skryté uvnitř reportéru i při scrollování.
+- Regresní sada fyzicky ověřuje stažený ZIP, jeho snímky a diagnostiku, jednu instanci reportéru, motivy, mobilní zobrazení a klávesnici.
+- Funkce organizace třídy ani lokální data nebyly změněny; PWA cache je `ghrab-sortio-v1.0.12`.
+
 ## 1.0.11 — P5 (2026-08-05)
 ### CI hotfix 2026-08-08
 - Visual QA používá pouze v testovacím serveru odemčenou podobu chráněných HTML stránek, aby přímé testování `manual/` a `tests/` nepadalo na nedostupném Studio bootstrapu.

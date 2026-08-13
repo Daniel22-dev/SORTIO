@@ -2,7 +2,7 @@
   "standard": "GHRAB-QA-1.0.2",
   "appId": "sortio",
   "appName": "SORTIO – Organizátor třídy",
-  "appVersion": "1.0.11",
+  "appVersion": "1.0.12",
   "entryPoint": "dist/index.html",
   "serveRoot": "dist",
   "buildRoot": "dist",
@@ -46,17 +46,17 @@
     {
       "file": "package.json",
       "regex": "\\\"version\\\"\\s*:\\s*\\\"([0-9.]+)\\\"",
-      "expected": "1.0.11"
+      "expected": "1.0.12"
     },
     {
       "file": "dist/studio-manifest.json",
       "regex": "\\\"version\\\"\\s*:\\s*\\\"([0-9.]+)\\\"",
-      "expected": "1.0.11"
+      "expected": "1.0.12"
     },
     {
       "file": "dist/sw.js",
       "regex": "ghrab-sortio-v([0-9.]+)",
-      "expected": "1.0.11"
+      "expected": "1.0.12"
     }
   ],
   "pwaTargets": [
