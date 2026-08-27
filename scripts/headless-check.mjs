@@ -9,7 +9,7 @@ let executablePath=process.env.GHRAB_CHROMIUM_PATH||'';if(!executablePath){for(c
 let browser;try{
   browser=await chromium.launch({headless:true,...(executablePath?{executablePath}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
-  await page.route('**/AI-Studio-GHRAB/access/app-guard.js',route=>route.fulfill({contentType:'text/javascript',body:"export async function protectApp(){document.documentElement.dataset.ghrabAccess='granted';return true}"}));
+  await page.route('**/AI-Studio-GHRAB/access/app-guard.js',route=>route.fulfill({contentType:'text/javascript',body:"export async function protectApp(appId){const permit={appId,role:'admin',apps:[appId],qa:true};document.documentElement.dataset.ghrabAccess='granted';document.dispatchEvent(new CustomEvent('ghrab:app-access-granted',{detail:{appId,permit}}));return true}"}));
   await page.route('**/AI-Studio-GHRAB/access/access-gate.css',route=>route.fulfill({contentType:'text/css',body:''}));
   await page.route('**/AI-Studio-GHRAB/config/support.json',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({administratorEmail:'balaz@ghrabuvka.cz'})}));
   await page.route('**/AI-Studio-GHRAB/config/apps.generated.json',route=>route.fulfill({status:200,contentType:'application/json',body:'[]'}));

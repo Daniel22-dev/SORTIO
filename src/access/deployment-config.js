@@ -80,20 +80,26 @@ function fallbackConfig() {
   return {
     schema: CONFIG_SCHEMA,
     version: CONFIG_VERSION,
-    environmentId: "github-pages-fallback",
-    profile: "github-pages",
+    environmentId: "configuration-unavailable",
+    profile: "configuration-unavailable",
     studioBaseUrl: DEFAULT_STUDIO_BASE_URL,
     appBaseUrls: { ...DEFAULT_APP_BASE_URLS },
     assetBaseUrl: "./",
     apiBaseUrl: "",
     allowedOrigins: ["self", "https://daniel22-dev.github.io"],
-    sharedAccessVersion: "p0-fallback",
-    authMode: "signed-permit",
-    aiTransport: "direct-provider",
+    sharedAccessVersion: "unavailable",
+    authMode: "disabled",
+    aiTransport: "disabled",
     telemetryMode: "local",
+    access: {
+      strategy: "fail-closed",
+      maxOfflineAgeHours: 0,
+      maxSignedBundleAgeDays: 0,
+      failClosedWhenStale: true,
+    },
     features: {
-      schoolServerReady: true,
-      allowLocalProviderKeys: true,
+      schoolServerReady: false,
+      allowLocalProviderKeys: false,
       serverSessionReady: false,
       schoolGatewayReady: false,
     },
@@ -143,6 +149,7 @@ function normalise(raw, appId) {
     allowedOrigins: Object.freeze([...raw.allowedOrigins]),
     features: Object.freeze({ ...(raw.features || {}) }),
     access: Object.freeze({
+      ...(raw.access || {}),
       guardUrl: new URL("access/app-guard.js", studioBaseUrl).href,
       gateCssUrl: new URL("access/access-gate.css", studioBaseUrl).href,
       guideUrl: new URL("manualy/error-report.html", studioBaseUrl).href,
@@ -187,7 +194,7 @@ export async function loadDeploymentConfig({
       cacheKey,
       (async () => {
         const inline = globalThis.__GHRAB_DEPLOYMENT_CONFIG_OVERRIDE__;
-        if (inline) return validate(inline);
+        if (inline) return { ...validate(inline), configurationSource: "override" };
         try {
           const response = await fetchWithTimeout(
             configUrl,
@@ -202,10 +209,10 @@ export async function loadDeploymentConfig({
               `Deployment konfigurace skončila stavem ${response.status}.`,
             );
           }
-          return validate(await response.json());
+          return { ...validate(await response.json()), configurationSource: "network" };
         } catch (error) {
           console.warn(
-            "GHRAB deployment konfigurace není dostupná; používám bezpečný GitHub fallback.",
+            "GHRAB deployment konfigurace není dostupná; aplikace zůstává v uzamčeném režimu.",
             error,
           );
           return fallbackConfig();

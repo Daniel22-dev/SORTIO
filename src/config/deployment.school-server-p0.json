@@ -18,7 +18,7 @@
   "allowedOrigins": [
     "self"
   ],
-  "sharedAccessVersion": "access-p0-2026-08-04",
+  "sharedAccessVersion": "access-p1-20260824175535Z-k_wtm7Zj",
   "environmentId": "school-server-p0-compatibility",
   "profile": "school-server-p0",
   "authMode": "signed-permit",
@@ -45,5 +45,11 @@
     "serverRequired": false,
     "githubUpload": "pending",
     "postUploadValidationRequired": true
+  },
+  "access": {
+    "strategy": "online-first-signed-lkg",
+    "maxOfflineAgeHours": 24,
+    "maxSignedBundleAgeDays": 30,
+    "failClosedWhenStale": true
   }
 }

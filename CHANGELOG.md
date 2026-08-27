@@ -1,3 +1,14 @@
+## 1.0.13 — GARP bezpečnostní kandidát (2026-08-27)
+
+- Deployment fallback je fail-closed (`configuration-unavailable`, `authMode: disabled`) místo provozního GitHub fallbacku.
+- Chráněný kód aplikace, manuálu a testovacího centra se na veřejné cestě aktivuje až po zachycení oprávnění pro SORTIO z centrální brány.
+- `sharedAccessVersion` je synchronizována s aktuálním podepsaným access bundle AI Studia; produkce výslovně drží 24 h LKG a 30 dní stáří bundle.
+- Deployment konfigurace se neukládají do běžné PWA precache.
+- School-server profil zůstává `server-session` a zakazuje lokální provider klíče.
+- GitHub Actions jsou připnuté na konkrétní commit SHA.
+- Přidán `test:garp-security`, který výše uvedené vlastnosti hlídá proti regresi.
+- CSP stále obsahuje `unsafe-inline` kvůli současné single-file/inline architektuře; jde o známý hardeningový dluh, ne nově zavedenou regresi.
+
 ## 1.0.12 — sjednocení reportéru (2026-08-13)
 
 - Reportér používá dvoukrokové vytvoření a skutečné stažení diagnostického ZIPu; Gmail je dostupný až po kliknutí na stažení.

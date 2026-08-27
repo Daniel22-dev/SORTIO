@@ -1,7 +1,7 @@
 const GHRAB_SW_CONTRACT='ghrab-service-worker-v1';
 /* GHRAB service-worker contract v1 · update activation is user-controlled. */
 const APP_VERSION = '__APP_VERSION__';
-const CACHE_NAME = "ghrab-sortio-v1.0.12";
+const CACHE_NAME = "ghrab-sortio-v1.0.13";
 const CACHE_PREFIXES = ["ghrab-sortio-v", "sortio-v"];
 const CORE = [
   "./",
@@ -13,9 +13,6 @@ const CORE = [
   "./access/error-reporter.js",
   "./access/error-reporter.css",
   "./access/error-reporter-adapter.js",
-  "./config/deployment.json",
-  "./config/deployment.school-server-p0.json",
-  "./config/deployment.school-server.example.json",
   "./assets/brand/school-logo.png",
   "./assets/sortio-mark.svg",
   "./icons/icon-192.png",
@@ -87,9 +84,7 @@ async function cacheFirst(request) {
 function isRuntimeRequest(url, scopePath) {
   const relative = url.pathname.slice(scopePath.length);
   return relative === 'runtime-config.js' ||
-    relative === 'config/deployment.json' ||
-    relative === 'config/deployment.school-server-p0.json' ||
-    relative === 'config/deployment.school-server.example.json' ||
+    /^config\/deployment(?:\.[^/]+)?\.json$/.test(relative) ||
     /^(?:api|auth|session|health)(?:\/|$)/.test(relative);
 }
 

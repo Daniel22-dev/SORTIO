@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-ghrab-access="checking" data-theme="dark" data-ghrab-app-id="sortio" data-ghrab-app-version="1.0.12">
+<html lang="cs" data-ghrab-access="checking" data-theme="dark" data-ghrab-app-id="sortio" data-ghrab-app-version="1.0.13">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -51,6 +51,13 @@ function unlockProtectedScripts() {
   return helper();
 }
 
+function permitAllowsApp(permit) {
+  if (!permit || typeof permit !== 'object') return false;
+  if (permit.role === 'admin') return true;
+  const apps = Array.isArray(permit.apps) ? permit.apps : [];
+  return apps.includes('*') || apps.includes(APP_ID) || permit.appId === APP_ID;
+}
+
 async function boot() {
   try {
     const deploymentModule = await import('./access/deployment-config.js');
@@ -64,6 +71,9 @@ async function boot() {
     }, { once: true });
     const allowed = await protectApp(APP_ID, { studioUrl, errorReporter: false });
     if (!allowed) return;
+    if (!permitAllowsApp(grantedPermit)) {
+      throw new Error('Centrální brána nepotvrdila platné oprávnění pro SORTIO.');
+    }
     window.__GHRAB_STUDIO_ACCESS__ = Object.freeze({ appId: APP_ID, permit: grantedPermit });
     void startLocalReporter('sortio:granted');
     unlockProtectedScripts();
