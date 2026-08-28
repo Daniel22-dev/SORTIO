@@ -127,7 +127,7 @@
     "schema": "ghrab-platform-app-integration-v1",
     "contract": "ghrab-platform-v1",
     "requiredPlatformRange": ">=1.1.0 <2.0.0",
-    "platformVersion": "1.0.0",
+    "platformVersion": "1.1.0",
     "brandVersion": "1.0.0",
     "themeContract": 1,
     "swContract": 1,
