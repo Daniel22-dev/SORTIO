@@ -5,6 +5,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { performance as nodePerformance } from 'node:perf_hooks';
 import { setTimeout as sleep } from 'node:timers/promises';
+import { findChromiumPath } from './chromium-path.mjs';
 
 const root = path.resolve('.');
 const dist = path.join(root, 'dist');
@@ -14,12 +15,7 @@ const budget = quality.runtimeBudget || {};
 const widths = [1280, 390, 320];
 const maxPages = Number(process.env.GHRAB_REFLOW_MAX_PAGES || 40);
 
-function chromiumPath() {
-  for (const candidate of [process.env.CHROMIUM_PATH, '/usr/lib/chromium/chromium', '/usr/bin/chromium', '/usr/bin/google-chrome'].filter(Boolean)) {
-    if (fs.existsSync(candidate)) return candidate;
-  }
-  throw new Error('Chromium není dostupné');
-}
+function chromiumPath(){return findChromiumPath();}
 async function waitJson(url) {
   for (let i = 0; i < 600; i += 1) {
     try { const response = await fetch(url); if (response.ok) return await response.json(); } catch {}

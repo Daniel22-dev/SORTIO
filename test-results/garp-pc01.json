@@ -1,0 +1,19 @@
+{
+  "schema":"sortio-garp-pc01-v1",
+  "version":"1.0.16",
+  "status":"passed-for-fixed-findings",
+  "N-08":{
+    "protectiveMechanism":"sanitizeData(raw,{repairDuplicateIdentifiers:true}) on persistent restore paths with deterministic uniqueIdentifier allocation and reference remapping",
+    "persistentIngress":["loadData primary DATA_KEY","loadData LAST_GOOD_KEY fallback","loadData legacy-key migration","cross-tab storage listener -> loadData","restoreRecoverySnapshot"],
+    "importBoundary":"validateBackupPayload remains fail-closed via validateUniqueBackupIdentifiers(sanitizeData(payload.data))",
+    "identifierCategories":["classes","students","current groups","seats","engagement records","score teams","draw history","group history","role history"],
+    "tests":["crafted distinct raw IDs colliding after sanitization remain distinct after loadData","seat references remain mapped to their original students","all identifier categories pass validateUniqueBackupIdentifiers after persistent repair","recovery snapshot uses same repair path","import of same crafted collision remains rejected"]
+  },
+  "N-09":{
+    "protectiveMechanism":"package.json aggregates behavior tests into npm test and qa:p5:ci",
+    "paths":["npm test -> test:garp-hostile-render","npm test -> test:garp-canary","qa:p5:ci -> test:garp-hostile-render","qa:p5:ci -> test:garp-canary"],
+    "tests":["garp-security-regressions asserts all four aggregate links","npm test executes both and passes","qa:p5:ci executes both and passes them before environment-limited qa:runtime"]
+  },
+  "historicalHighFixN02Retested":true,
+  "historicalImportUniquenessN07Retested":true
+}

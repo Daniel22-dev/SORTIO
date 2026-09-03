@@ -68,6 +68,7 @@ const CORRUPT_KEY=evaluate('CORRUPT_KEY');
 
 function freshClass(studentCount=12){
   storage.clear();storage.failWrites=false;storage.failKey=null;counter=0;
+  vm.runInContext('LAST_PERSISTED_TEXT=null',context);
   App.data=context.defaultData();
   const students=Array.from({length:studentCount},(_,index)=>context.makeStudent(`Jméno${index+1}`,`Příjmení${index+1}`));
   return context.createClass({name:'Testovací třída',schoolYear:'2026/2027',students});
@@ -106,6 +107,75 @@ assert.doesNotThrow(()=>context.updateStudent(namesakeClass.id,second.id,{firstN
 const sanitized=context.sanitizeData({...context.defaultData(),unknownTopLevel:'nesmí zůstat'});
 assert.equal('unknownTopLevel'in sanitized,false);
 
+// GARP 2.3 / RT-07+RT-08: identifikátory z nedůvěryhodné zálohy musí být bezpečné pro HTML atributy a musí zachovat vazby.
+const hostileId='student-\" onerror=\"window.__sortioXss=1\" data-x=\"';
+const hostileGroupId='group-\"><img src=x onerror=window.__sortioXss=2>';
+const hostileSeatId='seat-'.repeat(30)+'\" autofocus onfocus=window.__sortioXss=3 x=\"';
+const hostileClassId='class-\" onpointerenter=window.__sortioXss=4 x=\"';
+const hostileRaw={schema:'sortio-data-v5',version:5,selectedClassId:hostileClassId,classes:[{
+  id:hostileClassId,name:'Syntetická třída',students:[{id:hostileId,firstName:'Ada',lastName:'Testovací'}],
+  currentGroups:[{id:hostileGroupId,name:'Tým',studentIds:[hostileId],spokespersonId:hostileId,roleAssignments:{Mluvčí:hostileId}}],
+  seatingPlan:{template:'rows',rows:2,columns:2,seats:[{id:hostileSeatId,row:0,column:0,studentId:hostileId}]},
+  engagementHistory:[{id:'engage-\" onfocus=bad',studentId:hostileId,kind:'answer'}],
+  toolState:{scores:[{id:'team-\" onerror=bad',name:'Tým',score:1}]},
+  groupRules:{together:[],apart:[],pins:{[hostileId]:0}},
+}]};
+const hostilePayload={schema:'sortio-backup-v4',data:hostileRaw,integrity:{checksum:context.checksumText(JSON.stringify(hostileRaw))}};
+const hostile=context.validateBackupPayload(hostilePayload);
+const collisionDerivedId=context.sanitizeIdentifier(hostileId,'student');
+const duplicateRaw=JSON.parse(JSON.stringify(hostileRaw));
+duplicateRaw.classes[0].students.push({id:collisionDerivedId,firstName:'Běla',lastName:'Kolizní'});
+duplicateRaw.classes[0].seatingPlan.seats.push({id:'seat-safe-2',row:0,column:1,studentId:collisionDerivedId});
+const duplicatePayload={schema:'sortio-backup-v4',data:duplicateRaw,integrity:{checksum:context.checksumText(JSON.stringify(duplicateRaw))}};
+assert.throws(()=>context.validateBackupPayload(duplicatePayload),error=>error.code==='BACKUP_DUPLICATE_IDENTIFIER');
+
+// GARP 2.3 / N-08: persistentní loadData cesta kolizi neopustí ani nesloučí identity.
+storage.clear();storage.failWrites=false;storage.failKey=null;
+vm.runInContext('LAST_PERSISTED_TEXT=undefined',context);
+storage.setItem(DATA_KEY,JSON.stringify(duplicateRaw));
+const repairedCollision=context.loadData();
+const repairedClass=repairedCollision.classes[0];
+assert.equal(new Set(repairedClass.students.map(student=>student.id)).size,repairedClass.students.length);
+assert.notEqual(repairedClass.students[0].id,repairedClass.students[1].id);
+assert.equal(repairedClass.seatingPlan.seats[0].studentId,repairedClass.students[0].id);
+assert.equal(repairedClass.seatingPlan.seats[1].studentId,repairedClass.students[1].id);
+assert.doesNotThrow(()=>context.validateUniqueBackupIdentifiers(repairedCollision));
+
+// PC-01 N-08: stejná opravná cesta pokrývá všechny kategorie ID hlídané importní invariantou.
+const allCategoryDuplicates={schema:'sortio-data-v5',version:5,selectedClassId:'class-dup',classes:[
+  {id:'class-dup',name:'A',students:[{id:'student-a',firstName:'A',lastName:'Jedna'}],
+   currentGroups:[{id:'group-dup',name:'G1',studentIds:['student-a']},{id:'group-dup',name:'G2',studentIds:['student-a']}],
+   seatingPlan:{template:'rows',rows:2,columns:2,seats:[{id:'seat-dup',row:0,column:0,studentId:'student-a'},{id:'seat-dup',row:0,column:1,studentId:'student-a'}]},
+   engagementHistory:[{id:'eng-dup',studentId:'student-a',kind:'answer'},{id:'eng-dup',studentId:'student-a',kind:'speaker'}],
+   toolState:{scores:[{id:'team-dup',name:'T1',score:1},{id:'team-dup',name:'T2',score:2}]},
+   drawHistory:[{id:'draw-dup',selectedIds:['student-a']},{id:'draw-dup',selectedIds:['student-a']}],
+   groupHistory:[{id:'groupset-dup',groups:[]},{id:'groupset-dup',groups:[]}],
+   roleHistory:[{id:'role-dup',groupId:'group-dup',studentId:'student-a',role:'Mluvčí'},{id:'role-dup',groupId:'group-dup',studentId:'student-a',role:'Zapisovatel'}]},
+  {id:'class-dup',name:'B',students:[{id:'student-b',firstName:'B',lastName:'Dvě'}]}
+]};
+storage.clear();vm.runInContext('LAST_PERSISTED_TEXT=undefined',context);storage.setItem(DATA_KEY,JSON.stringify(allCategoryDuplicates));
+const repairedAll=context.loadData();
+assert.doesNotThrow(()=>context.validateUniqueBackupIdentifiers(repairedAll));
+assert.equal(new Set(repairedAll.classes.map(item=>item.id)).size,2);
+
+// Recovery snapshot je druhý persistentní vstup a musí používat stejnou deduplikaci.
+storage.clear();vm.runInContext('LAST_PERSISTED_TEXT=undefined',context);App.data=context.loadData();
+storage.setItem(RECOVERY_KEY,JSON.stringify(duplicateRaw));
+assert.doesNotThrow(()=>context.restoreRecoverySnapshot());
+assert.doesNotThrow(()=>context.validateUniqueBackupIdentifiers(App.data));
+assert.equal(new Set(App.data.classes[0].students.map(student=>student.id)).size,App.data.classes[0].students.length);
+const safeId=/^[A-Za-z0-9][A-Za-z0-9._:-]{0,79}$/;
+const hostileClass=hostile.classes[0],hostileStudent=hostileClass.students[0],hostileGroup=hostileClass.currentGroups[0],hostileSeat=hostileClass.seatingPlan.seats[0];
+for(const value of [hostile.selectedClassId,hostileClass.id,hostileStudent.id,hostileGroup.id,hostileSeat.id,hostileClass.engagementHistory[0].id,hostileClass.toolState.scores[0].id])assert.match(value,safeId);
+assert.equal(hostile.selectedClassId,hostileClass.id);
+assert.equal(hostileGroup.studentIds[0],hostileStudent.id);
+assert.equal(hostileGroup.spokespersonId,hostileStudent.id);
+assert.equal(hostileGroup.roleAssignments['Mluvčí'],hostileStudent.id);
+assert.equal(hostileSeat.studentId,hostileStudent.id);
+assert.equal(Object.keys(hostileClass.groupRules.pins)[0],hostileStudent.id);
+assert.ok(!JSON.stringify(hostile).includes('onerror'));
+assert.ok(!JSON.stringify(hostile).includes('<img'));
+
 // Regrese S1: docházka nesmí zničit skupiny, sezení ani rozpracovaný cyklus.
 let classItem=freshClass(12);
 context.generateGroups({mode:'size',value:4,smartMode:'random'});
@@ -143,7 +213,7 @@ assert.equal(classItem.currentGroups.flatMap(group=>group.studentIds).length,11)
 assert.ok(!classItem.currentGroups.flatMap(group=>group.studentIds).includes(lockedAbsentId));
 
 // Regrese S3: last-good je skutečně předchozí stav.
-storage.clear();storage.failWrites=false;storage.failKey=null;App.data=context.defaultData();
+storage.clear();storage.failWrites=false;storage.failKey=null;vm.runInContext('LAST_PERSISTED_TEXT=null',context);App.data=context.defaultData();
 context.saveData({render:false,event:'first'});
 const firstSnapshot=storage.getItem(DATA_KEY);
 App.data.aliases.test='změna';
@@ -158,6 +228,34 @@ App.data.aliases.test='další změna';
 context.saveData({render:false,event:'last-good-write-failure'});
 assert.equal(storage.getItem(DATA_KEY),protectedPrimary);
 storage.failKey=null;
+
+// GARP 2.3 / SIM-04: zastaralá karta nesmí přepsat novější localStorage stav.
+const staleSnapshot=JSON.parse(storage.getItem(DATA_KEY));
+const externalSnapshot=JSON.parse(storage.getItem(DATA_KEY));
+externalSnapshot.aliases.external='novější-karta';
+externalSnapshot.updatedAt=nowIso();
+storage.setItem(DATA_KEY,JSON.stringify(externalSnapshot));
+App.data=staleSnapshot;
+App.data.aliases.stale='zastaralá-karta';
+context.saveData({render:false,event:'multi-tab-stale-write'});
+const afterConflict=JSON.parse(storage.getItem(DATA_KEY));
+assert.equal(afterConflict.aliases.external,'novější-karta');
+assert.equal(afterConflict.aliases.stale,undefined);
+assert.equal(App.data.aliases.external,'novější-karta');
+assert.equal(App.storageError?.conflict,true);
+
+// GARP 2.3 / N-01: karta otevřená nad prázdným úložištěm musí být ozbrojena proti pozdějšímu externímu zápisu.
+storage.clear();storage.failWrites=false;storage.failKey=null;App.storageError=null;
+App.data=context.loadData();
+assert.equal(evaluate('LAST_PERSISTED_TEXT'),null);
+const externalFromEmpty=context.defaultData();externalFromEmpty.aliases.external='novější-z-prázdného-startu';
+storage.setItem(DATA_KEY,JSON.stringify(externalFromEmpty));
+App.data.aliases.stale='zastaralý-zápis';
+context.saveData({render:false,event:'multi-tab-empty-start'});
+const afterEmptyStartConflict=JSON.parse(storage.getItem(DATA_KEY));
+assert.equal(afterEmptyStartConflict.aliases.external,'novější-z-prázdného-startu');
+assert.equal(afterEmptyStartConflict.aliases.stale,undefined);
+assert.equal(App.storageError?.conflict,true);
 
 // Úložiště blokované zásadou prohlížeče se nehlásí jako dostupné.
 const workingStorage=context.window.localStorage;
@@ -189,5 +287,22 @@ let mismatch=null;
 try{context.validateBackupPayload(legacyPayload)}catch(error){mismatch=error}
 assert.equal(mismatch?.code,'BACKUP_CHECKSUM_MISMATCH');
 assert.doesNotThrow(()=>context.validateBackupPayload(legacyPayload,{allowChecksumMismatch:true}));
+
+// GARP 2.3 / SIM-08: skutečný importBackup musí stejnou nedůvěryhodnou zálohu sanitizovat i při reimportu do čerstvého stavu.
+storage.clear();storage.failWrites=false;storage.failKey=null;App.storageError=null;App.data=context.defaultData();vm.runInContext('LAST_PERSISTED_TEXT=null',context);
+context.confirm=()=>true;
+const hostileImportText=JSON.stringify(hostilePayload);
+const imported=await context.importBackup({size:Buffer.byteLength(hostileImportText),text:async()=>hostileImportText});
+assert.equal(imported,true);
+const importedClass=App.data.classes[0],importedStudent=importedClass.students[0];
+assert.match(importedClass.id,safeId);
+assert.match(importedStudent.id,safeId);
+assert.equal(importedClass.currentGroups[0].studentIds[0],importedStudent.id);
+assert.ok(!storage.getItem(DATA_KEY).includes('onerror'));
+assert.ok(!storage.getItem(DATA_KEY).includes('<img'));
+const beforeRejectedDuplicate=storage.getItem(DATA_KEY);
+const duplicateImportText=JSON.stringify(duplicatePayload);
+await assert.rejects(context.importBackup({size:Buffer.byteLength(duplicateImportText),text:async()=>duplicateImportText}),error=>error.code==='BACKUP_DUPLICATE_IDENTIFIER');
+assert.equal(storage.getItem(DATA_KEY),beforeRejectedDuplicate);
 
 console.log('[domain] Produkční parser, skupiny, docházka, losovací cyklus, sezení a odolnost dat prošly.');

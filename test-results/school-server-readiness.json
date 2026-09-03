@@ -1,0 +1,13 @@
+{
+  "schema": "sortio-school-server-readiness-evidence-v1",
+  "version": "1.0.16",
+  "profile": "school-server",
+  "environmentId": "school-server-production",
+  "authMode": "server-session",
+  "aiTransport": "not-applicable",
+  "allowLocalProviderKeys": false,
+  "serverSessionReady": true,
+  "schoolServerConnected": false,
+  "sha256": "6b413e4d059b71b368aa8e5d2289d212fb137b80b6331b22369200d10082b85f",
+  "status": "passed"
+}

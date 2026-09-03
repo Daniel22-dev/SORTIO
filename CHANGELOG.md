@@ -1,4 +1,22 @@
-## 1.0.13 — GARP bezpečnostní kandidát (2026-08-27)
+## 1.0.16 — uzavření LOW nálezů po druhé GARP 2.3 kontrole (2026-09-03)
+
+- Opravena kolize interních ID na persistentní `loadData()` cestě bez sloučení identit.
+- Zachováno fail-closed odmítnutí kolizních importovaných záloh.
+- Behaviorální hostile-render a canary testy zapojeny do `npm test` i `qa:p5:ci`.
+- Přidány regrese pro N-08 a PC-01 persistentní vstupní cestu.
+- Release Integrity po změně po druhém Claude kole zůstává AMBER do nového výslovného ověřovacího cyklu.
+
+## 1.0.15 — GARP 2.3 opravný bezpečnostní kandidát (2026-09-03)
+
+- Opraven stored XSS vektor z importovaných persistentních identifikátorů (N-02 / RT-07 / RT-08 / SIM-08).
+- Opraven multi-tab konflikt při startu nad prázdným úložištěm a přidána cross-tab synchronizace (N-01 / RT-15 / SIM-04).
+- Statická CSP je napojena na build pro všechny chráněné HTML vstupy a přidán fail-closed cross-origin frame guard (N-03 / RT-13).
+- Odstraněn neověřovaný `deployment.school-server-p0.json`; všechny distribuované deployment profily jsou kryty bezpečnostní regresí (N-04).
+- Reporterové PASS položky používají skutečné podmínky a browserové QA sdílí detekci Chromia (N-05/N-06).
+- Import fail-closed odmítá duplicitní interní identifikátory nalezené při volném adversariálním hledání.
+- Známý hardeningový dluh `unsafe-inline` zůstává explicitně evidován.
+
+## 1.0.14 — GARP bezpečnostní kandidát (2026-08-27)
 
 - Deployment fallback je fail-closed (`configuration-unavailable`, `authMode: disabled`) místo provozního GitHub fallbacku.
 - Chráněný kód aplikace, manuálu a testovacího centra se na veřejné cestě aktivuje až po zachycení oprávnění pro SORTIO z centrální brány.

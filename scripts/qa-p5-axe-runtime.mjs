@@ -5,6 +5,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { setTimeout as sleep } from 'node:timers/promises';
+import { findChromiumPath } from './chromium-path.mjs';
 
 const root=path.resolve('.'), dist=path.join(root,'dist');
 const consumer=JSON.parse(await fsp.readFile(path.join(root,'ghrab-platform.consumer.json'),'utf8'));
@@ -17,7 +18,7 @@ const out=path.join(dist,'qa-p5-axe-runtime-report.json');
 let installedVersion='';try{installedVersion=JSON.parse(await fsp.readFile(pkgPath,'utf8')).version||''}catch{}
 async function finish(report,code=0){await fsp.writeFile(out,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({appId:report.appId,appVersion:report.appVersion,status:report.status,summary:report.summary,note:report.note},null,2));if(code)process.exitCode=code;}
 if(installedVersion!==requestedVersion||!fs.existsSync(axePath)){await finish({schema:'ghrab-p5-axe-runtime-v1',appId:consumer.appId,appVersion:consumer.appVersion,requestedVersion,installedVersion:installedVersion||null,status:required?'failed':'not-ready-environment',scriptsExecuted:false,pages:[],summary:{scanned:0,critical:0,serious:0,moderate:0,minor:0,blockers:required?1:0},note:'Je nutné spustit npm ci a nainstalovat přesně axe-core 4.12.1.'},required?1:0);process.exit(required?1:0);}
-function chromiumPath(){for(const p of [process.env.CHROMIUM_PATH,'/usr/bin/chromium','/usr/lib/chromium/chromium','/usr/bin/google-chrome'].filter(Boolean))if(fs.existsSync(p))return p;throw new Error('Chromium není dostupné');}
+function chromiumPath(){return findChromiumPath();}
 async function walk(dir){if(!fs.existsSync(dir))return[];const out=[];for(const e of await fsp.readdir(dir,{withFileTypes:true})){const p=path.join(dir,e.name);e.isDirectory()?out.push(...await walk(p)):out.push(p)}return out}
 function mime(file){return ({'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.webmanifest':'application/manifest+json; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.mp3':'audio/mpeg','.mp4':'video/mp4','.woff2':'font/woff2'})[path.extname(file).toLowerCase()]||'application/octet-stream'}
 const prelude=`<style>html[data-ghrab-qa-runtime="true"] body{visibility:visible!important;opacity:1!important}</style><script>(()=>{window.__GHRAB_QA_RUNTIME__=true;document.documentElement.dataset.ghrabAccess='granted';document.documentElement.dataset.ghrabQaRuntime='true';try{Object.defineProperty(navigator,'webdriver',{get:()=>true,configurable:true})}catch{}window.alert=()=>{};window.confirm=()=>true;window.prompt=()=>'';window.open=()=>null;try{if(globalThis.ServiceWorkerContainer?.prototype?.register)globalThis.ServiceWorkerContainer.prototype.register=async()=>({update:async()=>{},addEventListener:()=>{}})}catch{}})();<\/script>`;

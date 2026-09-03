@@ -1,0 +1,15 @@
+{
+  "schema":"sortio-garp-environment-limitations-v1",
+  "version":"1.0.16",
+  "limitations":[
+    {"test":"qa:runtime / dedicated browser lifecycle","status":"NOT TESTED","reason":"managed Chromium policy blocks local test pages; qa:p5-runtime times out on index.html"},
+    {"test":"test:reporter browser portion","status":"NOT TESTED","reason":"managed Chromium URLBlocklist blocks local test pages; static reporter suite completed 52 PASS / 0 FAIL"},
+    {"test":"qa:axe","status":"NOT TESTED","reason":"exact axe-core 4.12.1 unavailable; npm ci did not complete in this environment; script reports not-ready-environment"},
+    {"test":"central signed-permit/revocation runtime","status":"NOT TESTED","reason":"shared app-guard/runtime is outside this application ZIP"},
+    {"test":"SIM-03 back/forward/restore dedicated drill","status":"NOT TESTED","reason":"not completed in this environment"},
+    {"test":"SIM-07 live service-worker update/recovery drill","status":"NOT TESTED","reason":"not completed in trustworthy served browser lifecycle"},
+    {"test":"RT-16 key custody/MFA/branch protection","status":"NOT TESTED","reason":"organizational/repository-host evidence not present in application ZIP"}
+  ],
+  "browserTestsThatDidRun":["qa:browser PASS via /usr/bin/chromium","garp-hostile-render PASS via CDP Page.setDocumentContent"],
+  "status":"documented"
+}

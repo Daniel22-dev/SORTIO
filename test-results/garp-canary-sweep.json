@@ -1,0 +1,24 @@
+{
+  "schema": "sortio-garp-canary-sweep-v1",
+  "version": "1.0.16",
+  "syntheticOnly": true,
+  "marker": "GARP-STUDENT-CANARY-SORTIO-1.0.16-FINAL-1603",
+  "email": "garpstudentcanaryfinal1603.test@example.invalid",
+  "before": {
+    "storageMarker": true,
+    "storageEmail": false,
+    "backupMarker": true,
+    "backupEmail": false,
+    "diagnosticMarker": false,
+    "diagnosticEmail": false
+  },
+  "after": {
+    "storageMarker": false,
+    "storageEmail": false,
+    "remainingKeys": [
+      "sortio.data.v5"
+    ],
+    "classCount": 0
+  },
+  "status": "passed"
+}

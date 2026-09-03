@@ -43,7 +43,7 @@ for (const p of files) {
     );
   for (const x of text.matchAll(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi)) {
     const email = x[0].toLowerCase();
-    const example = /@(example\.(?:com|org|net)|example\.edu)$/.test(email);
+    const example = /@(example\.(?:com|org|net|edu|invalid))$/.test(email);
     const testFixture =
       /(?:^|\/)(?:tests?|fixtures?)(?:\/|$)|(?:interni-testy|testy-data)\.(?:js|mjs)$|^AUDIT_/i.test(
         rel,

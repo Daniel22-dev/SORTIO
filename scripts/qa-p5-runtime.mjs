@@ -5,6 +5,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { setTimeout as sleep } from 'node:timers/promises';
+import { findChromiumPath } from './chromium-path.mjs';
 
 const root = path.resolve('.');
 const dist = path.join(root, 'dist');
@@ -15,12 +16,7 @@ const configuredPages = Array.isArray(consumer?.quality?.runtimeAudit?.pages) ? 
 const settleMs = Number(process.env.GHRAB_RUNTIME_SETTLE_MS || 900);
 const outPath = path.join(dist, 'qa-p5-runtime-report.json');
 
-function chromiumPath() {
-  for (const candidate of [process.env.CHROMIUM_PATH, '/usr/bin/chromium', '/usr/lib/chromium/chromium', '/usr/bin/google-chrome'].filter(Boolean)) {
-    if (fs.existsSync(candidate)) return candidate;
-  }
-  throw new Error('Chromium není dostupné. Nastavte CHROMIUM_PATH nebo nainstalujte Chromium.');
-}
+function chromiumPath(){return findChromiumPath();}
 async function walk(directory) {
   if (!fs.existsSync(directory)) return [];
   const result = [];

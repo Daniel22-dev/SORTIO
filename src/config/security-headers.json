@@ -1,10 +1,12 @@
 {
   "schema": "ghrab-security-headers-v1",
   "appId": "sortio",
-  "version": "1.0.13",
+  "version": "1.0.16",
   "staticProfile": {
-    "contentSecurityPolicy": "default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' data: blob:; worker-src 'self' blob:; frame-src 'self'; manifest-src 'self'",
-    "note": "unsafe-inline remains a documented P1 compatibility exception and is removed in P2/P3 modularisation."
+    "contentSecurityPolicy": "default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' data: blob:; worker-src 'self' blob:; frame-src 'self'; manifest-src 'self'",
+    "delivery": "meta-generated-at-build",
+    "frameAncestors": "client-same-origin-guard; HTTP frame-ancestors is available only in schoolServerProfile",
+    "note": "unsafe-inline remains a documented compatibility exception; stored/untrusted data must never reach executable HTML contexts."
   },
   "schoolServerProfile": {
     "headers": {

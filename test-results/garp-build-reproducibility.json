@@ -1,0 +1,22 @@
+{
+  "schema": "sortio-build-reproducibility-v1",
+  "version": "1.0.16",
+  "status": "passed-with-timestamp-only-differences",
+  "stableMismatchCount": 0,
+  "rawMismatches": [
+    [
+      "platform-build-info.json",
+      "hash-diff"
+    ],
+    [
+      "studio-manifest.json",
+      "hash-diff"
+    ]
+  ],
+  "stableMismatches": [],
+  "timestampOnlyFiles": [
+    "dist/platform-build-info.json: builtAt",
+    "dist/studio-manifest.json: publishedAt"
+  ],
+  "method": "fresh copy without dist/node_modules/test-results, npm run build, SHA-256 compare of all dist files; timestamp carrier JSON normalized"
+}

@@ -1,0 +1,13 @@
+{
+  "schema": "sortio-garp-negative-controls-v1",
+  "version": "1.0.16",
+  "syntheticOnly": true,
+  "controls": [
+    {"finding":"N-02","severity":"HIGH (historical)","mutation":"disable unsafe identifier rewrite in disposable copy","expected":"hostile render fails","exitCode":1,"observed":{"canaryExecuted":true,"onerrorCount":20,"hostileMarkupCount":79,"unsafePersistedIdentifiers":6},"cleanCandidateRetest":"passed"},
+    {"finding":"N-07","severity":"MEDIUM (historical)","mutation":"disable duplicate-identifier validation in disposable copy","expected":"domain duplicate import regression fails","exitCode":1,"observed":"missing expected BACKUP_DUPLICATE_IDENTIFIER exception","cleanCandidateRetest":"passed"},
+    {"finding":"N-08","severity":"LOW","mutation":"disable repairDuplicateIdentifiers on loadData in disposable copy","expected":"persistent collision regression fails","exitCode":1,"observed":"two student identities collapsed to one (1 !== 2)","cleanCandidateRetest":"passed"},
+    {"finding":"N-09","severity":"LOW","mutation":"remove hostile-render and canary from npm test and qa:p5:ci in disposable copy","expected":"GARP security aggregation regression fails","exitCode":1,"observed":"four missing aggregate-gate assertions","cleanCandidateRetest":"passed"}
+  ],
+  "disposableTreesRemoved": true,
+  "status": "passed"
+}

@@ -4,12 +4,13 @@ import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { setTimeout as sleep } from 'node:timers/promises';
+import { findChromiumPath } from './chromium-path.mjs';
 
 const root=path.resolve('.');
 const dist=path.join(root,'dist');
 const consumer=JSON.parse(await fsp.readFile(path.join(root,'ghrab-platform.consumer.json'),'utf8'));
 const maxPages=Number(process.env.GHRAB_A11Y_MAX_PAGES||50);
-function chromiumPath(){for(const p of [process.env.CHROMIUM_PATH,'/usr/lib/chromium/chromium','/usr/bin/chromium','/usr/bin/google-chrome'].filter(Boolean))if(fs.existsSync(p))return p;throw new Error('Chromium není dostupné');}
+function chromiumPath(){return findChromiumPath();}
 async function waitJson(url){for(let i=0;i<600;i++){try{const r=await fetch(url);if(r.ok)return await r.json();}catch{}await sleep(50)}throw new Error('Chromium debug timeout');}
 class Cdp{constructor(url){this.ws=new WebSocket(url);this.seq=0;this.pending=new Map();this.ready=new Promise((res,rej)=>{this.ws.onopen=res;this.ws.onerror=rej});this.ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.id&&this.pending.has(m.id)){const p=this.pending.get(m.id);this.pending.delete(m.id);m.error?p.reject(new Error(JSON.stringify(m.error))):p.resolve(m.result)}};this.ws.onclose=()=>{for(const p of this.pending.values())p.reject(new Error('CDP closed'));this.pending.clear()}}async call(method,params={}){await this.ready;return new Promise((resolve,reject)=>{const id=++this.seq;const timer=setTimeout(()=>{this.pending.delete(id);reject(new Error(`CDP timeout: ${method}`))},30000);this.pending.set(id,{resolve:v=>{clearTimeout(timer);resolve(v)},reject:e=>{clearTimeout(timer);reject(e)}});this.ws.send(JSON.stringify({id,method,params}))})}async eval(expression){const r=await this.call('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true,userGesture:true});if(r.exceptionDetails)throw new Error(r.exceptionDetails.exception?.description||r.exceptionDetails.text);return r.result?.value}close(){try{this.ws.close()}catch{}}}
 async function walk(dir){if(!fs.existsSync(dir))return[];const out=[];for(const e of await fsp.readdir(dir,{withFileTypes:true})){const p=path.join(dir,e.name);e.isDirectory()?out.push(...await walk(p)):out.push(p)}return out}

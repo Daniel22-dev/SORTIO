@@ -14,6 +14,11 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = join(ROOT, "src");
 const DIST = join(ROOT, "dist");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
+const securityHeaders = JSON.parse(readFileSync(join(SRC, "config", "security-headers.json"), "utf8"));
+const staticCsp = String(securityHeaders?.staticProfile?.contentSecurityPolicy || "").trim();
+if (!staticCsp || /frame-ancestors/i.test(staticCsp)) {
+  throw new Error("Statická CSP pro meta tag chybí nebo obsahuje nepodporované frame-ancestors.");
+}
 const TOKENS = {
   css: "/*==SORTIO_STYLES==*/",
   body: "<!--==SORTIO_BODY==-->",
@@ -23,6 +28,12 @@ const TOKENS = {
 rmSync(DIST, { recursive: true, force: true });
 mkdirSync(DIST, { recursive: true });
 cpSync(SRC, DIST, { recursive: true });
+for (const rel of ["manual/index.html", "tests/index.html"]) {
+  const file = join(DIST, rel);
+  const text = readFileSync(file, "utf8").replaceAll("__STATIC_CSP__", staticCsp);
+  if (text.includes("__STATIC_CSP__")) throw new Error(`CSP token zůstal v ${rel}.`);
+  writeFileSync(file, text);
+}
 
 const tpl = readFileSync(join(DIST, "index.template.html"), "utf8");
 const css = readFileSync(join(DIST, "styles.css"), "utf8");
@@ -51,9 +62,10 @@ let html = tpl
   .replace(TOKENS.css, () => css)
   .replace(TOKENS.body, () => body)
   .replace(TOKENS.js, () => js)
+  .replaceAll("__STATIC_CSP__", staticCsp)
   .replaceAll("__APP_VERSION__", pkg.version)
   .replaceAll("__BUILD_TIME__", new Date().toISOString());
-if (Object.values(TOKENS).some((token) => html.includes(token))) {
+if (Object.values(TOKENS).some((token) => html.includes(token)) || html.includes("__STATIC_CSP__")) {
   throw new Error("Build token zůstal ve výstupu.");
 }
 writeFileSync(join(DIST, "index.html"), html);

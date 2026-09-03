@@ -4,6 +4,7 @@ import { readFile, writeFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { setTimeout as sleep } from 'node:timers/promises';
+import { findChromiumPath } from './chromium-path.mjs';
 
 const root = path.resolve('.');
 const dist = path.join(root, 'dist');
@@ -37,12 +38,7 @@ if (installedVersion !== requestedVersion || !existsSync(axePath)) {
   process.exit(required ? 1 : 0);
 }
 
-function chromiumPath() {
-  for (const candidate of [process.env.CHROMIUM_PATH, '/usr/lib/chromium/chromium', '/usr/bin/chromium', '/usr/bin/google-chrome'].filter(Boolean)) {
-    if (existsSync(candidate)) return candidate;
-  }
-  throw new Error('Chromium není dostupné');
-}
+function chromiumPath(){return findChromiumPath();}
 async function waitJson(url) {
   for (let i = 0; i < 180; i += 1) {
     try { const response = await fetch(url); if (response.ok) return await response.json(); } catch {}

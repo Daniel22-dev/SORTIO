@@ -1,4 +1,4 @@
-# SORTIO 1.0.13 — GARP bezpečnostní kandidát
+# SORTIO 1.0.14 — GARP bezpečnostní kandidát
 
 Datum: 27. 8. 2026
 

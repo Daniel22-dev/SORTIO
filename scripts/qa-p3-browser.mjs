@@ -4,6 +4,7 @@ import { existsSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { setTimeout as sleep } from 'node:timers/promises';
+import { findChromiumPath } from './chromium-path.mjs';
 
 const root=path.resolve('.');
 const dist=path.join(root,'dist');
@@ -11,7 +12,7 @@ const consumer=JSON.parse(await readFile(path.join(root,'ghrab-platform.consumer
 const platformJs=(await readFile(path.join(dist,'ghrab','ghrab-platform.js'),'utf8')).replace("new URL('./ghrab/ghrab-platform.js', location.href)","new URL('https://example.test/app/ghrab/ghrab-platform.js')");
 const platformCss=await readFile(path.join(dist,'ghrab','ghrab-platform.css'),'utf8');
 const config={appId:consumer.appId,appVersion:consumer.appVersion,requiredPlatformRange:consumer.platform.requiredRange||'>=1.1.0 <2.0.0',supportedThemeModes:['light','dark','system'],defaultTheme:'system',autoFooter:false,accessibility:{labels:{studentName:'Jméno studenta'}}};
-function chromiumPath(){for(const p of [process.env.CHROMIUM_PATH,'/usr/lib/chromium/chromium','/usr/bin/chromium','/usr/bin/google-chrome'].filter(Boolean))if(existsSync(p))return p;throw new Error('Chromium není dostupné');}
+function chromiumPath(){return findChromiumPath();}
 async function waitJson(url){for(let i=0;i<180;i++){try{const r=await fetch(url);if(r.ok)return await r.json();}catch{}await sleep(50);}throw new Error('Chromium debug timeout');}
 class Cdp{constructor(url){this.ws=new WebSocket(url);this.seq=0;this.pending=new Map();this.ready=new Promise((res,rej)=>{this.ws.onopen=res;this.ws.onerror=rej});this.ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.id&&this.pending.has(m.id)){const p=this.pending.get(m.id);this.pending.delete(m.id);m.error?p.reject(new Error(JSON.stringify(m.error))):p.resolve(m.result)}};}async call(method,params={}){await this.ready;return new Promise((resolve,reject)=>{const id=++this.seq;this.pending.set(id,{resolve,reject});this.ws.send(JSON.stringify({id,method,params}))})}async eval(expression){const r=await this.call('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true,userGesture:true});if(r.exceptionDetails)throw new Error(r.exceptionDetails.exception?.description||r.exceptionDetails.text);return r.result?.value}close(){try{this.ws.close()}catch{}}}
 const memory=`<script>(()=>{class M{constructor(){this.m=new Map()}get length(){return this.m.size}key(i){return [...this.m.keys()][i]??null}getItem(k){return this.m.has(String(k))?this.m.get(String(k)):null}setItem(k,v){this.m.set(String(k),String(v))}removeItem(k){this.m.delete(String(k))}clear(){this.m.clear()}};Object.defineProperty(window,'localStorage',{value:new M(),configurable:true});Object.defineProperty(window,'sessionStorage',{value:new M(),configurable:true});window.matchMedia=window.matchMedia||(()=>({matches:false,addEventListener(){},removeEventListener(){}}));})();<\/script>`;

@@ -62,11 +62,22 @@ function renderActiveDataView(){
   if(App.route==='settings'){renderSettingsDataSummary();renderProductionHealth()}
   refreshAccessibilityLabels();
 }
+function bindCrossTabStorageSync(){
+  window.addEventListener('storage',event=>{
+    if(event.key!==DATA_KEY)return;
+    try{
+      App.data=loadData();
+      App.storageError={message:'Data byla aktualizována v jiné kartě.',createdAt:nowIso(),quotaExceeded:false,conflict:true};
+      document.dispatchEvent(new CustomEvent('sortio:data-changed',{detail:{event:'storage_external_change'}}));
+      toast('Data byla změněna v jiné kartě. SORTIO načetlo novější stav.','info');
+    }catch(error){captureError(error,'storage-external-sync')}
+  });
+}
 function init(){
   App.settings={...App.settings,...loadSettings()};
   App.data=loadData();
   applyTheme();applyMotion();
-  bindNavigation();bindSettings();bindClassUi();bindDrawUi();bindGroupsUi();bindRolesUi();bindSeatingUi();bindToolsUi();bindProjection();bindProductionTools();bindKeyboardShortcuts();bindRuntimeHealth();bindPwaInstall();
+  bindNavigation();bindSettings();bindClassUi();bindDrawUi();bindGroupsUi();bindRolesUi();bindSeatingUi();bindToolsUi();bindProjection();bindProductionTools();bindKeyboardShortcuts();bindRuntimeHealth();bindPwaInstall();bindCrossTabStorageSync();
   renderRoadmap();enhanceAccessibility();registerServiceWorker();
   document.addEventListener('sortio:data-changed',()=>{
     const transient=captureTransientViewState();
