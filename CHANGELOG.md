@@ -1,5 +1,11 @@
 ## 1.0.16 — uzavření LOW nálezů po druhé GARP 2.3 kontrole (2026-09-03)
 
+### CI hotfix 2026-09-03 — hostile-render Chromium target race
+
+- Opraven race condition v `scripts/garp-hostile-render.mjs`: test nyní čeká na skutečný CDP `page` target místo jednorázového čtení `/json`.
+- Přidána regrese, která hlídá, že readiness čekání zůstane zapojené.
+- Produkční `src/` se nemění; aplikační verze zůstává 1.0.16.
+
 - Opravena kolize interních ID na persistentní `loadData()` cestě bez sloučení identit.
 - Zachováno fail-closed odmítnutí kolizních importovaných záloh.
 - Behaviorální hostile-render a canary testy zapojeny do `npm test` i `qa:p5:ci`.

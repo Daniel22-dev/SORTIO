@@ -32,12 +32,29 @@ function transformHtml(source){
 }
 const html=transformHtml(appHtml);if(process.env.GARP_DUMP_HTML)fs.writeFileSync(process.env.GARP_DUMP_HTML,html);
 if(!/http-equiv=["']Content-Security-Policy/i.test(html))throw new Error('Hostile-render harness omylem odstranil CSP.');
-async function waitJson(url){for(let i=0;i<220;i++){try{const r=await fetch(url);if(r.ok)return await r.json()}catch{}await sleep(50)}throw new Error('Chromium debug timeout')}
+async function waitJson(url,accept=()=>true){
+  for(let i=0;i<220;i++){
+    try{
+      const r=await fetch(url);
+      if(r.ok){
+        const value=await r.json();
+        if(accept(value))return value;
+      }
+    }catch{}
+    await sleep(50);
+  }
+  throw new Error(`Chromium debug timeout: ${url}`);
+}
+function hasPageTarget(targets){return Array.isArray(targets)&&targets.some(t=>t?.type==='page'&&t?.webSocketDebuggerUrl)}
 class Cdp{constructor(url){this.ws=new WebSocket(url);this.seq=0;this.pending=new Map();this.ready=new Promise((res,rej)=>{this.ws.onopen=res;this.ws.onerror=rej});this.ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.id&&this.pending.has(m.id)){const p=this.pending.get(m.id);this.pending.delete(m.id);m.error?p.reject(new Error(JSON.stringify(m.error))):p.resolve(m.result)}};}async call(method,params={}){await this.ready;return new Promise((resolve,reject)=>{const id=++this.seq;this.pending.set(id,{resolve,reject});this.ws.send(JSON.stringify({id,method,params}))})}async eval(expression){const r=await this.call('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true,userGesture:true});if(r.exceptionDetails)throw new Error(r.exceptionDetails.exception?.description||r.exceptionDetails.text);return r.result?.value}close(){try{this.ws.close()}catch{}}}
 const debugPort=13700+(process.pid%400),profile=`/tmp/sortio-garp-hostile-${process.pid}`;fs.rmSync(profile,{recursive:true,force:true});
 const chrome=spawn(findChromiumPath(),['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--disable-background-networking','--disable-extensions','--no-first-run','--mute-audio','--remote-allow-origins=*',`--remote-debugging-port=${debugPort}`,`--user-data-dir=${profile}`,'about:blank'],{stdio:'ignore',detached:true});let client;
 try{
-  await waitJson(`http://127.0.0.1:${debugPort}/json/version`);const targets=await waitJson(`http://127.0.0.1:${debugPort}/json`);client=new Cdp(targets.find(t=>t.type==='page').webSocketDebuggerUrl);await client.call('Runtime.enable');await client.call('Page.enable');const tree=await client.call('Page.getFrameTree');await client.call('Page.setDocumentContent',{frameId:tree.frameTree.frame.id,html});
+  await waitJson(`http://127.0.0.1:${debugPort}/json/version`);
+  const targets=await waitJson(`http://127.0.0.1:${debugPort}/json`,hasPageTarget);
+  const pageTarget=targets.find(t=>t?.type==='page'&&t?.webSocketDebuggerUrl);
+  client=new Cdp(pageTarget.webSocketDebuggerUrl);
+  await client.call('Runtime.enable');await client.call('Page.enable');const tree=await client.call('Page.getFrameTree');await client.call('Page.setDocumentContent',{frameId:tree.frameTree.frame.id,html});
   let ready=false;for(let i=0;i<240;i++){ready=Boolean(await client.eval("document.readyState==='complete'&&document.documentElement.dataset.appReady==='true'"));if(ready)break;await sleep(50)}if(!ready){const debug=await client.eval(`(()=>({ready:document.readyState,access:document.documentElement.dataset.ghrabAccess,appReady:document.documentElement.dataset.appReady||'',errors:window.__GARP_ERRORS__||[],body:document.body?.textContent?.slice(0,300)||''}))()`);throw new Error('SORTIO se v hostile-render harnessu nespustilo: '+JSON.stringify(debug));}
   for(const route of ['classes','groups','roles','seating','tools']){await client.eval(`activateRoute(${JSON.stringify(route)},{save:false,scroll:false})`);await sleep(120);}
   const result=await client.eval(`(()=>({canary:window.__sortioXss,textCanary:window.__sortioTextXss,onerrorCount:document.querySelectorAll('[onerror]').length,onfocusCount:document.querySelectorAll('[onfocus]').length,hostileMarkupCount:[...document.querySelectorAll('body *:not(script):not(style)')].filter(el=>el.outerHTML.includes(${JSON.stringify(canary)})).length,hostileTextElementCount:document.querySelectorAll('img[data-garp-hostile-text]').length,students:document.querySelectorAll('[data-student-id]').length,stored:localStorage.getItem('sortio.data.v5')||'',errors:window.__GARP_ERRORS__||[]}))()`);

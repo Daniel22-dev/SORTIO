@@ -42,6 +42,8 @@ for(const required of ['test:garp-hostile-render','test:garp-canary']){
  expect(testScript.includes(required),`npm test nespouští ${required}`);
  expect(p5ciScript.includes(required),`qa:p5:ci nespouští ${required}`);
 }
+const hostileHarness=read('scripts/garp-hostile-render.mjs');
+expect(hostileHarness.includes('function hasPageTarget')&&hostileHarness.includes('waitJson(`http://127.0.0.1:${debugPort}/json`,hasPageTarget)'), 'hostile-render harness nečeká na vznik page CDP targetu');
 const initSource=read('src/js/99-init.js');
 expect(initSource.includes("addEventListener('storage'"),'chybí cross-tab storage listener');
 expect(initSource.includes('event.key!==DATA_KEY'),'cross-tab listener neomezuje změny na primární DATA_KEY');
@@ -83,4 +85,4 @@ for(const dirent of fs.readdirSync(path.join(root,'.github/workflows'))){
  }
 }
 if(failures.length){console.error(JSON.stringify({schema:'garp-sortio-security-regressions-v1',status:'failed',failures},null,2));process.exit(1)}
-console.log(JSON.stringify({schema:'garp-sortio-security-regressions-v1',status:'passed',version:pkg.version,checks:['fail-closed deployment','permit-before-unlock','signed config age/version','service-worker runtime configuration exclusion','all deployment profiles no AI/local provider keys','effective CSP/frame guard','cross-tab storage reload','duplicate import ID rejection','persistent ID collision repair','automated hostile-render/canary gates','GitHub Actions SHA pins']},null,2));
+console.log(JSON.stringify({schema:'garp-sortio-security-regressions-v1',status:'passed',version:pkg.version,checks:['fail-closed deployment','permit-before-unlock','signed config age/version','service-worker runtime configuration exclusion','all deployment profiles no AI/local provider keys','effective CSP/frame guard','cross-tab storage reload','duplicate import ID rejection','persistent ID collision repair','automated hostile-render/canary gates','hostile-render CDP target readiness','GitHub Actions SHA pins']},null,2));
