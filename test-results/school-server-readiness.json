@@ -1,6 +1,6 @@
 {
   "schema": "sortio-school-server-readiness-evidence-v1",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "profile": "school-server",
   "environmentId": "school-server-production",
   "authMode": "server-session",
@@ -8,6 +8,8 @@
   "allowLocalProviderKeys": false,
   "serverSessionReady": true,
   "schoolServerConnected": false,
-  "sha256": "6b413e4d059b71b368aa8e5d2289d212fb137b80b6331b22369200d10082b85f",
-  "status": "passed"
+  "consumerSha256": "989e232382fac92eb64f40d101afe2b25223d982679d4c96dbced6d306558e7b",
+  "buildCommand": "npm run build:school-server",
+  "buildStatus": "passed",
+  "status": "passed-prepared-not-connected"
 }

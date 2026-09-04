@@ -46,6 +46,7 @@ const context={
   nowIso,titleCase,normalizeText,randomInt,shuffle,
   uid:(prefix='id')=>`${prefix}-${++counter}`,
   captureError:()=>{},recordEvent:()=>{},downloadText:()=>{},confirm:()=>true,
+  suiteSessionContentWriteAllowed:()=>true,assertSuiteSessionContentWriteAllowed:()=>true,
   setTimeout,clearTimeout,
 };
 vm.createContext(context);

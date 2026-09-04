@@ -22,7 +22,6 @@ if (!staticCsp || /frame-ancestors/i.test(staticCsp)) {
 const TOKENS = {
   css: "/*==SORTIO_STYLES==*/",
   body: "<!--==SORTIO_BODY==-->",
-  js: "/*==SORTIO_JS==*/",
 };
 
 rmSync(DIST, { recursive: true, force: true });
@@ -61,7 +60,6 @@ const js = jsFiles
 let html = tpl
   .replace(TOKENS.css, () => css)
   .replace(TOKENS.body, () => body)
-  .replace(TOKENS.js, () => js)
   .replaceAll("__STATIC_CSP__", staticCsp)
   .replaceAll("__APP_VERSION__", pkg.version)
   .replaceAll("__BUILD_TIME__", new Date().toISOString());
@@ -69,6 +67,7 @@ if (Object.values(TOKENS).some((token) => html.includes(token)) || html.includes
   throw new Error("Build token zůstal ve výstupu.");
 }
 writeFileSync(join(DIST, "index.html"), html);
+writeFileSync(join(DIST, "app.js"), `${js}\n`);
 for (const name of ["index.template.html", "styles.css", "body.html"]) {
   rmSync(join(DIST, name));
 }

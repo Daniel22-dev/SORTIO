@@ -64,7 +64,9 @@ function renderActiveDataView(){
 }
 function bindCrossTabStorageSync(){
   window.addEventListener('storage',event=>{
-    if(event.key!==DATA_KEY)return;
+    const canonical=suiteCanonicalStorageKey(DATA_KEY);
+    if(event.key!==canonical&&event.key!==DATA_KEY)return;
+    if(!suiteSessionContentWriteAllowed({triggerCleanup:true}))return;
     try{
       App.data=loadData();
       App.storageError={message:'Data byla aktualizována v jiné kartě.',createdAt:nowIso(),quotaExceeded:false,conflict:true};
@@ -73,7 +75,8 @@ function bindCrossTabStorageSync(){
     }catch(error){captureError(error,'storage-external-sync')}
   });
 }
-function init(){
+async function init(){
+  if(!(await prepareSuiteSessionLifecycle())){document.documentElement.dataset.appReady='suite-session-blocked';return}
   App.settings={...App.settings,...loadSettings()};
   App.data=loadData();
   applyTheme();applyMotion();
@@ -89,8 +92,9 @@ function init(){
   activateRoute(initial,{save:false,scroll:false});
   window.scrollTo(0,0);
   document.documentElement.dataset.appReady='true';
+  App.suiteSession.hydrated=true;
   App.lastOperation='ready';
   recordEvent('app_open',{version:SORTIO_VERSION});
   console.info(`SORTIO ${SORTIO_VERSION} připraveno · ${MODULES.length} modulů`);
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{void init()},{once:true});else void init();

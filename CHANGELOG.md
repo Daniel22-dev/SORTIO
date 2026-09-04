@@ -1,3 +1,13 @@
+## 1.0.17 — GHRAB Platform 1.1.2 / suite-session kandidát (2026-09-04)
+
+- Převzata přesná referenční GHRAB Platform 1.1.2 z AI Studia 0.21.40.
+- Přidán `ghrab-suite-session-v1` lifecycle: pre-hydration replay, live cleanup, write guard, idempotence a fail-closed acknowledgement.
+- PC-01 zpřesnil vlastnictví storage; migration full backup se maže jako potenciálně osobní obsah, settings/lifecycle tombstones zůstávají.
+- Opraven skutečný cross-tab storage klíč na kanonický `ghrab.sortio.data.v5`.
+- Sledovaná tisková okna s obsahem se při ukončení suite relace zavřou.
+- Přidány automatizované suite-session testy a povinný negative control pro release wave.
+- Kandidát není produkční release; E-01, centrální F-02 a same-origin F-03 zůstávají ekosystémovou podmínkou/follow-upem.
+
 ## 1.0.16 — uzavření LOW nálezů po druhé GARP 2.3 kontrole (2026-09-03)
 
 ### CI hotfix 2026-09-03 — hostile-render Chromium target race

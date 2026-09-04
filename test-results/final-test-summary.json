@@ -1,0 +1,72 @@
+{
+  "schema": "sortio-final-test-summary-v1",
+  "version": "1.0.17",
+  "platformVersion": "1.1.2",
+  "syntheticOnly": true,
+  "passed": [
+    "npm test (full aggregate)",
+    "platform conformance 104/104",
+    "verify:structure",
+    "domain tests",
+    "package3 runtime",
+    "package4 runtime",
+    "package5 runtime",
+    "test:internal 35/35",
+    "garp-security regressions",
+    "garp-hostile-render",
+    "garp-canary",
+    "garp-suite-session 5/5",
+    "qa:quality 37/37",
+    "qa:security",
+    "qa:pwa",
+    "qa:xss sink regression",
+    "qa:browser",
+    "qa:lock",
+    "build:school-server",
+    "reporter static 52/52",
+    "build reproducibility normalized timestamp-only",
+    "secret scan"
+  ],
+  "expectedBlockedOrNotTested": [
+    {
+      "test": "qa:runtime / qa:a11y / qa:reflow",
+      "classification": "NOT TESTED",
+      "reason": "managed Chromium URLBlocklist blocks navigable test pages"
+    },
+    {
+      "test": "qa:axe",
+      "classification": "NOT TESTED",
+      "reason": "exact locked axe-core unavailable because npm DNS/install unavailable; report status not-ready-environment"
+    },
+    {
+      "test": "qa:critical",
+      "classification": "NOT TESTED",
+      "reason": "Playwright dependency unavailable after npm install timeout"
+    },
+    {
+      "test": "legacy qa:release",
+      "classification": "NOT TESTED",
+      "reason": "orchestrator requires npm ci; npm DNS unavailable"
+    },
+    {
+      "test": "P5 release certification",
+      "classification": "FAIL-as-gate",
+      "result": "39/41; missing runtime report and axe scriptsExecuted"
+    },
+    {
+      "test": "P5 acceptance",
+      "classification": "FAIL-as-gate",
+      "result": "13/15; missing runtime report and failed P5 certification"
+    },
+    {
+      "test": "reporter browser portion",
+      "classification": "NOT TESTED",
+      "reason": "managed URLBlocklist"
+    }
+  ],
+  "negativeControl": {
+    "suiteCleanupDisabled": "same suite test 0/5 PASS, 5/5 FAIL",
+    "cleanRetest": "5/5 PASS"
+  },
+  "overallCandidateGate": "AMBER"
+}

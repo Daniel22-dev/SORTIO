@@ -1,0 +1,131 @@
+{
+  "schema": "sortio-ghrab-suite-session-regressions-v1",
+  "appId": "sortio",
+  "appVersion": "1.0.17",
+  "platformVersion": "1.1.2",
+  "contract": "ghrab-suite-session-v1",
+  "syntheticOnly": true,
+  "runId": "7234c0cda0f24efc",
+  "canary": "GARP-STUDENT-CANARY-SORTIO-1.0.17-7234c0cda0f24efc",
+  "syntheticEmail": "garp.student.canary.7234c0cda0f24efc@example.invalid",
+  "execution": {
+    "browser": "system Chromium via CDP",
+    "application": "actual dist/index.html with access gate bypassed and platform/app scripts executed",
+    "storage": "Storage-compatible in-memory local/sessionStorage so the exact Platform 1.1.2 migration/alias code can run",
+    "reason": "Managed Chromium returns ERR_BLOCKED_BY_ADMINISTRATOR for HTTP, HTTPS and file navigation.",
+    "notTested": [
+      "native same-origin localStorage persistence/StorageEvent transport between navigated tabs",
+      "native Back/Forward navigation/BFCache transport",
+      "post-boot physical legacy-remnant deletion through native Storage methods"
+    ]
+  },
+  "cases": [
+    {
+      "name": "open-child-suite-end",
+      "status": "PASS",
+      "generation": "garp-open-child-1788540450186-b88b2e91",
+      "clean": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      },
+      "lifecycle": {
+        "suiteSignal": true,
+        "observed": true,
+        "completed": true,
+        "acknowledged": true,
+        "state": {
+          "schema": "sortio-suite-session-state-v1",
+          "observedGeneration": "garp-open-child-1788540450186-b88b2e91",
+          "observedAt": "2026-09-04T16:47:30.187Z",
+          "cleanupCompletedGeneration": "garp-open-child-1788540450186-b88b2e91",
+          "cleanupCompletedAt": "2026-09-04T16:47:30.188Z"
+        }
+      },
+      "settingsPreserved": true,
+      "migrationMarkerPreserved": true,
+      "signalTransport": "synthetic StorageEvent in Chromium; native same-origin navigation blocked by administrator policy"
+    },
+    {
+      "name": "delayed-open-replay",
+      "status": "PASS",
+      "generation": "garp-delayed-open-1788540450192-858c9ae5",
+      "clean": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      },
+      "lifecycle": {
+        "suiteSignal": true,
+        "observed": true,
+        "completed": true,
+        "acknowledged": true,
+        "state": {
+          "schema": "sortio-suite-session-state-v1",
+          "observedGeneration": "garp-delayed-open-1788540450192-858c9ae5",
+          "observedAt": "2026-09-04T16:47:30.265Z",
+          "cleanupCompletedGeneration": "garp-delayed-open-1788540450192-858c9ae5",
+          "cleanupCompletedAt": "2026-09-04T16:47:30.266Z"
+        }
+      },
+      "reloadDidNotRepeatCleanup": true,
+      "persistenceAcrossReload": "post-cleanup storage snapshot reinjected into a fresh Chromium document because origin navigation is policy-blocked"
+    },
+    {
+      "name": "multi-tab",
+      "status": "PASS",
+      "generation": "garp-multi-tab-1788540450704-f4a81829",
+      "staleAttempt": {
+        "threw": false,
+        "blocked": true
+      },
+      "cleanA": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      },
+      "cleanB": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      },
+      "bothTabsClosed": true,
+      "nativeSharedLocalStorageTransport": "NOT TESTED - Chromium administrator policy blocks navigable same-origin pages; exact same generation and StorageEvent delivered to two real browser contexts"
+    },
+    {
+      "name": "browser-back-forward",
+      "status": "PASS",
+      "generation": "garp-history-1788540450842-357afedd",
+      "clean": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      },
+      "lifecycleEquivalentEvents": 2,
+      "nativeBackForwardNavigation": "NOT TESTED - Chromium administrator policy blocks HTTP/file navigation; pageshow/focus stale-page guard executed in real Chromium"
+    },
+    {
+      "name": "fail-closed",
+      "status": "PASS",
+      "generation": "garp-fail-closed-1788540451141-e58818d9",
+      "failureProof": {
+        "acknowledged": false,
+        "observed": true,
+        "completed": false,
+        "primaryCanaryRemained": true
+      },
+      "retrySucceeded": true,
+      "clean": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      }
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "status": "passed"
+}

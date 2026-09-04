@@ -1,15 +1,62 @@
 {
-  "schema":"sortio-garp-environment-limitations-v1",
-  "version":"1.0.16",
-  "limitations":[
-    {"test":"qa:runtime / dedicated browser lifecycle","status":"NOT TESTED","reason":"managed Chromium policy blocks local test pages; qa:p5-runtime times out on index.html"},
-    {"test":"test:reporter browser portion","status":"NOT TESTED","reason":"managed Chromium URLBlocklist blocks local test pages; static reporter suite completed 52 PASS / 0 FAIL"},
-    {"test":"qa:axe","status":"NOT TESTED","reason":"exact axe-core 4.12.1 unavailable; npm ci did not complete in this environment; script reports not-ready-environment"},
-    {"test":"central signed-permit/revocation runtime","status":"NOT TESTED","reason":"shared app-guard/runtime is outside this application ZIP"},
-    {"test":"SIM-03 back/forward/restore dedicated drill","status":"NOT TESTED","reason":"not completed in this environment"},
-    {"test":"SIM-07 live service-worker update/recovery drill","status":"NOT TESTED","reason":"not completed in trustworthy served browser lifecycle"},
-    {"test":"RT-16 key custody/MFA/branch protection","status":"NOT TESTED","reason":"organizational/repository-host evidence not present in application ZIP"}
+  "schema": "sortio-garp-environment-limitations-v2",
+  "version": "1.0.17",
+  "status": "documented",
+  "limitations": [
+    {
+      "test": "qa:runtime / qa:a11y / qa:reflow native served-browser lifecycle",
+      "status": "NOT TESTED",
+      "reason": "Managed Chromium policy /etc/chromium/policies/managed/000_policy_merge.json contains URLBlocklist [\"*\"]; local HTTP navigation times out/ERR_BLOCKED_BY_ADMINISTRATOR."
+    },
+    {
+      "test": "native suite-session same-origin multi-tab StorageEvent transport",
+      "status": "NOT TESTED",
+      "reason": "same managed browser URLBlocklist prevents trustworthy navigated same-origin tabs; logic was exercised in Chromium with Storage-compatible in-memory storage and synthetic StorageEvent."
+    },
+    {
+      "test": "native Browser Back/Forward and BFCache transport",
+      "status": "NOT TESTED",
+      "reason": "browser navigation is administrator-blocked; pageshow/focus generation guards were exercised as browser-level lifecycle equivalents only."
+    },
+    {
+      "test": "post-boot physical legacy-remnant deletion via native Storage prototype",
+      "status": "NOT TESTED",
+      "reason": "suite harness uses Storage-compatible in-memory storage; cleanup logic and fail-closed path executed, but native-origin Storage prototype path requires navigable origin."
+    },
+    {
+      "test": "qa:axe",
+      "status": "NOT TESTED",
+      "reason": "npm DNS unavailable; npm ci timed out twice and exact locked axe-core 4.12.1 remained unavailable. qa:axe reported not-ready-environment with scanned=0."
+    },
+    {
+      "test": "qa:critical / legacy qa:release",
+      "status": "NOT TESTED",
+      "reason": "clean npm dependencies cannot be installed in this environment; Playwright module incomplete, and legacy qa:release blocks on npm ci."
+    },
+    {
+      "test": "test:reporter browser portion",
+      "status": "NOT TESTED",
+      "reason": "same Chromium URLBlocklist; static reporter suite completed 52 PASS / 0 FAIL."
+    },
+    {
+      "test": "SIM-07 live service-worker update/recovery drill",
+      "status": "NOT TESTED",
+      "reason": "requires trustworthy served browser lifecycle across release/cache update; unavailable under URLBlocklist."
+    },
+    {
+      "test": "RT-16 key custody/MFA/branch protection/push-protection attestation",
+      "status": "NOT TESTED",
+      "reason": "organizational/repository-host evidence is outside the application ZIP and was not supplied."
+    },
+    {
+      "test": "ecosystem-wide E-01/F-02 completion",
+      "status": "NOT TESTED / PENDING WAVE",
+      "reason": "this candidate covers one child only; AI Studio does not yet provide evidence that all relevant children acknowledged one coordinated suite end."
+    }
   ],
-  "browserTestsThatDidRun":["qa:browser PASS via /usr/bin/chromium","garp-hostile-render PASS via CDP Page.setDocumentContent"],
-  "status":"documented"
+  "browserEvidenceThatDidRun": [
+    "qa:browser PASS via system Chromium/CDP setDocumentContent",
+    "garp-hostile-render PASS via system Chromium/CDP",
+    "suite-session logic tests 5/5 PASS via system Chromium/CDP with in-memory Storage equivalent"
+  ]
 }

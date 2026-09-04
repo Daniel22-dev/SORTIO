@@ -20,9 +20,10 @@ function saveSettings(){
   try{storage.setItem(SETTINGS_KEY,JSON.stringify({...App.settings,lastRoute:App.route}));return true}
   catch(error){captureError(error,'save-settings');return false}
 }
-function parseDataText(text,key){if(!text)return null;try{return JSON.parse(text)}catch(error){if(key===DATA_KEY){try{safeStorage()?.setItem(CORRUPT_KEY,text)}catch(_){}}throw error}}
+function parseDataText(text,key){if(!text)return null;try{return JSON.parse(text)}catch(error){if(key===DATA_KEY&&suiteSessionContentWriteAllowed({triggerCleanup:true})){try{safeStorage()?.setItem(CORRUPT_KEY,text)}catch(_){}}throw error}}
 function acceptedDataSchema(schema){return['sortio-data-v2','sortio-data-v3','sortio-data-v4','sortio-data-v5'].includes(schema)}
 function persistDataSnapshot(data,{updateIntegrity=true,allowExternalChange=false}={}){
+  assertSuiteSessionContentWriteAllowed();
   const storage=safeStorage();
   if(!storage)return false;
   const previous=storage.getItem(DATA_KEY);
@@ -324,6 +325,7 @@ Chcete soubor přesto načíst? Tuto možnost použijte jen u vlastní důvěryh
   }
   const summary={classes:incoming.classes.length,students:incoming.classes.reduce((sum,item)=>sum+item.students.length,0)};
   if(App.settings.confirmDestructive!==false&&!confirm(`Načíst zálohu s ${summary.classes} třídami a ${summary.students} studenty? Aktuální stav bude možné obnovit tlačítkem „Vrátit stav před importem“.`))return false;
+  assertSuiteSessionContentWriteAllowed();
   const storage=safeStorage();
   if(storage&&App.data)storage.setItem(RECOVERY_KEY,JSON.stringify(App.data));
   App.data=incoming;
@@ -331,5 +333,5 @@ Chcete soubor přesto načíst? Tuto možnost použijte jen u vlastní důvěryh
   return true;
 }
 function hasRecoverySnapshot(){return!!safeStorage()?.getItem(RECOVERY_KEY)}
-function restoreRecoverySnapshot(){const storage=safeStorage();const text=storage?.getItem(RECOVERY_KEY);if(!text)throw new Error('Není uložen stav před importem.');const raw=parseDataText(text,RECOVERY_KEY);App.data=sanitizeData(raw,{repairDuplicateIdentifiers:true});saveData({event:'backup_restore_pre_import'});storage.removeItem(RECOVERY_KEY);return true}
+function restoreRecoverySnapshot(){assertSuiteSessionContentWriteAllowed();const storage=safeStorage();const text=storage?.getItem(RECOVERY_KEY);if(!text)throw new Error('Není uložen stav před importem.');const raw=parseDataText(text,RECOVERY_KEY);App.data=sanitizeData(raw,{repairDuplicateIdentifiers:true});saveData({event:'backup_restore_pre_import'});storage.removeItem(RECOVERY_KEY);return true}
 function storageHealthSnapshot(){const storage=safeStorage();let primaryValid=false,lastGoodValid=false,primaryBytes=0,lastGoodBytes=0;try{const text=storage?.getItem(DATA_KEY)||'';primaryBytes=new Blob([text]).size;primaryValid=!!text&&acceptedDataSchema(JSON.parse(text).schema)}catch(_){}try{const text=storage?.getItem(LAST_GOOD_KEY)||'';lastGoodBytes=new Blob([text]).size;lastGoodValid=!!text&&acceptedDataSchema(JSON.parse(text).schema)}catch(_){}return{available:!!storage,primaryValid,lastGoodValid,primaryBytes,lastGoodBytes,recoveryAvailable:hasRecoverySnapshot(),corruptSnapshotAvailable:!!storage?.getItem(CORRUPT_KEY),saveCount:Number(App.data?.integrity?.saveCount||0),lastSavedAt:App.data?.integrity?.lastSavedAt||null}}

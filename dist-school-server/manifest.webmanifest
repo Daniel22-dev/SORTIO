@@ -1,0 +1,41 @@
+{
+  "name": "SORTIO – Organizátor třídy",
+  "short_name": "SORTIO",
+  "id": "./",
+  "description": "Produkční organizátor třídy s chytrými skupinami, projekcí, diagnostikou a bezpečnými zálohami",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07101f",
+  "theme_color": "#07101f",
+  "lang": "cs",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "version": "1.0.17",
+  "ghrab_platform": {
+    "contract": "ghrab-platform-v1",
+    "platform_version": "1.1.2",
+    "required_range": ">=1.1.2 <2.0.0",
+    "brand_version": "1.0.0",
+    "app_id": "sortio",
+    "cache_name": "ghrab-sortio-v1.0.17",
+    "theme_contract": "ghrab-theme-v1",
+    "storage_contract": "ghrab-storage-namespace-v1",
+    "bridge_contract": "ghrab-studio-handoff-v2",
+    "artifact_contract": "ghrab-artifact-envelope-v1",
+    "accessibility_contract": "ghrab-a11y-v1",
+    "performance_contract": "ghrab-performance-v1",
+    "module_contract": "ghrab-lazy-modules-v1"
+  }
+}

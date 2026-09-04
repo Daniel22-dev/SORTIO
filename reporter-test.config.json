@@ -2,7 +2,7 @@
   "distEntry": "dist/index.html",
   "appId": "sortio",
   "appName": "SORTIO",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "reporterPath": "src/access/error-reporter.js",
   "stylePath": "src/access/error-reporter.css",
   "adapterPath": "src/access/error-reporter-adapter.js",
@@ -17,7 +17,7 @@
     "src/body.html",
     "src/manual/index.html",
     "README.md",
-    "RELEASE-NOTES-1.0.16.md"
+    "RELEASE-NOTES-1.0.17.md"
   ],
   "distCachePaths": [
     "dist/access/error-reporter.js",

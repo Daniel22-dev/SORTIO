@@ -1,13 +1,13 @@
 {
   "name": "sortio-organizator-tridy",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "private": true,
   "description": "SORTIO – produkční local-first organizátor třídy s odolným ukládáním, diagnostikou, projekcí a tiskem",
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
     "verify:structure": "node scripts/verify-structure.mjs",
-    "test": "npm run build && npm run verify:structure && npm run test:domain && npm run test:package3 && npm run test:package4 && npm run test:package5 && npm run test:garp-security && npm run test:garp-hostile-render && npm run test:garp-canary",
+    "test": "npm run build && npm run verify:structure && npm run test:domain && npm run test:package3 && npm run test:package4 && npm run test:package5 && npm run test:garp-security && npm run test:garp-hostile-render && npm run test:garp-canary && npm run test:garp-suite-session",
     "test:domain": "node scripts/domain-tests.mjs",
     "test:headless": "node scripts/headless-check.mjs",
     "qa:technical": "node scripts/qa-technical.mjs",
@@ -40,7 +40,7 @@
     "qa:p4": "npm run qa:p5",
     "qa:p4:ci": "npm run qa:p5:ci",
     "qa:p5": "npm run qa:lock && npm run build && npm run verify:platform && npm run qa:quality && npm run test:garp-security && npm run qa:browser && npm run qa:runtime && npm run qa:xss && node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs",
-    "qa:p5:ci": "npm run qa:lock && npm run build && npm run verify:platform && npm run qa:quality && npm run test:garp-security && npm run test:garp-hostile-render && npm run test:garp-canary && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe && AXE_REQUIRED=1 node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs",
+    "qa:p5:ci": "npm run qa:lock && npm run build && npm run verify:platform && npm run qa:quality && npm run test:garp-security && npm run test:garp-hostile-render && npm run test:garp-canary && npm run test:garp-suite-session && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe && AXE_REQUIRED=1 node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs",
     "test:p5": "npm run qa:p5",
     "qa:runtime": "node scripts/qa-p5-runtime.mjs",
     "qa:xss": "node scripts/qa-p5-xss-sinks.mjs",
@@ -48,7 +48,8 @@
     "pretest:reporter": "npm run build",
     "test:garp-security": "node scripts/garp-security-regressions.mjs",
     "test:garp-hostile-render": "node scripts/garp-hostile-render.mjs",
-    "test:garp-canary": "node scripts/garp-canary-sweep.mjs"
+    "test:garp-canary": "node scripts/garp-canary-sweep.mjs",
+    "test:garp-suite-session": "node scripts/garp-suite-session-regressions.mjs"
   },
   "engines": {
     "node": ">=18"

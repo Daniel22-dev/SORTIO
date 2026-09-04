@@ -1,10 +1,10 @@
 {
   "schema": "ghrab-platform-app-integration-v1",
   "appId": "sortio",
-  "appVersion": "1.0.16",
+  "appVersion": "1.0.17",
   "contract": "ghrab-platform-v1",
-  "requiredPlatformRange": ">=1.0.0 <2.0.0",
-  "platformVersion": "1.0.0",
+  "requiredPlatformRange": ">=1.1.2 <2.0.0",
+  "platformVersion": "1.1.2",
   "brandVersion": "1.0.0",
   "themeContract": "ghrab-theme-v1",
   "swContract": "ghrab-service-worker-v1",
@@ -27,7 +27,7 @@
     ]
   },
   "storagePrefix": "ghrab.sortio.",
-  "cacheName": "ghrab-sortio-v1.0.16",
+  "cacheName": "ghrab-sortio-v1.0.17",
   "capabilities": [
     "artifact-envelope-v1",
     "canonical-branding",
@@ -39,17 +39,18 @@
     "roles",
     "seating",
     "storage-namespace-v1",
+    "suite-session-lifecycle-v1",
     "sw-contract-v1",
     "theme-contract-v1"
   ],
   "artifacts": {
     "ghrab-platform.js": {
-      "sha256": "e5c1c5a77d35c4c198c123532be4e9b06cc77116c2542e7f192650358f6ff860",
-      "bytes": 40408
+      "sha256": "199d03d9dc9263a9e74ed1f1102df0324f3b63e78704f1c70aeacec5feec530c",
+      "bytes": 58204
     },
     "ghrab-platform.css": {
-      "sha256": "ccef738c8e6b954c206c9d64214c85a9ee507f3916e279becccb9c674b0ab4dc",
-      "bytes": 5180
+      "sha256": "eb465488df46f3d1672d721094800b0be3eb1278924b7699873a483f130b07ad",
+      "bytes": 5182
     },
     "ghrab-artifact-envelope-v1.schema.json": {
       "sha256": "8edeaaadd72c7bf60285440dd59eb31d0e7139755e1e4642d5ab457816e46d58",

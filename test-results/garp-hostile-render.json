@@ -1,6 +1,6 @@
 {
   "schema": "sortio-garp-hostile-render-v1",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "cspPreserved": true,
   "storageHarness": "in-memory localStorage equivalent",
   "canaryExecuted": false,

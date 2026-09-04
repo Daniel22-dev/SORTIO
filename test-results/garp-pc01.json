@@ -1,19 +1,187 @@
 {
-  "schema":"sortio-garp-pc01-v1",
-  "version":"1.0.16",
-  "status":"passed-for-fixed-findings",
-  "N-08":{
-    "protectiveMechanism":"sanitizeData(raw,{repairDuplicateIdentifiers:true}) on persistent restore paths with deterministic uniqueIdentifier allocation and reference remapping",
-    "persistentIngress":["loadData primary DATA_KEY","loadData LAST_GOOD_KEY fallback","loadData legacy-key migration","cross-tab storage listener -> loadData","restoreRecoverySnapshot"],
-    "importBoundary":"validateBackupPayload remains fail-closed via validateUniqueBackupIdentifiers(sanitizeData(payload.data))",
-    "identifierCategories":["classes","students","current groups","seats","engagement records","score teams","draw history","group history","role history"],
-    "tests":["crafted distinct raw IDs colliding after sanitization remain distinct after loadData","seat references remain mapped to their original students","all identifier categories pass validateUniqueBackupIdentifiers after persistent repair","recovery snapshot uses same repair path","import of same crafted collision remains rejected"]
+  "schema": "sortio-garp-pc01-v2",
+  "version": "1.0.17",
+  "status": "completed",
+  "syntheticOnly": true,
+  "architecture": {
+    "primaryProfile": "standalone-github-pages/local-first",
+    "schoolServerProfile": "prepared-not-connected",
+    "generativeAI": false,
+    "backendInPrimaryProfile": false
   },
-  "N-09":{
-    "protectiveMechanism":"package.json aggregates behavior tests into npm test and qa:p5:ci",
-    "paths":["npm test -> test:garp-hostile-render","npm test -> test:garp-canary","qa:p5:ci -> test:garp-hostile-render","qa:p5:ci -> test:garp-canary"],
-    "tests":["garp-security-regressions asserts all four aggregate links","npm test executes both and passes","qa:p5:ci executes both and passes them before environment-limited qa:runtime"]
+  "persistenceWriters": [
+    {
+      "writer": "saveSettings",
+      "file": "src/js/20-state-storage.js",
+      "targets": [
+        "ghrab.sortio.settings.v2"
+      ],
+      "content": "non-content settings",
+      "clearOnEndWork": false
+    },
+    {
+      "writer": "loadData corrupt quarantine",
+      "file": "src/js/20-state-storage.js",
+      "targets": [
+        "ghrab.sortio.data.v5.corrupt"
+      ],
+      "content": "potentially personal corrupt primary snapshot",
+      "clearOnEndWork": true
+    },
+    {
+      "writer": "persistDataSnapshot",
+      "file": "src/js/20-state-storage.js",
+      "targets": [
+        "ghrab.sortio.data.v5",
+        "ghrab.sortio.data.v5.last-good"
+      ],
+      "content": "class/student/work state",
+      "clearOnEndWork": true,
+      "suiteWriteGuard": true
+    },
+    {
+      "writer": "loadData legacy migration",
+      "file": "src/js/20-state-storage.js",
+      "targets": [
+        "ghrab.sortio.data.v5"
+      ],
+      "sources": [
+        "sortio.data.v4",
+        "sortio.data.v3",
+        "sortio.data.v2"
+      ],
+      "clearOnEndWork": true
+    },
+    {
+      "writer": "importBackup",
+      "file": "src/js/20-state-storage.js",
+      "targets": [
+        "ghrab.sortio.data.v5.pre-import",
+        "ghrab.sortio.data.v5"
+      ],
+      "content": "pre-import recovery plus imported work state",
+      "clearOnEndWork": true,
+      "suiteWriteGuard": true
+    },
+    {
+      "writer": "restoreRecoverySnapshot",
+      "file": "src/js/20-state-storage.js",
+      "targets": [
+        "ghrab.sortio.data.v5"
+      ],
+      "content": "restored work state",
+      "clearOnEndWork": true,
+      "suiteWriteGuard": true
+    },
+    {
+      "writer": "GHRAB Platform namespace migration",
+      "file": "vendor/ghrab-platform-1.1.2/ghrab-platform.js",
+      "targets": [
+        "ghrab.sortio.migration.p2-storage-namespace-v1.backup",
+        "ghrab.sortio.migration.p2-storage-namespace-v1.done"
+      ],
+      "content": "full migration backup may contain work/student data; done marker non-content",
+      "clearOnEndWork": {
+        "backup": true,
+        "doneMarker": false
+      }
+    },
+    {
+      "writer": "suite-session lifecycle",
+      "file": "src/js/21-suite-session.js",
+      "targets": [
+        "ghrab.sortio.suite-session-state.v1",
+        "ghrab.sortio.suite-session-seen.v1"
+      ],
+      "content": "generation/timestamps/ack only",
+      "clearOnEndWork": false
+    }
+  ],
+  "storage": {
+    "localStorage": true,
+    "sessionStorageApplicationData": false,
+    "indexedDB": false,
+    "cacheStorage": {
+      "used": true,
+      "content": "same-origin static/core/runtime GET assets only",
+      "studentContentExpected": false,
+      "clearOnEndWork": false
+    },
+    "credentialsOrApiKeys": {
+      "storedByApp": false,
+      "providerKeys": false
+    },
+    "aiPromptOrDebugStorage": {
+      "generativeAI": false,
+      "promptsStored": false,
+      "diagnosticsContainStudentContentByDefault": false
+    },
+    "studioHandoff": {
+      "contractDeclared": "ghrab-studio-handoff-v2",
+      "applicationConsumesOrCreatesPayload": false,
+      "bridgeUse": "telemetry only"
+    },
+    "autosave": {
+      "timers": false,
+      "writes": "explicit user/domain actions only"
+    },
+    "recoveryCopies": [
+      "ghrab.sortio.data.v5.last-good",
+      "ghrab.sortio.data.v5.pre-import",
+      "ghrab.sortio.data.v5.corrupt",
+      "ghrab.sortio.migration.p2-storage-namespace-v1.backup"
+    ],
+    "legacyStorage": [
+      "sortio.data.v5",
+      "sortio.data.v5.last-good",
+      "sortio.data.v5.pre-import",
+      "sortio.data.v5.corrupt",
+      "sortio.data.v4",
+      "sortio.data.v3",
+      "sortio.data.v2"
+    ],
+    "exportImport": {
+      "explicitUserAction": true,
+      "backupMayContainNames": true,
+      "downloadedFilesOutsideBrowserStorageOwnership": true,
+      "emailImportTransient": true,
+      "emailStored": false
+    },
+    "printWindows": {
+      "mayContainNames": true,
+      "trackedAndClosedOnSuiteEnd": true
+    }
   },
-  "historicalHighFixN02Retested":true,
-  "historicalImportUniquenessN07Retested":true
+  "manifestRuntimeComparison": {
+    "inputManifestIssue": "broad ghrab.sortio.* ownership was too coarse and could include lifecycle/settings state; migration full backup needed explicit content classification",
+    "correctedManifest": "src/config/data-manifest.json manifestVersion 4",
+    "result": "runtime writers and manifest ownership reconciled"
+  },
+  "suiteCleanupOwnedContent": [
+    "ghrab.sortio.data.v5",
+    "ghrab.sortio.data.v5.last-good",
+    "ghrab.sortio.data.v5.pre-import",
+    "ghrab.sortio.data.v5.corrupt",
+    "ghrab.sortio.data.v4",
+    "ghrab.sortio.data.v3",
+    "ghrab.sortio.data.v2",
+    "ghrab.sortio.migration.p2-storage-namespace-v1.backup",
+    "physical legacy equivalents"
+  ],
+  "suitePreservedNonContent": [
+    "ghrab.sortio.settings.v2",
+    "ghrab.sortio.theme.v1",
+    "ghrab.sortio.migration.p2-storage-namespace-v1.done",
+    "ghrab.sortio.suite-session-state.v1",
+    "ghrab.sortio.suite-session-seen.v1",
+    "static Cache Storage"
+  ],
+  "notFound": [
+    "application sessionStorage writer",
+    "IndexedDB writer",
+    "provider/API credential writer",
+    "AI prompt storage",
+    "automatic autosave timer",
+    "server persistence in primary profile"
+  ]
 }

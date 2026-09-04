@@ -1,0 +1,20 @@
+{
+  "schema": "ghrab-server-ready-build-v1",
+  "app": "sortio-organizator-tridy",
+  "appId": "sortio",
+  "version": "1.0.17",
+  "phase": "P3",
+  "profile": "school-server",
+  "builtAt": "2026-09-04T16:47:33.276Z",
+  "activeAuthMode": "server-session",
+  "activeAiTransport": "not-applicable",
+  "telemetryMode": "server",
+  "appBaseUrl": "/apps/sortio/",
+  "apiBaseUrl": "/api/v1/",
+  "containsSecrets": false,
+  "localProviderKeysAllowed": false,
+  "serverSessionReady": true,
+  "schoolGatewayReady": null,
+  "aiCoreVersion": null,
+  "contractVersion": null
+}

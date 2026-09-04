@@ -1,0 +1,164 @@
+{
+  "schema": "sortio-garp-2.3-targeted-gate-v1",
+  "version": "1.0.17",
+  "platformVersion": "1.1.2",
+  "syntheticOnly": true,
+  "rt": {
+    "RT-00": {
+      "status": "PASS",
+      "evidence": "PC-01/runtime-derived data map completed; manifest reconciled with actual writers."
+    },
+    "RT-01": {
+      "status": "NOT TESTED",
+      "evidence": "Child fail-closed/permit-before-unlock regression PASS, but authoritative central signed-permit cross-app runtime is outside this ZIP and native served browser is policy-blocked."
+    },
+    "RT-02": {
+      "status": "PASS",
+      "evidence": "Client content/lifecycle storage tampering cannot create app authorization; suite fail-closed storage failure path exercised."
+    },
+    "RT-03": {
+      "status": "NOT TESTED",
+      "evidence": "Central authorization token signature/audience/revocation runtime is outside child ZIP."
+    },
+    "RT-04": {
+      "status": "NOT TESTED",
+      "evidence": "Central signed-permit/LKG time manipulation not available in this child-only environment."
+    },
+    "RT-05": {
+      "status": "NOT TESTED",
+      "evidence": "PWA/static SW checks PASS; authoritative SIM-07 service-worker update/recovery drill unavailable because browser navigation is blocked."
+    },
+    "RT-06": {
+      "status": "PASS",
+      "evidence": "Unique synthetic canary sweep: expected local content/backup presence, no email persistence, no diagnostics leak, cleanup removes canary."
+    },
+    "RT-07": {
+      "status": "PASS",
+      "evidence": "Chromium hostile-render test PASS; no injected canary execution, active handler, hostile markup or unsafe persisted IDs."
+    },
+    "RT-08": {
+      "status": "PASS",
+      "evidence": "Domain malicious import/reimport checks validate schema/checksum/size/identifier sanitization and duplicate rejection."
+    },
+    "RT-09": {
+      "status": "N/A",
+      "evidence": "SORTIO has no generative-AI request path; AIR-01..AIR-12 not applicable."
+    },
+    "RT-10": {
+      "status": "PASS",
+      "evidence": "Secret scan over source/scripts/QA/vendor/dist/school-server/.github: 205 files, 0 secret-pattern matches, 0 forbidden secret files."
+    },
+    "RT-11": {
+      "status": "NOT TESTED",
+      "evidence": "Teacher/admin authorization boundary is provided by shared access layer outside child ZIP; child static fail-closed regression PASS only."
+    },
+    "RT-12": {
+      "status": "PASS",
+      "evidence": "No application postMessage authority path; only SW update message and same-origin about:blank cleanup iframe; URL/navigation paths statically constrained."
+    },
+    "RT-13": {
+      "status": "PASS",
+      "evidence": "CSP/browser-boundary static checks PASS and hostile-render runtime PASS; unsafe-inline remains a documented compatibility exception, not treated as proof of arbitrary untrusted HTML safety."
+    },
+    "RT-14": {
+      "status": "PASS",
+      "evidence": "Diagnostics canary absent; reporter static privacy/sanitization suite 52 PASS/0 FAIL. Reporter browser UI portion separately NOT TESTED due URLBlocklist."
+    },
+    "RT-15": {
+      "status": "NOT TESTED",
+      "evidence": "Domain stale-write conflict and suite write guards PASS; authoritative native same-origin multi-tab transport (SIM-04) unavailable."
+    },
+    "RT-16": {
+      "status": "NOT TESTED",
+      "evidence": "Lockfile/platform hashes/workflow pins/build reproducibility checked; SIM-07 and key-custody/MFA/branch-protection organizational evidence not available."
+    },
+    "RT-17": {
+      "status": "NOT TESTED",
+      "evidence": "Suite logic blocks stale restoration and multi-context canary in Chromium, but required native SIM-03/SIM-04 browser transport is unavailable."
+    },
+    "RT-18": {
+      "status": "PASS",
+      "evidence": "Standalone architecture truthful; school-server profile builds successfully and is marked prepared-not-connected; no client provider keys."
+    },
+    "RT-19": {
+      "status": "PASS",
+      "evidence": "AI EGRESS INSPECTION by source/runtime inventory confirms no AI/provider request path in SORTIO."
+    },
+    "RT-20": {
+      "status": "NOT TESTED",
+      "evidence": "Owned-content cleanup/fail-closed/replay logic PASS 5/5 and migration recovery is cleared; native Back/Forward/BFCache and native cross-tab storage transport remain unavailable."
+    }
+  },
+  "sim": {
+    "SIM-01": {
+      "status": "NOT TESTED",
+      "evidence": "Central cross-app authorization/token boundary outside child ZIP."
+    },
+    "SIM-02": {
+      "status": "NOT TESTED",
+      "evidence": "Central revocation/LKG propagation outside child ZIP."
+    },
+    "SIM-03": {
+      "status": "NOT TESTED",
+      "evidence": "Browser lifecycle guard logic PASS in Chromium; native Back/Forward/BFCache/session restore transport blocked by managed URLBlocklist."
+    },
+    "SIM-04": {
+      "status": "NOT TESTED",
+      "evidence": "Two-context stale-write/suite logic PASS; native shared-origin localStorage/StorageEvent collision unavailable."
+    },
+    "SIM-05": {
+      "status": "N/A",
+      "evidence": "No AI response rendering."
+    },
+    "SIM-06": {
+      "status": "N/A",
+      "evidence": "No AI request/retry path."
+    },
+    "SIM-07": {
+      "status": "NOT TESTED",
+      "evidence": "Live SW release transition/recovery requires navigable served browser lifecycle."
+    },
+    "SIM-08": {
+      "status": "PASS",
+      "evidence": "Synthetic export/import path and fresh-state reimport regression exercise sanitization, checksum, duplicate rejection and explicit content lifecycle; no real student data used."
+    }
+  },
+  "air": {
+    "status": "N/A",
+    "reason": "No generative AI/provider/model request path."
+  },
+  "findings": {
+    "E-01": {
+      "status": "OPEN-ECOSYSTEM",
+      "localChild": "migrated-candidate",
+      "note": "Do not close until all relevant child apps are migrated and jointly tested."
+    },
+    "F-02": {
+      "status": "LOCAL-MITIGATION-PASS / ECOSYSTEM-FOLLOW-UP",
+      "note": "SORTIO records observed -> cleanup completed -> explicit ack with readback. Platform/Studio still lacks authoritative all-child acknowledgement aggregation/wait."
+    },
+    "F-03": {
+      "status": "OPEN-LOW-ECOSYSTEM-DEBT",
+      "note": "Same-origin JS can access global suite tombstone and per-app ack keys; compromised same-origin child/XSS can signal suite end or spoof another known key. Requires ecosystem trust-boundary redesign for strong isolation."
+    }
+  },
+  "gates": {
+    "security": "AMBER",
+    "privacy": "AMBER",
+    "redTeam": "AMBER",
+    "releaseIntegrity": "AMBER",
+    "overall": "AMBER",
+    "productionEligibility": false,
+    "restriction": "TESTOVACÍ PROVOZ POUZE SE SYNTETICKÝMI DATY until missing native/organizational evidence and coordinated ecosystem wave are completed.",
+    "securityReason": "No confirmed HIGH/CRITICAL in the child code, but authoritative central access/token runtime and some browser-native boundaries are NOT TESTED in this environment."
+  },
+  "greenProhibitedBecause": [
+    "SIM-03 NOT TESTED",
+    "SIM-04 NOT TESTED",
+    "SIM-07 NOT TESTED",
+    "RT-16 incomplete",
+    "RT-17/RT-20 cannot be authoritative PASS without required native lifecycle simulations",
+    "independent Claude review pending",
+    "E-01 ecosystem wave incomplete"
+  ]
+}

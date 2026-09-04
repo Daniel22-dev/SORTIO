@@ -1,13 +1,34 @@
 {
-  "schema": "sortio-garp-negative-controls-v1",
-  "version": "1.0.16",
+  "schema": "sortio-garp-negative-controls-v2",
+  "version": "1.0.17",
   "syntheticOnly": true,
+  "status": "passed",
   "controls": [
-    {"finding":"N-02","severity":"HIGH (historical)","mutation":"disable unsafe identifier rewrite in disposable copy","expected":"hostile render fails","exitCode":1,"observed":{"canaryExecuted":true,"onerrorCount":20,"hostileMarkupCount":79,"unsafePersistedIdentifiers":6},"cleanCandidateRetest":"passed"},
-    {"finding":"N-07","severity":"MEDIUM (historical)","mutation":"disable duplicate-identifier validation in disposable copy","expected":"domain duplicate import regression fails","exitCode":1,"observed":"missing expected BACKUP_DUPLICATE_IDENTIFIER exception","cleanCandidateRetest":"passed"},
-    {"finding":"N-08","severity":"LOW","mutation":"disable repairDuplicateIdentifiers on loadData in disposable copy","expected":"persistent collision regression fails","exitCode":1,"observed":"two student identities collapsed to one (1 !== 2)","cleanCandidateRetest":"passed"},
-    {"finding":"N-09","severity":"LOW","mutation":"remove hostile-render and canary from npm test and qa:p5:ci in disposable copy","expected":"GARP security aggregation regression fails","exitCode":1,"observed":"four missing aggregate-gate assertions","cleanCandidateRetest":"passed"}
+    {
+      "id": "suite-session-cleanup-disabled",
+      "mutation": "Disposable copy replaced performSuiteSessionCleanup with a no-op success result; production source was not modified.",
+      "expected": "same suite-session regression must FAIL",
+      "observedExitCode": 1,
+      "observedSummary": {
+        "total": 5,
+        "passed": 0,
+        "failed": 5
+      },
+      "observedFailures": [
+        "open-child retained all owned content and canary",
+        "delayed-open replay retained canary/migration backup",
+        "multi-tab equivalent retained/restored canary",
+        "pageshow/BFCache lifecycle guard retained old canary",
+        "fail-closed expected cleanup-failed but dangerous no-op reported ended"
+      ],
+      "cleanCandidateRetest": {
+        "exitCode": 0,
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "disposableCopyRemoved": true
+    }
   ],
-  "disposableTreesRemoved": true,
-  "status": "passed"
+  "historicalNegativeControls": "Prior 1.0.16 audit controls for hostile identifier rendering/import collision/aggregation were not substituted for this migration-specific control; their fixes remain covered by current npm test regressions."
 }

@@ -7,7 +7,7 @@ const read=(p)=>fs.readFileSync(path.join(root,p),'utf8');
 const json=(p)=>JSON.parse(read(p));
 const expect=(ok,msg)=>{if(!ok)failures.push(msg)};
 const pkg=json('package.json');
-expect(pkg.version==='1.0.16','package version není 1.0.16');
+expect(pkg.version==='1.0.17','package version není 1.0.17');
 const dep=json('src/config/deployment.json');
 expect(dep.sharedAccessVersion==='access-p1-20260824175535Z-k_wtm7Zj','produkční sharedAccessVersion není synchronizována');
 expect(dep.authMode==='signed-permit','produkční authMode není signed-permit');
@@ -38,15 +38,30 @@ expect(storageSource.includes('sanitizeData(raw,{repairDuplicateIdentifiers:true
 expect(storageSource.includes('uniqueIdentifier'),'chybí deterministická deduplikace interních ID');
 const testScript=String(pkg.scripts?.test||'');
 const p5ciScript=String(pkg.scripts?.['qa:p5:ci']||'');
-for(const required of ['test:garp-hostile-render','test:garp-canary']){
+for(const required of ['test:garp-hostile-render','test:garp-canary','test:garp-suite-session']){
  expect(testScript.includes(required),`npm test nespouští ${required}`);
  expect(p5ciScript.includes(required),`qa:p5:ci nespouští ${required}`);
 }
+
+const suiteSource=read('src/js/21-suite-session.js');
+const dataManifest=json('src/config/data-manifest.json');
+const consumer=json('ghrab-platform.consumer.json');
+expect(consumer.platform?.version==='1.1.2','consumer nepoužívá GHRAB Platform 1.1.2');
+expect(consumer.platform?.requiredRange==='>=1.1.2 <2.0.0','consumer nevyžaduje minimálně Platform 1.1.2');
+expect(suiteSource.includes("session.onEnd(detail=>handleSuiteSessionEnd(detail),{replay:false})"),'suite-session handler není napojen přes Platform session.onEnd');
+expect(suiteSource.includes('session.acknowledge(generation)')&&suiteSource.includes("session.seen?.()"),'suite-session acknowledgement není explicitně ověřeno');
+expect(suiteSource.includes('cleanupCompletedGeneration')&&suiteSource.includes('observedGeneration'),'F-02 lokální observed/completed stav není rozlišitelný');
+expect(suiteSource.includes('pageshow-generation-check')&&suiteSource.includes('write-guard-generation-change'),'chybí stale/BFCache write guard');
+expect(suiteSource.includes('SUITE_MIGRATION_BACKUP_KEY'),'suite cleanup nemaže full migration recovery backup');
+const clearPatterns=dataManifest.stores.filter(store=>store.kind==='localStorage'&&store.clearOnEndWork===true).flatMap(store=>store.patterns||[]);
+for(const key of ['ghrab.sortio.data.v5','ghrab.sortio.data.v5.last-good','ghrab.sortio.data.v5.pre-import','ghrab.sortio.data.v5.corrupt','ghrab.sortio.data.v4','ghrab.sortio.data.v3','ghrab.sortio.data.v2','ghrab.sortio.migration.p2-storage-namespace-v1.backup'])expect(clearPatterns.includes(key),`data manifest nemá clearOnEndWork ownership pro ${key}`);
+for(const key of ['ghrab.sortio.settings.v2','ghrab.sortio.theme.v1','ghrab.sortio.migration.p2-storage-namespace-v1.done','ghrab.sortio.suite-session-state.v1','ghrab.sortio.suite-session-seen.v1'])expect(!clearPatterns.includes(key),`data manifest chybně maže non-content lifecycle/settings klíč ${key}`);
+
 const hostileHarness=read('scripts/garp-hostile-render.mjs');
 expect(hostileHarness.includes('function hasPageTarget')&&hostileHarness.includes('waitJson(`http://127.0.0.1:${debugPort}/json`,hasPageTarget)'), 'hostile-render harness nečeká na vznik page CDP targetu');
 const initSource=read('src/js/99-init.js');
 expect(initSource.includes("addEventListener('storage'"),'chybí cross-tab storage listener');
-expect(initSource.includes('event.key!==DATA_KEY'),'cross-tab listener neomezuje změny na primární DATA_KEY');
+expect(initSource.includes('suiteCanonicalStorageKey(DATA_KEY)'),'cross-tab listener nepoužívá fyzický kanonický DATA_KEY');
 expect(initSource.includes('App.data=loadData()'),'cross-tab listener po změně nenačítá aktuální stav');
 for(const page of ['src/index.template.html','src/manual/index.html','src/tests/index.html']){
  const text=read(page);
@@ -85,4 +100,4 @@ for(const dirent of fs.readdirSync(path.join(root,'.github/workflows'))){
  }
 }
 if(failures.length){console.error(JSON.stringify({schema:'garp-sortio-security-regressions-v1',status:'failed',failures},null,2));process.exit(1)}
-console.log(JSON.stringify({schema:'garp-sortio-security-regressions-v1',status:'passed',version:pkg.version,checks:['fail-closed deployment','permit-before-unlock','signed config age/version','service-worker runtime configuration exclusion','all deployment profiles no AI/local provider keys','effective CSP/frame guard','cross-tab storage reload','duplicate import ID rejection','persistent ID collision repair','automated hostile-render/canary gates','hostile-render CDP target readiness','GitHub Actions SHA pins']},null,2));
+console.log(JSON.stringify({schema:'garp-sortio-security-regressions-v1',status:'passed',version:pkg.version,checks:['fail-closed deployment','permit-before-unlock','signed config age/version','service-worker runtime configuration exclusion','all deployment profiles no AI/local provider keys','effective CSP/frame guard','platform 1.1.2 suite-session lifecycle','manifest ownership/clearOnEndWork','F-02 observed-completed-ack separation','stale/BFCache write guard','cross-tab storage reload','duplicate import ID rejection','persistent ID collision repair','automated hostile-render/canary gates','hostile-render CDP target readiness','GitHub Actions SHA pins']},null,2));

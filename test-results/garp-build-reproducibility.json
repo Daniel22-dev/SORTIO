@@ -1,22 +1,27 @@
 {
   "schema": "sortio-build-reproducibility-v1",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "status": "passed-with-timestamp-only-differences",
+  "fileCountA": 40,
+  "fileCountB": 40,
+  "rawMismatchCount": 2,
   "stableMismatchCount": 0,
   "rawMismatches": [
-    [
-      "platform-build-info.json",
-      "hash-diff"
-    ],
-    [
-      "studio-manifest.json",
-      "hash-diff"
-    ]
+    {
+      "file": "platform-build-info.json",
+      "a": "da5ae91df830419b384b2541243c5538688c3475f35a65e1ba315f63ecb24970",
+      "b": "75901c3e9391491ec2518be8ad655656dde97ecb888e1a224cf546c423323850"
+    },
+    {
+      "file": "studio-manifest.json",
+      "a": "b7deb56a5224db220ba6fe7e6aefea492d5839a900fb3a6bb33d2fbe5ded4b72",
+      "b": "845472baae70fd5caa33ce188c61a8db75163f7734ff5ec49b930768d4440448"
+    }
   ],
   "stableMismatches": [],
   "timestampOnlyFiles": [
-    "dist/platform-build-info.json: builtAt",
-    "dist/studio-manifest.json: publishedAt"
+    "platform-build-info.json",
+    "studio-manifest.json"
   ],
-  "method": "fresh copy without dist/node_modules/test-results, npm run build, SHA-256 compare of all dist files; timestamp carrier JSON normalized"
+  "method": "two fresh source copies excluding dist/dist-school-server/node_modules/test-results/qa-results; npm run build; SHA-256 compare; JSON builtAt/publishedAt/generatedAt normalized only for determinism check"
 }
