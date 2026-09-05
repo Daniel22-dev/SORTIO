@@ -1,7 +1,7 @@
 {
   "schema": "ghrab-platform-app-integration-v1",
   "appId": "sortio",
-  "appVersion": "1.1.0",
+  "appVersion": "1.1.3",
   "contract": "ghrab-platform-v1",
   "requiredPlatformRange": ">=1.1.2 <2.0.0",
   "platformVersion": "1.1.2",
@@ -27,7 +27,7 @@
     ]
   },
   "storagePrefix": "ghrab.sortio.",
-  "cacheName": "ghrab-sortio-v1.1.0",
+  "cacheName": "ghrab-sortio-v1.1.3",
   "capabilities": [
     "artifact-envelope-v1",
     "canonical-branding",

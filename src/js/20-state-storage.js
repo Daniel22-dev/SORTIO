@@ -14,7 +14,7 @@ function defaultSeatingPlan(){return{template:'rows',rows:4,columns:6,seats:[],u
 function defaultToolState(){return{scores:[],decisionOptions:[],updatedAt:null}}
 function defaultLessonBoardState(){
   const sceneId='scene-default';
-  return{activeSceneId:sceneId,scenes:[{id:sceneId,name:'Moje hodina',background:{type:'gradient',value:'midnight'},widgets:[]}],updatedAt:null};
+  return{activeSceneId:sceneId,scenes:[{id:sceneId,classId:'',name:'Obecná pracovní plocha',background:{type:'gradient',value:'midnight'},widgets:[]}],updatedAt:null};
 }
 function defaultData(){return{schema:'sortio-data-v5',version:5,selectedClassId:null,classes:[],aliases:{},lessonBoard:defaultLessonBoardState(),createdAt:nowIso(),updatedAt:nowIso(),integrity:{saveCount:0,lastSavedAt:null}}}
 function loadSettings(){const storage=safeStorage();if(!storage)return{...App.settings};try{const saved=JSON.parse(storage.getItem(SETTINGS_KEY)||'{}');return{theme:['dark','light','system'].includes(saved.theme)?saved.theme:'dark',motion:saved.motion!==false,confirmDestructive:saved.confirmDestructive!==false,lastRoute:String(saved.lastRoute||'overview')}}catch(_){return{...App.settings}}}
@@ -249,7 +249,7 @@ function sanitizeLessonScene(value){
   if(!value||typeof value!=='object')return null;
   const id=sanitizeIdentifier(value.id,'scene');
   const widgets=Array.isArray(value.widgets)?value.widgets.slice(0,30).map(sanitizeLessonWidget).filter(Boolean):[];
-  return{id,name:String(value.name||'Scéna').slice(0,80),background:sanitizeLessonBackground(value.background),widgets};
+  const rawClassId=String(value.classId||'');const classId=rawClassId==='__general__'?'__general__':rawClassId?sanitizeIdentifier(rawClassId,'class'):'';return{id,classId,name:String(value.name||'Pracovní plocha').slice(0,80),background:sanitizeLessonBackground(value.background),widgets};
 }
 function sanitizeLessonBackground(value){
   const source=value&&typeof value==='object'?value:{};
@@ -272,17 +272,17 @@ function sanitizeLessonWidget(value){
   if(!['timer','visual-timer','stopwatch','clock','traffic','draw','dice','score','text','work','image','event','agenda','poll','qr'].includes(type))return null;
   const pos=n=>Math.max(0,Math.min(100,Number(n)||0));
   const size=(n,min)=>Math.max(min,Math.min(100,Number(n)||min));
-  return{id:sanitizeIdentifier(value.id,'widget'),type,x:pos(value.x),y:pos(value.y),w:size(value.w,12),h:size(value.h,14),locked:!!value.locked,title:String(value.title||'').slice(0,80),data:sanitizeLessonWidgetData(type,value.data)};
+  const scale=Math.max(.65,Math.min(2.2,Number(value.scale)||1));return{id:sanitizeIdentifier(value.id,'widget'),type,x:pos(value.x),y:pos(value.y),w:size(value.w,12),h:size(value.h,14),scale,locked:!!value.locked,title:String(value.title||'').slice(0,80),data:sanitizeLessonWidgetData(type,value.data)};
 }
 function sanitizeLessonWidgetData(type,value){
   const d=value&&typeof value==='object'?value:{};
   const safeSeconds=(v,max=24*3600)=>Math.max(0,Math.min(max,Math.floor(Number(v)||0)));
-  if(type==='timer'||type==='visual-timer')return{duration:safeSeconds(d.duration||300),remaining:safeSeconds(d.remaining??d.duration??300),running:!!d.running,endsAt:Number.isFinite(Number(d.endsAt))?Number(d.endsAt):null,sound:['bell','chime','soft','none'].includes(d.sound)?d.sound:'bell',showNumbers:d.showNumbers!==false};
+  if(type==='timer'||type==='visual-timer')return{duration:safeSeconds(d.duration||300),remaining:safeSeconds(d.remaining??d.duration??300),running:!!d.running,endsAt:Number.isFinite(Number(d.endsAt))?Number(d.endsAt):null,sound:['bell','piano','guitar','xylophone','trumpet','drum','none'].includes(d.sound)?d.sound:'bell',showNumbers:d.showNumbers!==false};
   if(type==='stopwatch')return{elapsed:safeSeconds(d.elapsed,7*24*3600),running:!!d.running,startedAt:Number.isFinite(Number(d.startedAt))?Number(d.startedAt):null,laps:Array.isArray(d.laps)?d.laps.slice(0,30).map(v=>safeSeconds(v,7*24*3600)):[]};
-  if(type==='clock')return{style:['digital','analog','both'].includes(d.style)?d.style:'both',showSeconds:d.showSeconds!==false,alarmTime:/^([01]\d|2[0-3]):[0-5]\d$/.test(String(d.alarmTime||''))?String(d.alarmTime):'',alarmSound:['bell','chime','soft','none'].includes(d.alarmSound)?d.alarmSound:'chime',alarmFiredDate:String(d.alarmFiredDate||'').slice(0,20)};
-  if(type==='traffic')return{active:['red','amber','green'].includes(d.active)?d.active:'green',labels:{red:String(d.labels?.red||'Ticho').slice(0,40),amber:String(d.labels?.amber||'Šeptem').slice(0,40),green:String(d.labels?.green||'Diskuse').slice(0,40)}};
+  if(type==='clock')return{style:['digital','analog','both'].includes(d.style)?d.style:'both',showSeconds:d.showSeconds!==false};
+  if(type==='traffic')return{active:['red','amber','green'].includes(d.active)?d.active:''};
   if(type==='draw')return{tool:['pen','line','rect','ellipse','eraser'].includes(d.tool)?d.tool:'pen',color:/^#[0-9a-f]{6}$/i.test(String(d.color||''))?String(d.color):'#ffffff',width:Math.max(1,Math.min(16,Number(d.width)||4)),paper:['blank','lines','grid'].includes(d.paper)?d.paper:'blank',strokes:Array.isArray(d.strokes)?d.strokes.slice(-120).map(sanitizeLessonStroke).filter(Boolean):[]};
-  if(type==='dice')return{count:Math.max(1,Math.min(3,Number(d.count)||1)),sides:[6,12,20].includes(Number(d.sides))?Number(d.sides):6,last:Array.isArray(d.last)?d.last.slice(0,3).map(v=>String(v??'').slice(0,80)).filter(Boolean):[],mode:['dice','coin','number','letters','custom'].includes(d.mode)?d.mode:'dice',min:Math.max(-999,Math.min(999,Number(d.min)||1)),max:Math.max(-999,Math.min(999,Number(d.max)||100)),custom:Array.isArray(d.custom)?d.custom.slice(0,30).map(v=>String(v).slice(0,80)).filter(Boolean):[]};
+  if(type==='dice')return{count:Math.max(1,Math.min(3,Number(d.count)||1)),sides:[6,12,20].includes(Number(d.sides))?Number(d.sides):6,last:Array.isArray(d.last)?d.last.slice(0,3).map(v=>String(v??'').slice(0,80)).filter(Boolean):[],mode:['dice','d12','d20','coin','number','letters','color','math','custom'].includes(d.mode)?d.mode:'dice',min:Math.max(-999,Math.min(999,Number(d.min)||1)),max:Math.max(-999,Math.min(999,Number(d.max)||100)),custom:Array.isArray(d.custom)?d.custom.slice(0,30).map(v=>String(v).slice(0,80)).filter(Boolean):[]};
   if(type==='score')return{mode:['points','duel','race'].includes(d.mode)?d.mode:'points',goal:Math.max(1,Math.min(999,Number(d.goal)||10)),teams:Array.isArray(d.teams)?d.teams.slice(0,12).map((team,index)=>({id:sanitizeIdentifier(team?.id,'board-team'),name:String(team?.name||`Tým ${index+1}`).slice(0,80),score:Math.max(-999,Math.min(9999,Number(team?.score)||0))})):[]};
   if(type==='text')return{text:String(d.text||'Napište instrukci…').slice(0,2000),size:Math.max(14,Math.min(72,Number(d.size)||28)),align:['left','center','right'].includes(d.align)?d.align:'center'};
   if(type==='work')return{mode:['silent','whisper','pair','group','discussion'].includes(d.mode)?d.mode:'silent'};

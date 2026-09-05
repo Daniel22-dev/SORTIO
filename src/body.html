@@ -7,11 +7,11 @@
     </a>
     <div class="release-pill"><span></span> SORTIO __APP_VERSION__ · výukový panel</div>
     <div class="top-actions">
-      <a class="icon-button studio-link" href="/AI-Studio-GHRAB/" data-ghrab-studio-link title="Zpět do AI Studia"><span>✦</span><b>Studio</b></a>
-      <button class="icon-button" id="motionToggle" type="button" title="Pohybové efekty"><span>◎</span><b>Pohyb</b></button>
-      <button class="icon-button" id="themeToggle" type="button" title="Světlý nebo tmavý režim"><span>◐</span><b>Motiv</b></button>
-      <button class="icon-button projection-launch" id="projectionBtn" type="button" title="Bezpečný projekční režim"><span>▣</span><b>Projekce</b></button>
-      <button class="icon-button" id="keyboardHelpBtn" type="button" title="Klávesové zkratky" aria-controls="keyboardDialog"><span>?</span><b>Zkratky</b></button><button class="icon-button" id="fullscreenBtn" type="button" title="Celá obrazovka"><span>⛶</span><b>Celá obrazovka</b></button>
+      <button class="icon-button" id="motionToggle" type="button" title="Zapnout nebo vypnout pohybové efekty a animace"><span>◎</span><b>Pohyb</b></button>
+      <button class="icon-button" id="themeToggle" type="button" title="Přepnout tmavý, světlý nebo systémový motiv"><span>◐</span><b>Motiv</b></button>
+      <button class="icon-button projection-launch" id="projectionBtn" type="button" title="Čistá projekce pro plátno bez pracovního ovládání"><span>▣</span><b>Projekce</b></button>
+      <a class="icon-button" id="manualBtn" href="./manual/" target="_blank" rel="noopener" title="Otevřít interaktivní manuál SORTIO v nové kartě"><span>▤</span><b>Manuál</b></a>
+      <button class="icon-button" id="keyboardHelpBtn" type="button" title="Přehled klávesových zkratek" aria-controls="keyboardDialog"><span>?</span><b>Zkratky</b></button><button class="icon-button" id="fullscreenBtn" type="button" title="Celá obrazovka celé aplikace"><span>⛶</span><b>Celá obrazovka</b></button>
     </div>
   </header>
 
@@ -108,7 +108,7 @@
 
 
     <section class="view" data-view="tools" id="tools">
-      <div class="page-title"><div><span>VÝUKOVÝ PANEL</span><h1>Hodina pod kontrolou</h1><p>Poskládejte si projekční plochu z časovačů, hodin, semaforu, tabule, kostek, skóre, obrázků, agendy a hlasování. Scény lze připravit pro různé fáze hodiny.</p></div><div class="page-badge accent">SORTIO __APP_VERSION__</div></div>
+      <div class="page-title"><div><span>VÝUKOVÝ PANEL</span><h1>Hodina pod kontrolou</h1><p>Každá aktivní třída má vlastní projekční plochu s časovači, hodinami, semaforem, tabulí, kostkami, skóre, obrázky, agendou a hlasováním.</p></div><div class="page-badge accent">SORTIO __APP_VERSION__</div></div>
       <div id="toolsWorkspace"></div>
     </section>
 
@@ -142,12 +142,12 @@
     <section class="view" data-view="about" id="about">
       <div class="page-title"><div><span>IDENTITA A VLASTNICTVÍ</span><h1>O aplikaci</h1><p>Školní aplikace pro rychlou organizaci živé výuky, vyvíjená modulárně jako součást AI Studia GHRAB.</p></div><div class="page-badge accent">v__APP_VERSION__</div></div>
       <div class="about-layout">
-        <article class="about-brand glass-panel"><img src="./assets/sortio-mark.svg" alt="Značka SORTIO"><span>SORTIO</span><h2>Výukový panel</h2><p>Organizace třídy a živé výuky: import, losování, skupiny, role, zasedací pořádek, scény hodiny, projekční widgety, obrázky a hlasování.</p></article>
+        <article class="about-brand glass-panel"><img src="./assets/sortio-mark.svg" alt="Značka SORTIO"><span>SORTIO</span><h2>Výukový panel</h2><p>Organizace třídy a živé výuky: import, losování, skupiny, role, zasedací pořádek, třídní pracovní plocha, projekční widgety, obrázky a hlasování.</p></article>
         <div class="about-details">
           <article><span>AUTOR A VÝVOJOVÝ GARANT</span><h3>Daniel Baláž</h3><p>Koncepce, návrh funkcí, metodické vedení a vývoj aplikace.</p></article>
           <article><span>ŠKOLNÍ PROJEKT</span><h3>Gymnázium, Ostrava-Hrabůvka</h3><p>Aplikace je připravována pro interní školní využití v rámci AI Studia GHRAB.</p></article>
           <article><span>OCHRANA DAT</span><h3>Local-first architektura</h3><p>Jména a historie zůstávají v konkrétním prohlížeči. Importované e-mailové adresy se po vytvoření náhledu neukládají. Při hledání obrázků odchází do Wikimedia Commons pouze hledaný výraz, nikdy data třídy.</p></article>
-          <article><span>TECHNICKÝ STAV</span><h3>__APP_VERSION__ · Výukový panel</h3><p>Widgetová pracovní plocha, scény, rozšířené projekční nástroje, knihovna Wikimedia Commons a připravené anonymní QR hlasování pro školní server.</p></article>
+          <article><span>TECHNICKÝ STAV</span><h3>__APP_VERSION__ · Výukový panel</h3><p>Pracovní plocha navázaná na aktivní třídu, škálovatelný obsah widgetů, rozšířené projekční nástroje, knihovna Wikimedia Commons a připravené anonymní QR hlasování pro školní server.</p></article>
         </div>
       </div>
       <article class="privacy-card"><span>PRAVIDLO PRO TESTOVÁNÍ</span><h3>Do veřejného repozitáře ani screenshotů nevkládat skutečné seznamy studentů.</h3><p>Pro vývojové testy jsou v balíčku použity pouze smyšlené adresy a jména. Při sdílení diagnostiky se osobní údaje automaticky nevypisují.</p></article>
@@ -203,7 +203,7 @@
 <dialog id="keyboardDialog" class="sortio-dialog keyboard-dialog">
   <div class="dialog-content">
     <header><div><span>RYCHLÉ OVLÁDÁNÍ</span><h2>Klávesové zkratky</h2></div><button type="button" data-action="close-dialog" aria-label="Zavřít">×</button></header>
-    <div class="shortcut-grid"><span><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>1–9</kbd><b>Přepnutí hlavních modulů</b></span><span><kbd>Alt</kbd> + <kbd>I</kbd><b>Import z IS</b></span><span><kbd>Alt</kbd> + <kbd>P</kbd><b>Bezpečná projekce</b></span><span><kbd>?</kbd><b>Tato nápověda</b></span><span><kbd>Esc</kbd><b>Zavření dialogu nebo projekce</b></span></div>
+    <div class="shortcut-grid"><span><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>1–9</kbd><b>Přepnutí hlavních modulů</b></span><span><kbd>Alt</kbd> + <kbd>I</kbd><b>Import z IS</b></span><span><kbd>Alt</kbd> + <kbd>P</kbd><b>Bezpečná projekce</b></span><span><kbd>?</kbd><b>Tato nápověda</b></span><span><kbd>Esc</kbd><b>Zavření dialogu nebo projekce</b></span></div><div class="shortcut-section-label">HORNÍ LIŠTA</div><div class="shortcut-grid top-control-grid"><span><kbd>Pohyb</kbd><b>Zapne / vypne animace a pohybové efekty</b></span><span><kbd>Motiv</kbd><b>Přepíná tmavý, světlý a systémový vzhled</b></span><span><kbd>Projekce</kbd><b>Čisté zobrazení pro plátno bez pracovního ovládání</b></span><span><kbd>Manuál</kbd><b>Otevře interaktivní manuál SORTIO v nové kartě</b></span><span><kbd>Celá obrazovka</kbd><b>Fullscreen celé aplikace; v Panelu je navíc Celá plocha</b></span></div>
     <footer><button type="button" class="primary-button" data-action="close-dialog">Rozumím</button></footer>
   </div>
 </dialog>

@@ -1,4 +1,4 @@
-# Architektura SORTIO 1.1.0
+# Architektura SORTIO 1.1.3
 
 SORTIO je modulární local-first PWA. Od verze 1.1 spojuje dvě rovnocenné části: **organizaci třídy** a **Výukový panel pro živou hodinu**. Uživatelské rozhraní, doménové algoritmy, datová vrstva, widgetová plocha, projekce, tisk a diagnostika zůstávají oddělené a testovatelné.
 
@@ -11,7 +11,7 @@ SORTIO je modulární local-first PWA. Od verze 1.1 spojuje dvě rovnocenné č�
 5. chytré skupiny a závazná pravidla;
 6. role, témata a zasedací pořádek;
 7. historie zapojování a spravedlivý výběr;
-8. widgetový Výukový panel a scény hodiny;
+8. widgetový Výukový panel s pracovní plochou navázanou na aktivní třídu;
 9. knihovna Wikimedia Commons bez uživatelského uploadu;
 10. anonymní live-poll frontend + serverový API kontrakt;
 11. bezpečná projekční vrstva;
@@ -21,9 +21,9 @@ SORTIO je modulární local-first PWA. Od verze 1.1 spojuje dvě rovnocenné č�
 
 ## Výukový panel
 
-Stav panelu je součástí hlavního datového modelu `lessonBoard`. Panel obsahuje více scén a každá scéna má pozadí a pole widgetů. Widget ukládá typ, pozici, rozměr, zámek, titulek a typově specifická data. Díky tomu může být jeden obecný layout engine použit pro timer, tabuli, obrázek, hlasování i další nástroje.
+Stav panelu je součástí hlavního datového modelu `lessonBoard`. Uživatelsky platí jednoduché pravidlo: **jedna aktivní třída = jedna pracovní plocha**. Interní pole `scenes` zůstává zachováno pouze kvůli kompatibilitě datového schématu; položky jsou nyní svázány přes `classId` a nejsou uživateli prezentovány jako samostatné scény. Při přepnutí aktivní třídy se automaticky přepne i její uložená plocha. Bez vybrané třídy existuje obecná pracovní plocha.
 
-Panel funguje i bez vybrané třídy. Pouze funkce, které skutečně potřebují třídní data (například načtení aktuálních skupin do scoreboardu), se vážou na zvolenou třídu.
+Widget ukládá typ, pozici, rozměr, zámek, titulek, samostatné měřítko vnitřního obsahu a typově specifická data. Rozměr karty a měřítko jejího obsahu jsou záměrně oddělené, aby bylo možné například ponechat velký Timer a současně zvětšit samotné číslice.
 
 ## Knihovna obrázků
 
@@ -66,7 +66,7 @@ Rozšíření 1.1 zvyšuje velikost klientského balíku. Kontrolované rozpočt
 ## Klíčové moduly
 
 - `20-state-storage.js` – datový trezor v5 a sanitizace Výukového panelu;
-- `87-lesson-board.js` – scény, widget engine a nástroje živé hodiny;
+- `87-lesson-board.js` – třídní pracovní plocha, widget engine a nástroje živé hodiny;
 - `88-media-library.js` – Wikimedia Commons knihovna;
 - `89-live-poll.js` – učitelská část anonymního QR hlasování;
 - `poll/poll.js` – veřejná hlasovací stránka pro telefon studenta;

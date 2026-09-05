@@ -2,7 +2,7 @@
   "name": "SORTIO – Výukový panel",
   "short_name": "SORTIO",
   "id": "./",
-  "description": "Výukový panel pro organizaci třídy a živou výuku se scénami, projekčními widgety, obrázky a hlasováním.",
+  "description": "Výukový panel pro organizaci třídy a živou výuku s pracovní plochou aktivní třídy, projekčními widgety, obrázky a hlasováním.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -22,14 +22,14 @@
       "purpose": "any maskable"
     }
   ],
-  "version": "1.1.0",
+  "version": "1.1.3",
   "ghrab_platform": {
     "contract": "ghrab-platform-v1",
     "platform_version": "1.1.2",
     "required_range": ">=1.1.2 <2.0.0",
     "brand_version": "1.0.0",
     "app_id": "sortio",
-    "cache_name": "ghrab-sortio-v1.1.0",
+    "cache_name": "ghrab-sortio-v1.1.3",
     "theme_contract": "ghrab-theme-v1",
     "storage_contract": "ghrab-storage-namespace-v1",
     "bridge_contract": "ghrab-studio-handoff-v2",

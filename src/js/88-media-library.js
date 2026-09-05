@@ -1,97 +1,23 @@
 const MEDIA_LIBRARY_CATEGORIES=Object.freeze([
   ['Příroda','nature landscape'],['Zvířata','animals wildlife'],['Vesmír','space astronomy'],['Geografie','world geography landscape'],
-  ['Historie','history historical'],['Umění','art painting'],['Architektura','architecture building'],['Věda','science laboratory'],
-  ['Roční období','season landscape'],['Škola','school education'],['Jídlo','food cuisine'],['Sport','sport athletics'],
+  ['Historie','history historical photograph'],['Umění','famous art painting'],['Architektura','architecture building'],['Věda','science laboratory'],
+  ['Roční období','seasons landscape'],['Škola','school education classroom'],['Jídlo','food cuisine'],['Sport','sport athletics'],
+  ['Města','city skyline'],['Česká republika','Czech Republic landscape'],['Evropa','Europe landmarks'],['Mapy','world map'],
+  ['Technologie','technology computer'],['Hudba','musical instruments'],['Doprava','transport vehicles'],['Textury','abstract texture background'],
 ]);
 let mediaLibraryRequestId=0;
 
 function mediaLibraryDialog(){return $('#mediaLibraryDialog')}
-function mediaLibraryPlainText(value){
-  const text=String(value||'');
-  if(!text.includes('<'))return text.replace(/\s+/g,' ').trim();
-  try{return(new DOMParser().parseFromString(text,'text/html').body.textContent||'').replace(/\s+/g,' ').trim()}catch(_){return text.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim()}
-}
-function mediaLibrarySafeImage(page){
-  const info=page?.imageinfo?.[0]||{};
-  const url=sanitizeLessonImageUrl(info.thumburl||info.url);
-  if(!url)return null;
-  const meta=info.extmetadata||{};
-  return{
-    id:String(page.pageid||page.title||url),
-    url,
-    sourcePage:sanitizeLessonSourceUrl(page.fullurl||`https://commons.wikimedia.org/wiki/${encodeURIComponent(String(page.title||'').replace(/ /g,'_'))}`),
-    sourceLabel:String(page.title||'Wikimedia Commons').replace(/^File:/i,'').slice(0,160),
-    license:mediaLibraryPlainText(meta.LicenseShortName?.value||meta.UsageTerms?.value||'Wikimedia Commons').slice(0,80),
-    author:mediaLibraryPlainText(meta.Artist?.value||meta.Credit?.value||'').slice(0,120),
-  };
-}
-function mediaLibraryButton(label,datasetKey,datasetValue,className=''){
-  const button=document.createElement('button');button.type='button';button.textContent=label;if(className)button.className=className;button.dataset[datasetKey]=datasetValue;return button;
-}
-function mediaLibraryRenderCategories(){
-  const root=$('#mediaLibraryCategories');if(!root)return;root.replaceChildren();
-  for(const[label,query]of MEDIA_LIBRARY_CATEGORIES)root.append(mediaLibraryButton(label,'mediaQuery',query));
-}
-function mediaLibraryRenderPresets(){
-  const root=$('#mediaLibraryPresets');if(!root)return;root.replaceChildren();
-  for(const bg of LESSON_BACKGROUND_PRESETS){const button=mediaLibraryButton('','mediaPreset',`${bg.type}:${bg.value}`,`media-preset board-bg-${bg.type}-${bg.value}`);button.title=bg.name;const span=document.createElement('span');span.textContent=bg.name;button.append(span);root.append(button)}
-}
-function mediaLibraryRenderStatus(text,{error=false}={}){
-  const root=$('#mediaLibraryResults');if(!root)return;const status=document.createElement('div');status.className=`media-library-status${error?' error':''}`;status.textContent=String(text||'');root.replaceChildren(status);
-}
-function mediaLibraryRenderResults(items){
-  const root=$('#mediaLibraryResults');if(!root)return;App.ui.mediaLibraryResults=items;
-  if(!items.length){mediaLibraryRenderStatus('Pro tento výraz jsem nenašel vhodné obrázky. Zkuste jiné slovo.');return}
-  const fragment=document.createDocumentFragment();
-  items.forEach((item,index)=>{const button=mediaLibraryButton('','mediaResult',String(index),'media-card');const image=document.createElement('img');image.src=item.url;image.alt=item.sourceLabel;image.loading='lazy';image.referrerPolicy='no-referrer';const text=document.createElement('span'),title=document.createElement('b'),meta=document.createElement('small');title.textContent=item.sourceLabel;meta.textContent=[item.author,item.license].filter(Boolean).join(' · ');text.append(title,meta);button.append(image,text);fragment.append(button)});
-  root.replaceChildren(fragment);
-}
-async function mediaLibrarySearch(query){
-  const clean=String(query||'').trim().slice(0,120);if(!clean)return;
-  const requestId=++mediaLibraryRequestId;App.ui.mediaLibraryBusy=true;mediaLibraryRenderStatus('Načítám obrázky z Wikimedia Commons…');
-  try{
-    const params=new URLSearchParams({action:'query',format:'json',formatversion:'2',generator:'search',gsrsearch:`${clean} filetype:bitmap`,gsrnamespace:'6',gsrlimit:'30',prop:'imageinfo|info',iiprop:'url|extmetadata',iiurlwidth:'1280',inprop:'url',origin:'*'});
-    const response=await fetch(`https://commons.wikimedia.org/w/api.php?${params.toString()}`,{method:'GET',credentials:'omit',referrerPolicy:'no-referrer',headers:{Accept:'application/json'}});
-    if(!response.ok)throw new Error(`Commons ${response.status}`);
-    const json=await response.json();if(requestId!==mediaLibraryRequestId)return;
-    const items=(json?.query?.pages||[]).map(mediaLibrarySafeImage).filter(Boolean).slice(0,30);
-    mediaLibraryRenderResults(items);
-  }catch(error){
-    if(requestId!==mediaLibraryRequestId)return;
-    captureError(error,'media-library');
-    mediaLibraryRenderStatus(navigator.onLine===false?'Knihovna obrázků vyžaduje připojení k internetu.':'Knihovnu Wikimedia Commons se nepodařilo načíst. Zkuste hledání zopakovat.',{error:true});
-  }finally{if(requestId===mediaLibraryRequestId)App.ui.mediaLibraryBusy=false}
-}
-function openMediaLibrary(target='background',widgetId=''){
-  const dialog=mediaLibraryDialog();if(!dialog){toast('Knihovna obrázků není dostupná.','error');return}
-  App.ui.mediaLibraryTarget={kind:target,widgetId:String(widgetId||'')};
-  mediaLibraryRenderCategories();mediaLibraryRenderPresets();
-  const presets=$('#mediaLibraryPresetSection');if(presets)presets.hidden=target!=='background';
-  const title=$('#mediaLibraryTitle');if(title)title.textContent=target==='background'?'Knihovna pozadí':'Knihovna obrázků';
-  const input=$('#mediaLibrarySearch');if(input&&!input.value)input.value='nature landscape';
-  if(!dialog.open)dialog.showModal();
-  requestAnimationFrame(()=>input?.focus());
-  void mediaLibrarySearch(input?.value||'nature landscape');
-}
+function mediaLibraryPlainText(value){const text=String(value||'');if(!text.includes('<'))return text.replace(/\s+/g,' ').trim();try{return(new DOMParser().parseFromString(text,'text/html').body.textContent||'').replace(/\s+/g,' ').trim()}catch(_){return text.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim()}}
+function mediaLibrarySafeImage(page){const info=page?.imageinfo?.[0]||{},url=sanitizeLessonImageUrl(info.thumburl||info.url);if(!url)return null;const meta=info.extmetadata||{};return{id:String(page.pageid||page.title||url),url,sourcePage:sanitizeLessonSourceUrl(page.fullurl||`https://commons.wikimedia.org/wiki/${encodeURIComponent(String(page.title||'').replace(/ /g,'_'))}`),sourceLabel:String(page.title||'Wikimedia Commons').replace(/^File:/i,'').slice(0,160),license:mediaLibraryPlainText(meta.LicenseShortName?.value||meta.UsageTerms?.value||'Wikimedia Commons').slice(0,80),author:mediaLibraryPlainText(meta.Artist?.value||meta.Credit?.value||'').slice(0,120)} }
+function mediaLibraryButton(label,datasetKey,datasetValue,className=''){const button=document.createElement('button');button.type='button';button.textContent=label;if(className)button.className=className;button.dataset[datasetKey]=datasetValue;return button}
+function mediaLibraryRenderCategories(){const root=$('#mediaLibraryCategories');if(!root)return;root.replaceChildren();for(const[label,query]of MEDIA_LIBRARY_CATEGORIES)root.append(mediaLibraryButton(label,'mediaQuery',query))}
+function mediaLibraryRenderPresets(){const root=$('#mediaLibraryPresets');if(!root)return;root.replaceChildren();for(const bg of LESSON_BACKGROUND_PRESETS){const button=mediaLibraryButton('','mediaPreset',`${bg.type}:${bg.value}`,`media-preset board-bg-${bg.type}-${bg.value}`);button.title=bg.name;const span=document.createElement('span');span.textContent=bg.name;button.append(span);root.append(button)}}
+function mediaLibraryRenderStatus(text,{error=false}={}){const root=$('#mediaLibraryResults');if(!root)return;const status=document.createElement('div');status.className=`media-library-status${error?' error':''}`;status.textContent=String(text||'');root.replaceChildren(status)}
+function mediaLibraryCard(item,index){const button=mediaLibraryButton('','mediaResult',String(index),'media-card');const image=document.createElement('img');image.src=item.url;image.alt=item.sourceLabel;image.loading='lazy';image.referrerPolicy='no-referrer';image.addEventListener('error',()=>{button.classList.add('image-error');image.alt='Náhled se nepodařilo načíst.'},{once:true});const text=document.createElement('span'),title=document.createElement('b'),meta=document.createElement('small');title.textContent=item.sourceLabel;meta.textContent=[item.author,item.license].filter(Boolean).join(' · ');text.append(title,meta);button.append(image,text);return button}
+function mediaLibraryRenderResults(items,{append=false}={}){const root=$('#mediaLibraryResults');if(!root)return;const previous=append?(App.ui.mediaLibraryResults||[]):[];App.ui.mediaLibraryResults=[...previous,...items];if(!App.ui.mediaLibraryResults.length){mediaLibraryRenderStatus('Pro tento výraz jsem nenašel vhodné obrázky. Zkuste jiné slovo.');return}const fragment=document.createDocumentFragment();App.ui.mediaLibraryResults.forEach((item,index)=>fragment.append(mediaLibraryCard(item,index)));if(App.ui.mediaLibraryContinue!==null&&App.ui.mediaLibraryContinue!==undefined){const more=mediaLibraryButton('Načíst dalších 50 obrázků','mediaMore','1','media-load-more');fragment.append(more)}root.replaceChildren(fragment)}
+async function mediaLibrarySearch(query,{append=false}={}){const clean=String(query||'').trim().slice(0,120);if(!clean)return;const requestId=++mediaLibraryRequestId;if(!append){App.ui.mediaLibraryResults=[];App.ui.mediaLibraryContinue=null;App.ui.mediaLibraryQuery=clean;mediaLibraryRenderStatus('Načítám obrázky z Wikimedia Commons…')}App.ui.mediaLibraryBusy=true;try{const args={action:'query',format:'json',formatversion:'2',generator:'search',gsrsearch:`${clean} filetype:bitmap`,gsrnamespace:'6',gsrlimit:'50',prop:'imageinfo|info',iiprop:'url|mime|mediatype|extmetadata',iiurlwidth:'1920',inprop:'url',origin:'*'};if(append&&App.ui.mediaLibraryContinue!==null&&App.ui.mediaLibraryContinue!==undefined)args.gsroffset=String(App.ui.mediaLibraryContinue);const params=new URLSearchParams(args),response=await fetch(`https://commons.wikimedia.org/w/api.php?${params.toString()}`,{method:'GET',credentials:'omit',referrerPolicy:'no-referrer',headers:{Accept:'application/json'}});if(!response.ok)throw new Error(`Commons ${response.status}`);const json=await response.json();if(requestId!==mediaLibraryRequestId)return;const items=(json?.query?.pages||[]).map(mediaLibrarySafeImage).filter(Boolean);App.ui.mediaLibraryContinue=json?.continue?.gsroffset??null;mediaLibraryRenderResults(items,{append})}catch(error){if(requestId!==mediaLibraryRequestId)return;captureError(error,'media-library');if(append){toast('Další obrázky se nepodařilo načíst.','error')}else mediaLibraryRenderStatus(navigator.onLine===false?'Knihovna obrázků vyžaduje připojení k internetu.':'Knihovnu Wikimedia Commons se nepodařilo načíst. Zkuste hledání zopakovat.',{error:true})}finally{if(requestId===mediaLibraryRequestId)App.ui.mediaLibraryBusy=false}}
+function openMediaLibrary(target='background',widgetId=''){const dialog=mediaLibraryDialog();if(!dialog){toast('Knihovna obrázků není dostupná.','error');return}App.ui.mediaLibraryTarget={kind:target,widgetId:String(widgetId||'')};App.ui.mediaLibraryResults=[];App.ui.mediaLibraryContinue=null;mediaLibraryRenderCategories();mediaLibraryRenderPresets();const presets=$('#mediaLibraryPresetSection');if(presets)presets.hidden=target!=='background';const title=$('#mediaLibraryTitle');if(title)title.textContent=target==='background'?'Knihovna pozadí':'Knihovna obrázků';const input=$('#mediaLibrarySearch');if(input&&!input.value)input.value='nature landscape';if(!dialog.open)dialog.showModal();requestAnimationFrame(()=>input?.focus());void mediaLibrarySearch(input?.value||'nature landscape')}
 function closeMediaLibrary(){const dialog=mediaLibraryDialog();if(dialog?.open)dialog.close();App.ui.mediaLibraryTarget=null}
-function mediaLibraryChoose(item){
-  if(!item)return;const target=App.ui.mediaLibraryTarget||{kind:'background'};
-  if(target.kind==='background'){
-    lessonBoardScene().background={type:'image',url:item.url,sourcePage:item.sourcePage,sourceLabel:item.sourceLabel,license:item.license};
-    closeMediaLibrary();lessonBoardPersist('lesson_background_image');return;
-  }
-  if(target.kind==='replace-widget'){
-    const widget=lessonBoardWidget(target.widgetId);if(widget&&widget.type==='image')widget.data={...widget.data,url:item.url,sourcePage:item.sourcePage,sourceLabel:item.sourceLabel,license:item.license};
-    closeMediaLibrary();lessonBoardPersist('lesson_image_replace');return;
-  }
-  closeMediaLibrary();lessonBoardAddImageWidget(item);
-}
-function bindMediaLibrary(){
-  document.addEventListener('submit',event=>{if(!event.target.matches('#mediaLibraryForm'))return;event.preventDefault();void mediaLibrarySearch($('#mediaLibrarySearch')?.value)});
-  document.addEventListener('click',event=>{
-    const query=event.target.closest('[data-media-query]');if(query){const input=$('#mediaLibrarySearch');if(input)input.value=query.dataset.mediaQuery;void mediaLibrarySearch(query.dataset.mediaQuery);return}
-    const result=event.target.closest('[data-media-result]');if(result){mediaLibraryChoose(App.ui.mediaLibraryResults?.[Number(result.dataset.mediaResult)]);return}
-    const preset=event.target.closest('[data-media-preset]');if(preset){const[type,value]=preset.dataset.mediaPreset.split(':');lessonBoardScene().background={type,value};closeMediaLibrary();lessonBoardPersist('lesson_background_preset');return}
-    if(event.target.closest('[data-media-close]'))closeMediaLibrary();
-  });
-}
+function mediaLibraryChoose(item){if(!item)return;const target=App.ui.mediaLibraryTarget||{kind:'background'};if(target.kind==='background'){lessonBoardScene().background={type:'image',url:item.url,sourcePage:item.sourcePage,sourceLabel:item.sourceLabel,license:item.license};closeMediaLibrary();lessonBoardPersist('lesson_background_image');toast('Obrázek byl nastaven jako pozadí plochy.','success');return}if(target.kind==='replace-widget'){const widget=lessonBoardWidget(target.widgetId);if(widget&&widget.type==='image')widget.data={...widget.data,url:item.url,sourcePage:item.sourcePage,sourceLabel:item.sourceLabel,license:item.license};closeMediaLibrary();lessonBoardPersist('lesson_image_replace');toast('Obrázek byl změněn.','success');return}closeMediaLibrary();lessonBoardAddImageWidget(item);toast('Obrázek byl přidán na pracovní plochu.','success')}
+function bindMediaLibrary(){document.addEventListener('submit',event=>{if(!event.target.matches('#mediaLibraryForm'))return;event.preventDefault();void mediaLibrarySearch($('#mediaLibrarySearch')?.value)});document.addEventListener('click',event=>{const query=event.target.closest('[data-media-query]');if(query){const input=$('#mediaLibrarySearch');if(input)input.value=query.dataset.mediaQuery;void mediaLibrarySearch(query.dataset.mediaQuery);return}const more=event.target.closest('[data-media-more]');if(more&&!App.ui.mediaLibraryBusy){void mediaLibrarySearch(App.ui.mediaLibraryQuery||$('#mediaLibrarySearch')?.value,{append:true});return}const result=event.target.closest('[data-media-result]');if(result){mediaLibraryChoose(App.ui.mediaLibraryResults?.[Number(result.dataset.mediaResult)]);return}const preset=event.target.closest('[data-media-preset]');if(preset){const[type,value]=preset.dataset.mediaPreset.split(':');lessonBoardScene().background={type,value};closeMediaLibrary();lessonBoardPersist('lesson_background_preset');toast('Pozadí pracovní plochy bylo změněno.','success');return}if(event.target.closest('[data-media-close]'))closeMediaLibrary()})}

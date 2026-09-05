@@ -1,3 +1,20 @@
+## 1.1.3 — 2026-09-05
+- Přidáno viditelné tlačítko **Manuál** do horní lišty aplikace.
+- Tlačítko otevírá existující interaktivní manuál v nové kartě, takže učitel nepřijde o rozpracovaný stav SORTIO.
+- Nápověda horní lišty nově popisuje i vstup do manuálu.
+- Přidána regresní kontrola, že odkaz na manuál je dostupný přímo z hlavního rozhraní.
+
+## 1.1.2 — Workflow a UX Výukového panelu (2026-09-05)
+
+- jedna pracovní plocha navázaná na aktivní třídu místo uživatelských scén;
+- fullscreen pracovní plochy a nezávislé měřítko obsahu widgetů;
+- přepracovaný Timer a kruhový Visual Timer; nové instrumentální zvuky;
+- hodiny bez alarmu, semafor bez popisků, vizuální animované kostky a mince;
+- event countdown odstraněn z nabídky;
+- rozšířená Wikimedia knihovna a opravené obrazové pozadí;
+- automatická diakritika běžných českých křestních jmen při importu z IS;
+- opravené zobrazení školního loga.
+
 ## 1.1.0 — Výukový panel (2026-09-05)
 
 ### CI hotfix 2026-09-05 — email-not-stored regression

@@ -84,6 +84,9 @@ assert.equal(context.parseImport('alex.novak@example.com neplatna-polozka').inva
 const reversed=context.parseImport('novak.jan2@example.com',{nameOrder:'last-first'}).rows[0];
 assert.equal(reversed.firstName,'Jan');
 assert.equal(reversed.lastName,'Novak');
+const accented=context.parseImport('tomas.novak@example.com jiri.svoboda@example.com stepan.dvorak@example.com ales.kral@example.com').rows;
+assert.deepEqual(plain(accented.map(row=>row.firstName)),['Tomáš','Jiří','Štěpán','Aleš']);
+assert.ok(accented.every(row=>row.firstNameAuto===true));
 for(const [total,mode,value]of [[26,'size',4],[25,'count',6],[31,'size',5],[3,'size',2]]){
   const lengths=context.groupLengths(total,{mode,value});
   assert.equal(lengths.reduce((sum,item)=>sum+item,0),total);

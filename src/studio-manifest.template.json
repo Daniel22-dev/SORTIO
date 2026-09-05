@@ -11,8 +11,8 @@
     "en": "Ready for controlled pilot"
   },
   "description": {
-    "cs": "Local-first výukový panel pro organizaci třídy a živou výuku: import z IS, losování, chytré skupiny, role, zasedací pořádek, scény hodiny, časovače, hodiny, semafor, tabule, kostky, týmové skóre, knihovna obrázků Wikimedia Commons, projekce a anonymní QR hlasování připravené pro školní server.",
-    "en": "A local-first teaching panel for classroom organisation and live lessons: school-system import, random selection, smart groups, roles, seating, lesson scenes, timers, clocks, traffic light, whiteboard, dice, team scores, a Wikimedia Commons image library, projection and anonymous QR polling prepared for the school server."
+    "cs": "Local-first výukový panel pro organizaci třídy a živou výuku: import z IS, losování, chytré skupiny, role, zasedací pořádek, pracovní plocha aktivní třídy, časovače, hodiny, semafor, tabule, kostky, týmové skóre, knihovna obrázků Wikimedia Commons, projekce a anonymní QR hlasování připravené pro školní server.",
+    "en": "A local-first teaching panel for classroom organisation and live lessons: school-system import, random selection, smart groups, roles, seating, a workspace for the active class, timers, clocks, traffic light, whiteboard, dice, team scores, a Wikimedia Commons image library, projection and anonymous QR polling prepared for the school server."
   },
   "launchUrl": "https://daniel22-dev.github.io/SORTIO/",
   "manualUrl": "https://daniel22-dev.github.io/SORTIO/manual/",
@@ -98,15 +98,14 @@
     "artifact-envelope-v1",
     "suite-session-lifecycle-v1",
     "lesson-widget-board",
-    "multi-scene-lesson-board",
+    "class-bound-lesson-board",
     "visual-timer",
     "classroom-clock",
     "traffic-light",
     "drawing-board",
     "advanced-dice",
-    "scene-scoreboard",
+    "class-scoreboard",
     "wikimedia-commons-image-library",
-    "event-countdown",
     "lesson-agenda",
     "work-mode-symbols",
     "anonymous-live-poll-ready",

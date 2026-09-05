@@ -5,14 +5,14 @@
     "cs": "SORTIO – Výukový panel",
     "en": "SORTIO – Teaching Panel"
   },
-  "version": "1.1.0",
+  "version": "1.1.3",
   "status": {
     "cs": "Připraveno k řízenému pilotu",
     "en": "Ready for controlled pilot"
   },
   "description": {
-    "cs": "Local-first výukový panel pro organizaci třídy a živou výuku: import z IS, losování, chytré skupiny, role, zasedací pořádek, scény hodiny, časovače, hodiny, semafor, tabule, kostky, týmové skóre, knihovna obrázků Wikimedia Commons, projekce a anonymní QR hlasování připravené pro školní server.",
-    "en": "A local-first teaching panel for classroom organisation and live lessons: school-system import, random selection, smart groups, roles, seating, lesson scenes, timers, clocks, traffic light, whiteboard, dice, team scores, a Wikimedia Commons image library, projection and anonymous QR polling prepared for the school server."
+    "cs": "Local-first výukový panel pro organizaci třídy a živou výuku: import z IS, losování, chytré skupiny, role, zasedací pořádek, pracovní plocha aktivní třídy, časovače, hodiny, semafor, tabule, kostky, týmové skóre, knihovna obrázků Wikimedia Commons, projekce a anonymní QR hlasování připravené pro školní server.",
+    "en": "A local-first teaching panel for classroom organisation and live lessons: school-system import, random selection, smart groups, roles, seating, a workspace for the active class, timers, clocks, traffic light, whiteboard, dice, team scores, a Wikimedia Commons image library, projection and anonymous QR polling prepared for the school server."
   },
   "launchUrl": "/apps/sortio/",
   "manualUrl": "/apps/sortio/manual/",
@@ -98,15 +98,14 @@
     "artifact-envelope-v1",
     "suite-session-lifecycle-v1",
     "lesson-widget-board",
-    "multi-scene-lesson-board",
+    "class-bound-lesson-board",
     "visual-timer",
     "classroom-clock",
     "traffic-light",
     "drawing-board",
     "advanced-dice",
-    "scene-scoreboard",
+    "class-scoreboard",
     "wikimedia-commons-image-library",
-    "event-countdown",
     "lesson-agenda",
     "work-mode-symbols",
     "anonymous-live-poll-ready",
@@ -128,7 +127,7 @@
     "platformContract": "ghrab-platform-v1",
     "platformRange": ">=1.1.2 <2.0.0"
   },
-  "publishedAt": "2026-09-05T19:08:10.367Z",
+  "publishedAt": "2026-09-05T20:38:42.557Z",
   "aiCore": {
     "schema": "ghrab-ai-app-integration-v1",
     "status": "not-applicable",
@@ -152,7 +151,7 @@
     "accessibilityContract": "ghrab-a11y-v1",
     "performanceContract": "ghrab-performance-v1",
     "moduleContract": "ghrab-lazy-modules-v1",
-    "cacheName": "ghrab-sortio-v1.1.0"
+    "cacheName": "ghrab-sortio-v1.1.3"
   },
   "deploymentProfile": "school-server",
   "serverReadyPhase": "P3"
