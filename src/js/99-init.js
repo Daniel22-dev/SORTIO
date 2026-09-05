@@ -80,7 +80,7 @@ async function init(){
   App.settings={...App.settings,...loadSettings()};
   App.data=loadData();
   applyTheme();applyMotion();
-  bindNavigation();bindSettings();bindClassUi();bindDrawUi();bindGroupsUi();bindRolesUi();bindSeatingUi();bindToolsUi();bindProjection();bindProductionTools();bindKeyboardShortcuts();bindRuntimeHealth();bindPwaInstall();bindCrossTabStorageSync();
+  bindNavigation();bindSettings();bindClassUi();bindDrawUi();bindGroupsUi();bindRolesUi();bindSeatingUi();bindLessonBoard();bindMediaLibrary();bindToolsUi();bindProjection();bindLivePoll();bindProductionTools();bindKeyboardShortcuts();bindRuntimeHealth();bindPwaInstall();bindCrossTabStorageSync();
   renderRoadmap();enhanceAccessibility();registerServiceWorker();
   document.addEventListener('sortio:data-changed',()=>{
     const transient=captureTransientViewState();

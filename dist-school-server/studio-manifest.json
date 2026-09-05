@@ -2,17 +2,17 @@
   "schema": "ai-studio-app-manifest-v1",
   "id": "sortio",
   "name": {
-    "cs": "SORTIO – Organizátor třídy",
-    "en": "SORTIO – Classroom Organiser"
+    "cs": "SORTIO – Výukový panel",
+    "en": "SORTIO – Teaching Panel"
   },
-  "version": "1.0.17",
+  "version": "1.1.0",
   "status": {
     "cs": "Připraveno k řízenému pilotu",
     "en": "Ready for controlled pilot"
   },
   "description": {
-    "cs": "Produkční local-first organizátor třídy: import z IS, losování, chytré skupiny, role, zasedací pořádek, bezpečná projekce, třídní nástroje, spravedlivá historie, tisk/PDF, odolné zálohy a diagnostika bez osobních údajů.",
-    "en": "A production local-first classroom organiser with school-system import, random selection, smart groups, roles, seating, safe projection, classroom tools, fair engagement history, print/PDF, resilient backups and privacy-safe diagnostics."
+    "cs": "Local-first výukový panel pro organizaci třídy a živou výuku: import z IS, losování, chytré skupiny, role, zasedací pořádek, scény hodiny, časovače, hodiny, semafor, tabule, kostky, týmové skóre, knihovna obrázků Wikimedia Commons, projekce a anonymní QR hlasování připravené pro školní server.",
+    "en": "A local-first teaching panel for classroom organisation and live lessons: school-system import, random selection, smart groups, roles, seating, lesson scenes, timers, clocks, traffic light, whiteboard, dice, team scores, a Wikimedia Commons image library, projection and anonymous QR polling prepared for the school server."
   },
   "launchUrl": "/apps/sortio/",
   "manualUrl": "/apps/sortio/manual/",
@@ -25,12 +25,12 @@
       "en": "Classroom organisation"
     },
     {
-      "cs": "Chytré skupiny",
-      "en": "Smart groups"
+      "cs": "Živá výuka",
+      "en": "Live teaching"
     },
     {
-      "cs": "Role a zasedací pořádek",
-      "en": "Roles and seating"
+      "cs": "Projekční nástroje",
+      "en": "Projection tools"
     },
     {
       "cs": "Local-first",
@@ -96,13 +96,29 @@
     "canonical-branding",
     "storage-namespace-v1",
     "artifact-envelope-v1",
-    "suite-session-lifecycle-v1"
+    "suite-session-lifecycle-v1",
+    "lesson-widget-board",
+    "multi-scene-lesson-board",
+    "visual-timer",
+    "classroom-clock",
+    "traffic-light",
+    "drawing-board",
+    "advanced-dice",
+    "scene-scoreboard",
+    "wikimedia-commons-image-library",
+    "event-countdown",
+    "lesson-agenda",
+    "work-mode-symbols",
+    "anonymous-live-poll-ready",
+    "qr-link-ready"
   ],
   "privacy": {
     "storage": "local-only",
     "storesEmailAddresses": false,
     "externalStudentDataTransfer": false,
-    "diagnosticsContainStudentNames": false
+    "diagnosticsContainStudentNames": false,
+    "mediaLibrary": "Wikimedia Commons; only search queries and selected public image requests are external",
+    "livePoll": "anonymous, short-lived server state only when school server is connected"
   },
   "compatibility": {
     "studioMinVersion": "0.18.5",
@@ -112,7 +128,7 @@
     "platformContract": "ghrab-platform-v1",
     "platformRange": ">=1.1.2 <2.0.0"
   },
-  "publishedAt": "2026-09-04T16:47:33.174Z",
+  "publishedAt": "2026-09-05T18:58:59.060Z",
   "aiCore": {
     "schema": "ghrab-ai-app-integration-v1",
     "status": "not-applicable",
@@ -136,7 +152,7 @@
     "accessibilityContract": "ghrab-a11y-v1",
     "performanceContract": "ghrab-performance-v1",
     "moduleContract": "ghrab-lazy-modules-v1",
-    "cacheName": "ghrab-sortio-v1.0.17"
+    "cacheName": "ghrab-sortio-v1.1.0"
   },
   "deploymentProfile": "school-server",
   "serverReadyPhase": "P3"

@@ -1,6 +1,6 @@
-# Architektura SORTIO 1.0.6
+# Architektura SORTIO 1.1.0
 
-SORTIO je modulární local-first PWA. Uživatelské rozhraní, doménové algoritmy, datová vrstva, projekce, tisk a diagnostika jsou oddělené tak, aby šly samostatně testovat.
+SORTIO je modulární local-first PWA. Od verze 1.1 spojuje dvě rovnocenné části: **organizaci třídy** a **Výukový panel pro živou hodinu**. Uživatelské rozhraní, doménové algoritmy, datová vrstva, widgetová plocha, projekce, tisk a diagnostika zůstávají oddělené a testovatelné.
 
 ## Vrstvy
 
@@ -11,44 +11,65 @@ SORTIO je modulární local-first PWA. Uživatelské rozhraní, doménové algor
 5. chytré skupiny a závazná pravidla;
 6. role, témata a zasedací pořádek;
 7. historie zapojování a spravedlivý výběr;
-8. třídní nástroje;
-9. bezpečná projekční vrstva;
-10. lokální tiskové/PDF výstupy;
-11. produkční diagnostika, přístupnost, PWA a AI Studio bridge;
-12. GHRAB QA 1.0.2.
+8. widgetový Výukový panel a scény hodiny;
+9. knihovna Wikimedia Commons bez uživatelského uploadu;
+10. anonymní live-poll frontend + serverový API kontrakt;
+11. bezpečná projekční vrstva;
+12. lokální tiskové/PDF výstupy;
+13. produkční diagnostika, přístupnost, PWA a AI Studio bridge;
+14. GHRAB Platform 1.1.2 + suite-session lifecycle + QA/GARP brány.
+
+## Výukový panel
+
+Stav panelu je součástí hlavního datového modelu `lessonBoard`. Panel obsahuje více scén a každá scéna má pozadí a pole widgetů. Widget ukládá typ, pozici, rozměr, zámek, titulek a typově specifická data. Díky tomu může být jeden obecný layout engine použit pro timer, tabuli, obrázek, hlasování i další nástroje.
+
+Panel funguje i bez vybrané třídy. Pouze funkce, které skutečně potřebují třídní data (například načtení aktuálních skupin do scoreboardu), se vážou na zvolenou třídu.
+
+## Knihovna obrázků
+
+SORTIO neobsahuje upload obrázků. `88-media-library.js` používá anonymní Wikimedia Commons API přes HTTPS. Do Wikimedia se neposílají jména, třídy ani jiná školní data; síťová komunikace obsahuje pouze hledaný výraz a následné načtení vybraného obrázku. URL obrázků a zdrojů jsou při ukládání omezeny sanitizací na povolené Wikimedia domény. Zdroj a licence se uchovávají spolu s obrázkem a zobrazují se i u obrazového pozadí.
+
+## QR hlasování
+
+Statické GitHub Pages nemohou samy sdílet stav mezi telefonem studenta a učitelskou projekcí. Proto je live poll rozdělen na:
+
+- frontend widget v SORTIO;
+- veřejnou mobilní stránku `/poll/`;
+- krátkodobý same-origin serverový stav podle `docs/SORTIO-LIVE-POLL-API.md`.
+
+Bez serveru je dostupné lokální hlasování na plátně. Po připojení školního serveru stejný widget vytvoří anonymní poll, zobrazí QR kód, synchronizuje výsledky a umí poll serverově ukončit. Kontrakt nevyžaduje jméno, e-mail ani ID studenta.
 
 ## Datový trezor v5
 
-- hlavní klíč: `sortio.data.v5`;
-- poslední bezpečný stav: `sortio.data.v5.last-good`;
-- vratný stav před importem: `sortio.data.v5.pre-import`;
-- lokální kopie poškozeného primárního zápisu: `sortio.data.v5.corrupt`;
-- automatická migrace z `sortio.data.v2`, `v3` a `v4`;
-- limity délky textů, počtu studentů, míst a historie při sanitizaci;
-- dvoukrokové ukládání s předchozím ověřeným stavem v `last-good` (localStorage neposkytuje transakce);
-- záloha `sortio-backup-v4` s kontrolním součtem FNV-1a pro detekci náhodného poškození;
+- hlavní kanonický klíč: `ghrab.sortio.data.v5` (přes platformní namespace alias);
+- poslední bezpečný stav a vratné/kontrolní kopie zůstávají ve vlastnictví SORTIO;
+- automatická migrace starších verzí dat;
+- limity délek, počtů objektů a historie při sanitizaci;
+- dvoukrokové ukládání s posledním ověřeným stavem;
+- záloha s kontrolním součtem pro detekci náhodného poškození;
 - maximální importovaný soubor 5 MB.
 
 Kontrolní součet není elektronický podpis. Chrání proti náhodnému poškození, nikoli proti úmyslné změně souboru.
 
+## GHRAB suite-session
+
+SORTIO používá GHRAB Platform 1.1.2 a kontrakt `ghrab-suite-session-v1`. Při ukončení společné relace AI Studia se zabrání dalším zápisům obsahu, uklidí vlastní potenciálně osobní data a až poté se zapíše acknowledgement. Stav nového Výukového panelu je uložen uvnitř stejného aplikačního datového trezoru, takže je tímto cleanupem pokryt automaticky.
+
 ## PWA a přístupová brána
 
-Service worker ukládá vlastní prostředky SORTIO pro rychlé načítání a instalaci aplikace. Samotné spuštění však zůstává bezpečně uzavřené: centrální brána AI Studia musí ověřit přístup online. Plnohodnotný offline start bude možné doplnit až tehdy, pokud centrální brána vydá časově omezený a kryptograficky ověřitelný token; obyčejný záznam v `localStorage` se jako oprávnění nepoužívá.
-
-## Soukromí
-
-E-mailové adresy se zpracují pouze v paměti otevřeného importního dialogu. Datový model ukládá jména a učitelská nastavení, nikoli adresy. Diagnostika vypisuje pouze počty, technický stav a anonymizované chybové zprávy.
+Service worker ukládá vlastní prostředky SORTIO pro rychlé načítání a instalaci aplikace. Samotné spuštění zůstává chráněné centrální přístupovou bránou AI Studia. Externí síťová oprávnění jsou omezená CSP na explicitně potřebné zdroje Wikimedia; mikrofon, kamera a geolokace zůstávají zakázané.
 
 ## Výkon
 
-Produkční kontrola ověřuje rozdělení 120 smyšlených studentů do 30 čtveřic. Sanitizace podporuje až 500 studentů v jedné třídě, přestože běžné školní použití je výrazně menší.
+Rozšíření 1.1 zvyšuje velikost klientského balíku. Kontrolované rozpočty jsou proto pro tuto major funkční změnu nastaveny na 550 kB pro kritický vstupní balík a 800 kB pro PWA precache; limit celého dist zůstává 900 kB a největšího souboru 270 kB.
 
-## Moduly
+## Klíčové moduly
 
-Verze 1.0.6 obsahuje 30 JavaScriptových modulů v `src/js/`. Produkční vrstvu tvoří zejména:
-
-- `20-state-storage.js` – datový trezor v5;
+- `20-state-storage.js` – datový trezor v5 a sanitizace Výukového panelu;
+- `87-lesson-board.js` – scény, widget engine a nástroje živé hodiny;
+- `88-media-library.js` – Wikimedia Commons knihovna;
+- `89-live-poll.js` – učitelská část anonymního QR hlasování;
+- `poll/poll.js` – veřejná hlasovací stránka pro telefon studenta;
+- `85-projection.js` – bezpečná projekce;
 - `92-production-tools.js` – demo, kontrola a diagnostický export;
-- `93-keyboard-accessibility.js` – klávesové ovládání;
-- `94-runtime-health.js` – online/offline a stav úložiště;
 - `95-diagnostics.js` – anonymizovaný technický snímek.

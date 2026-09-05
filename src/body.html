@@ -3,9 +3,9 @@
   <header class="topbar">
     <a class="brand" href="#overview" data-route="overview" aria-label="SORTIO – přehled">
       <img class="brand-mark" src="./assets/sortio-mark.svg" alt="">
-      <span><strong>SORTIO</strong><small>organizátor třídy</small></span>
+      <span><strong>SORTIO</strong><small>výukový panel</small></span>
     </a>
-    <div class="release-pill"><span></span> SORTIO 1.0 · produkční verze</div>
+    <div class="release-pill"><span></span> SORTIO __APP_VERSION__ · výukový panel</div>
     <div class="top-actions">
       <a class="icon-button studio-link" href="/AI-Studio-GHRAB/" data-ghrab-studio-link title="Zpět do AI Studia"><span>✦</span><b>Studio</b></a>
       <button class="icon-button" id="motionToggle" type="button" title="Pohybové efekty"><span>◎</span><b>Pohyb</b></button>
@@ -23,7 +23,7 @@
       <button class="nav-item" type="button" data-route="groups"><span>◌</span><b>Skupiny</b></button>
       <button class="nav-item" type="button" data-route="roles"><span>◇</span><b>Role</b></button>
       <button class="nav-item" type="button" data-route="seating"><span>▦</span><b>Místa</b></button>
-      <button class="nav-item" type="button" data-route="tools"><span>◫</span><b>Nástroje</b></button>
+      <button class="nav-item" type="button" data-route="tools"><span>◫</span><b>Panel</b></button>
       <button class="nav-item" type="button" data-route="settings"><span>⚙</span><b>Nastavení</b></button>
       <button class="nav-item" type="button" data-route="about"><span>ⓘ</span><b>O aplikaci</b></button>
     </nav>
@@ -37,12 +37,12 @@
     <section class="view active" data-view="overview" id="overview">
       <div class="hero-grid dashboard-hero">
         <article class="hero-copy glass-panel">
-          <div class="eyebrow"><span></span> Organizace třídy bez zdržování</div>
+          <div class="eyebrow"><span></span> Organizace třídy a živé výuky</div>
           <h1>Rozdělit.<br><em>Vybrat. Začít.</em></h1>
-          <p>Vložte skupinu z interního systému, označte nepřítomné a během několika sekund vylosujte studenta nebo vytvořte použitelné skupiny.</p>
+          <p>Organizujte třídu a řiďte živou hodinu na jednom místě – od importu, losování a skupin až po časovače, tabuli, semafor, obrázky a hlasování.</p>
           <div class="hero-actions">
             <button class="primary-button" type="button" data-action="open-import">Vložit skupinu z IS <span>→</span></button>
-            <button class="secondary-button" type="button" data-route="draw">Rychlé losování</button>
+            <button class="secondary-button" type="button" data-route="draw">Rychlé losování</button><button class="secondary-button" type="button" data-route="tools">Výukový panel</button>
           </div>
           <div class="privacy-inline"><span>✓</span><p>E-maily se používají jen při importu. Do uložených dat se nepřenášejí.</p></div>
         </article>
@@ -86,34 +86,34 @@
     </section>
 
     <section class="view" data-view="draw" id="draw">
-      <div class="page-title"><div><span>NÁHODNÝ VÝBĚR</span><h1>Spravedlivé losování</h1><p>Jeden student, více studentů nebo celé pořadí. Režim bez opakování hlídá, aby se třída nejprve vystřídala.</p></div><div class="page-badge accent">SORTIO 1.0</div></div>
+      <div class="page-title"><div><span>NÁHODNÝ VÝBĚR</span><h1>Spravedlivé losování</h1><p>Jeden student, více studentů nebo celé pořadí. Režim bez opakování hlídá, aby se třída nejprve vystřídala.</p></div><div class="page-badge accent">SORTIO __APP_VERSION__</div></div>
       <div id="drawWorkspace"></div>
     </section>
 
     <section class="view" data-view="groups" id="groups">
-      <div class="page-title"><div><span>CHYTRÁ TVORBA SKUPIN</span><h1>Skupiny podle vašich pravidel</h1><p>Náhodně, vyváženě, podle podobné úrovně nebo s omezením opakovaných kombinací. Pravidla „spolu“ a „od sebe“ jsou závazná.</p></div><div class="page-badge accent">SORTIO 1.0</div></div>
+      <div class="page-title"><div><span>CHYTRÁ TVORBA SKUPIN</span><h1>Skupiny podle vašich pravidel</h1><p>Náhodně, vyváženě, podle podobné úrovně nebo s omezením opakovaných kombinací. Pravidla „spolu“ a „od sebe“ jsou závazná.</p></div><div class="page-badge accent">SORTIO __APP_VERSION__</div></div>
       <div id="groupsWorkspace"></div>
     </section>
 
 
     <section class="view" data-view="roles" id="roles">
-      <div class="page-title"><div><span>ROLE, TÉMATA A ÚKOLY</span><h1>Každý ví, co má dělat</h1><p>Přidělte členům skupin role se spravedlivou rotací a rozdělte témata, otázky nebo stanoviště.</p></div><div class="page-badge accent">SORTIO 1.0</div></div>
+      <div class="page-title"><div><span>ROLE, TÉMATA A ÚKOLY</span><h1>Každý ví, co má dělat</h1><p>Přidělte členům skupin role se spravedlivou rotací a rozdělte témata, otázky nebo stanoviště.</p></div><div class="page-badge accent">SORTIO __APP_VERSION__</div></div>
       <div id="rolesWorkspace"></div>
     </section>
 
     <section class="view" data-view="seating" id="seating">
-      <div class="page-title"><div><span>ZASEDACÍ POŘÁDEK</span><h1>Učebna pod kontrolou</h1><p>Řady, dvojice, ostrůvky nebo uspořádání do U. SORTIO respektuje přední místa, uzamčené pozice a pravidla „od sebe“.</p></div><div class="page-badge accent">SORTIO 1.0</div></div>
+      <div class="page-title"><div><span>ZASEDACÍ POŘÁDEK</span><h1>Učebna pod kontrolou</h1><p>Řady, dvojice, ostrůvky nebo uspořádání do U. SORTIO respektuje přední místa, uzamčené pozice a pravidla „od sebe“.</p></div><div class="page-badge accent">SORTIO __APP_VERSION__</div></div>
       <div id="seatingWorkspace"></div>
     </section>
 
 
     <section class="view" data-view="tools" id="tools">
-      <div class="page-title"><div><span>NÁSTROJE PRO ŽIVOU VÝUKU</span><h1>Hodina pod kontrolou</h1><p>Časovač, stopky, rychlé rozhodování, týmové skóre a spravedlivé zapojování na jednom místě.</p></div><div class="page-badge accent">SORTIO 1.0</div></div>
+      <div class="page-title"><div><span>VÝUKOVÝ PANEL</span><h1>Hodina pod kontrolou</h1><p>Poskládejte si projekční plochu z časovačů, hodin, semaforu, tabule, kostek, skóre, obrázků, agendy a hlasování. Scény lze připravit pro různé fáze hodiny.</p></div><div class="page-badge accent">SORTIO __APP_VERSION__</div></div>
       <div id="toolsWorkspace"></div>
     </section>
 
     <section class="view" data-view="settings" id="settings">
-      <div class="page-title"><div><span>ZAŘÍZENÍ A DATA</span><h1>Nastavení aplikace</h1><p>Všechny třídy, jména, docházka a historie jsou uloženy pouze v tomto prohlížeči.</p></div><div class="page-badge">LOKÁLNĚ</div></div>
+      <div class="page-title"><div><span>ZAŘÍZENÍ A DATA</span><h1>Nastavení aplikace</h1><p>Třídní data, jména, docházka a historie zůstávají v tomto prohlížeči. Knihovna obrázků odesílá do Wikimedia Commons pouze hledaný výraz.</p></div><div class="page-badge">LOCAL-FIRST</div></div>
       <div class="settings-grid">
         <article class="settings-card"><div><h3>Vzhled</h3><p>Zvolte výchozí barevný režim.</p></div><div class="segmented" id="themeSegment"><button data-value="dark">Tmavý</button><button data-value="light">Světlý</button><button data-value="system">Systém</button></div></article>
         <article class="settings-card"><div><h3>Pohybové efekty</h3><p>Vypnutí omezí animace losování a přechody.</p></div><label class="switch"><input type="checkbox" id="motionSetting" checked><span></span></label></article>
@@ -142,12 +142,12 @@
     <section class="view" data-view="about" id="about">
       <div class="page-title"><div><span>IDENTITA A VLASTNICTVÍ</span><h1>O aplikaci</h1><p>Školní aplikace pro rychlou organizaci živé výuky, vyvíjená modulárně jako součást AI Studia GHRAB.</p></div><div class="page-badge accent">v__APP_VERSION__</div></div>
       <div class="about-layout">
-        <article class="about-brand glass-panel"><img src="./assets/sortio-mark.svg" alt="Značka SORTIO"><span>SORTIO</span><h2>Organizátor třídy</h2><p>Import z IS, chytré skupiny, role, projekční režim, třídní nástroje a tiskové výstupy.</p></article>
+        <article class="about-brand glass-panel"><img src="./assets/sortio-mark.svg" alt="Značka SORTIO"><span>SORTIO</span><h2>Výukový panel</h2><p>Organizace třídy a živé výuky: import, losování, skupiny, role, zasedací pořádek, scény hodiny, projekční widgety, obrázky a hlasování.</p></article>
         <div class="about-details">
           <article><span>AUTOR A VÝVOJOVÝ GARANT</span><h3>Daniel Baláž</h3><p>Koncepce, návrh funkcí, metodické vedení a vývoj aplikace.</p></article>
           <article><span>ŠKOLNÍ PROJEKT</span><h3>Gymnázium, Ostrava-Hrabůvka</h3><p>Aplikace je připravována pro interní školní využití v rámci AI Studia GHRAB.</p></article>
-          <article><span>OCHRANA DAT</span><h3>Local-first architektura</h3><p>Jména a historie zůstávají v konkrétním prohlížeči. Importované e-mailové adresy se po vytvoření náhledu neukládají.</p></article>
-          <article><span>TECHNICKÝ STAV</span><h3>1.0.17 · Připraveno k řízenému pilotu</h3><p>Bezpečná docházka bez ztráty práce, funkční obnova dat, skutečné regresní testy, odolnější import a přístupnost.</p></article>
+          <article><span>OCHRANA DAT</span><h3>Local-first architektura</h3><p>Jména a historie zůstávají v konkrétním prohlížeči. Importované e-mailové adresy se neukládají. Při hledání obrázků odchází do Wikimedia Commons pouze hledaný výraz, nikdy data třídy.</p></article>
+          <article><span>TECHNICKÝ STAV</span><h3>__APP_VERSION__ · Výukový panel</h3><p>Widgetová pracovní plocha, scény, rozšířené projekční nástroje, knihovna Wikimedia Commons a připravené anonymní QR hlasování pro školní server.</p></article>
         </div>
       </div>
       <article class="privacy-card"><span>PRAVIDLO PRO TESTOVÁNÍ</span><h3>Do veřejného repozitáře ani screenshotů nevkládat skutečné seznamy studentů.</h3><p>Pro vývojové testy jsou v balíčku použity pouze smyšlené adresy a jména. Při sdílení diagnostiky se osobní údaje automaticky nevypisují.</p></article>
@@ -183,9 +183,20 @@
 
 <dialog id="projectionDialog" class="projection-dialog">
   <div class="projection-shell">
-    <header><div><span>BEZPEČNÁ PROJEKCE</span><h2 id="projectionTitle">SORTIO</h2></div><div><select id="projectionMode" aria-label="Obsah projekce"><option value="auto">Aktuální obsah</option><option value="groups">Skupiny</option><option value="seating">Zasedací pořádek</option><option value="draw">Poslední losování</option><option value="tools">Třídní nástroje</option></select><button type="button" data-action="projection-fullscreen">Celá obrazovka</button><button type="button" data-action="close-projection" aria-label="Zavřít projekci">×</button></div></header>
+    <header><div><span>BEZPEČNÁ PROJEKCE</span><h2 id="projectionTitle">SORTIO</h2></div><div><select id="projectionMode" aria-label="Obsah projekce"><option value="auto">Aktuální obsah</option><option value="groups">Skupiny</option><option value="seating">Zasedací pořádek</option><option value="draw">Poslední losování</option><option value="lesson">Výukový panel</option><option value="tools">Původní třídní nástroje</option></select><button type="button" data-action="projection-fullscreen">Celá obrazovka</button><button type="button" data-action="close-projection" aria-label="Zavřít projekci">×</button></div></header>
     <main id="projectionContent" class="projection-content"></main>
     <footer><span>Na projekci nejsou zobrazeny interní úrovně, pravidla ani poznámky učitele.</span><b>SORTIO · Gymnázium, Ostrava-Hrabůvka</b></footer>
+  </div>
+</dialog>
+
+<dialog id="mediaLibraryDialog" class="sortio-dialog media-library-dialog" aria-labelledby="mediaLibraryTitle">
+  <div class="dialog-content">
+    <header><div><span>WIKIMEDIA COMMONS</span><h2 id="mediaLibraryTitle">Knihovna obrázků</h2></div><button type="button" data-media-close aria-label="Zavřít">×</button></header>
+    <form id="mediaLibraryForm" class="media-search-row"><input id="mediaLibrarySearch" type="search" maxlength="120" autocomplete="off" placeholder="Hledat např. solar system, autumn forest…"><button class="primary-button compact" type="submit">Hledat</button></form>
+    <div id="mediaLibraryCategories" class="media-categories" aria-label="Kategorie obrázků"></div>
+    <section id="mediaLibraryPresetSection" class="media-preset-section"><span>RYCHLÁ POZADÍ</span><div id="mediaLibraryPresets" class="media-presets"></div></section>
+    <div id="mediaLibraryResults" class="media-library-results"><div class="media-library-status">Vyberte kategorii nebo napište hledaný výraz.</div></div>
+    <footer class="media-library-footer"><span>Bez uploadu · obrázky z Wikimedia Commons</span><span>Do Wikimedia se odesílá pouze hledaný výraz. Zdroj a licence se ukládají spolu s obrázkem.</span></footer>
   </div>
 </dialog>
 

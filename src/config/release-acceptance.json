@@ -2,7 +2,7 @@
   "schema": "ghrab-release-acceptance-v1",
   "stage": "P5",
   "appId": "sortio",
-  "appVersion": "1.0.17",
+  "appVersion": "1.1.0",
   "releaseStatus": "ecosystem-wave-candidate",
   "primaryRuntime": {
     "mode": "standalone-github-pages",
@@ -10,7 +10,7 @@
     "offlineCapable": true,
     "currentUseApproved": false,
     "candidateSyntheticOnly": true,
-    "note": "1.0.17 is an ecosystem-wave candidate, not an approved production release."
+    "note": "1.1.0 is a teaching-panel feature candidate and requires the standard controlled release validation before production approval."
   },
   "github": {
     "status": "candidate-not-released",

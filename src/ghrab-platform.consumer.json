@@ -1,8 +1,8 @@
 {
   "schema": "ghrab-platform-consumer-v1",
   "appId": "sortio",
-  "appName": "SORTIO · Organizátor třídy",
-  "appVersion": "1.0.17",
+  "appName": "SORTIO · Výukový panel",
+  "appVersion": "1.1.0",
   "platform": {
     "version": "1.1.2",
     "contract": "ghrab-platform-v1",
@@ -58,7 +58,7 @@
     ]
   },
   "cache": {
-    "name": "ghrab-sortio-v1.0.17",
+    "name": "ghrab-sortio-v1.1.0",
     "updateMessage": "GHRAB_SKIP_WAITING"
   },
   "html": {
@@ -78,9 +78,9 @@
     "performanceBudget": {
       "distBytes": 900000,
       "entryHtmlBytes": 270000,
-      "entryCriticalBytes": 450000,
+      "entryCriticalBytes": 550000,
       "largestInlineScriptBytes": 170000,
-      "precacheBytes": 680000,
+      "precacheBytes": 800000,
       "largestFileBytes": 270000,
       "duplicateLargeBytes": 140000
     },

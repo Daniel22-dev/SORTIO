@@ -1,3 +1,14 @@
+## 1.1.0 — Výukový panel (2026-09-05)
+
+- SORTIO přejmenováno z „Organizátor třídy“ na „Výukový panel“ a rozšířeno o scénovou pracovní plochu pro živou výuku.
+- Přidán obecný widget engine: přesun, resize, lock, duplicate, delete a spotlight.
+- Přidány Timer 2.0, Visual timer, Stopky, Hodiny, Semafor, Tabule, Kostky 2.0, Skóre 2.0, Text, Režim práce, Obrázek, Event countdown, Agenda, Hlasování a QR odkaz.
+- Přidána vestavěná obrazová knihovna nad Wikimedia Commons bez uživatelského uploadu, včetně zdroje a licence.
+- Přidán anonymní live-poll frontend, veřejná mobilní stránka a kontrakt školního serveru pro QR hlasování s živými výsledky.
+- Měřič hluku záměrně nebyl přidán; mikrofon zůstává zakázaný.
+- Nový panel funguje bez vybrané třídy; třídní nástroje zůstávají dostupné po výběru třídy.
+- Zachována GHRAB Platform 1.1.2, suite-session cleanup a bezpečnostní/regresní brány.
+
 ## 1.0.17 — GHRAB Platform 1.1.2 / suite-session kandidát (2026-09-04)
 
 - Převzata přesná referenční GHRAB Platform 1.1.2 z AI Studia 0.21.40.

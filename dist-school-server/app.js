@@ -5,7 +5,7 @@ const $=(selector,root=document)=>root.querySelector(selector);
 const $$=(selector,root=document)=>[...root.querySelectorAll(selector)];
 const nowIso=()=>new Date().toISOString();
 const uid=(prefix='id')=>`${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,9)}`;
-const App={version:SORTIO_VERSION,route:'overview',lastOperation:'start',lastError:null,startedAt:nowIso(),settings:{theme:'dark',motion:true,confirmDestructive:true},data:null,ui:{importRows:[],importInvalid:[],importNameOrder:'first-last',studentSearch:'',groupMode:'size',smartGroupMode:'random',groupPanel:'build',seatingPanel:'plan',timer:{duration:300,remaining:300,running:false,endsAt:null},stopwatch:{elapsed:0,running:false,startedAt:null,laps:[]},drawMode:'single',drawCount:2,noRepeat:true,quickResult:null,projectionMode:'auto',printWindows:[]},suiteSession:{lifecycleReady:false,hydrated:false,generationAtHydration:'',writeBlocked:false,cleanupGeneration:'',cleanupPromise:null,unsubscribe:null,lastCompletedGeneration:'',lastFailure:null}};
+const App={version:SORTIO_VERSION,route:'overview',lastOperation:'start',lastError:null,startedAt:nowIso(),settings:{theme:'dark',motion:true,confirmDestructive:true},data:null,ui:{importRows:[],importInvalid:[],importNameOrder:'first-last',studentSearch:'',groupMode:'size',smartGroupMode:'random',groupPanel:'build',seatingPanel:'plan',timer:{duration:300,remaining:300,running:false,endsAt:null},stopwatch:{elapsed:0,running:false,startedAt:null,laps:[]},drawMode:'single',drawCount:2,noRepeat:true,quickResult:null,projectionMode:'auto',lessonSpotlightId:null,mediaLibraryTarget:null,mediaLibraryBusy:false,pollSyncHandles:{},printWindows:[]},suiteSession:{lifecycleReady:false,hydrated:false,generationAtHydration:'',writeBlocked:false,cleanupGeneration:'',cleanupPromise:null,unsubscribe:null,lastCompletedGeneration:'',lastFailure:null}};
 window.SORTIO=App;
 function escapeHtml(value=''){return String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}
 function normalizeText(value=''){return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('cs-CZ').replace(/[^a-z0-9]+/g,' ').trim()}
@@ -34,7 +34,11 @@ function safeStorage(){const storage=rawStorage();if(!storage)return null;try{vo
 function defaultRoleCatalog(){return['Mluvčí','Zapisovatel','Hlídač času','Kontrolor zadání']}
 function defaultSeatingPlan(){return{template:'rows',rows:4,columns:6,seats:[],updatedAt:null}}
 function defaultToolState(){return{scores:[],decisionOptions:[],updatedAt:null}}
-function defaultData(){return{schema:'sortio-data-v5',version:5,selectedClassId:null,classes:[],aliases:{},createdAt:nowIso(),updatedAt:nowIso(),integrity:{saveCount:0,lastSavedAt:null}}}
+function defaultLessonBoardState(){
+  const sceneId='scene-default';
+  return{activeSceneId:sceneId,scenes:[{id:sceneId,name:'Moje hodina',background:{type:'gradient',value:'midnight'},widgets:[]}],updatedAt:null};
+}
+function defaultData(){return{schema:'sortio-data-v5',version:5,selectedClassId:null,classes:[],aliases:{},lessonBoard:defaultLessonBoardState(),createdAt:nowIso(),updatedAt:nowIso(),integrity:{saveCount:0,lastSavedAt:null}}}
 function loadSettings(){const storage=safeStorage();if(!storage)return{...App.settings};try{const saved=JSON.parse(storage.getItem(SETTINGS_KEY)||'{}');return{theme:['dark','light','system'].includes(saved.theme)?saved.theme:'dark',motion:saved.motion!==false,confirmDestructive:saved.confirmDestructive!==false,lastRoute:String(saved.lastRoute||'overview')}}catch(_){return{...App.settings}}}
 function saveSettings(){
   const storage=safeStorage();
@@ -171,6 +175,7 @@ function sanitizeData(raw,{repairDuplicateIdentifiers=false}={}){
   const data={
     schema:'sortio-data-v5',version:5,selectedClassId,classes,
     aliases:source.aliases&&typeof source.aliases==='object'?Object.fromEntries(Object.entries(source.aliases).slice(0,500).map(([key,value])=>[String(key).slice(0,100),String(value).slice(0,100)])):{},
+    lessonBoard:sanitizeLessonBoard(source.lessonBoard),
     createdAt:source.createdAt||defaults.createdAt,updatedAt:source.updatedAt||defaults.updatedAt,
     integrity:{saveCount:Math.max(0,Number(source.integrity?.saveCount)||0),lastSavedAt:source.integrity?.lastSavedAt||source.updatedAt||null},
   };
@@ -252,6 +257,77 @@ function sanitizeEngagementHistory(value,ids,studentRefMap=null){
   if(!Array.isArray(value))return[];
   return value.map(item=>({id:sanitizeIdentifier(item?.id,'engagement'),studentId:sanitizeStudentRef(item?.studentId,ids,studentRefMap),kind:['answer','presentation','speaker','volunteer','other'].includes(item?.kind)?item.kind:'other',label:String(item?.label||'').slice(0,200),createdAt:item?.createdAt||nowIso()})).filter(item=>!!item.studentId).slice(0,HISTORY_LIMITS.engagement);
 }
+
+function sanitizeLessonBoard(value){
+  const source=value&&typeof value==='object'?value:{};
+  const rawScenes=Array.isArray(source.scenes)?source.scenes.slice(0,12):[];
+  const scenes=rawScenes.map(sanitizeLessonScene).filter(Boolean);
+  if(!scenes.length)scenes.push(...defaultLessonBoardState().scenes);
+  const activeRaw=String(source.activeSceneId||'');
+  const activeSceneId=scenes.some(scene=>scene.id===activeRaw)?activeRaw:scenes[0].id;
+  return{activeSceneId,scenes,updatedAt:source.updatedAt||null};
+}
+function sanitizeLessonScene(value){
+  if(!value||typeof value!=='object')return null;
+  const id=sanitizeIdentifier(value.id,'scene');
+  const widgets=Array.isArray(value.widgets)?value.widgets.slice(0,30).map(sanitizeLessonWidget).filter(Boolean):[];
+  return{id,name:String(value.name||'Scéna').slice(0,80),background:sanitizeLessonBackground(value.background),widgets};
+}
+function sanitizeLessonBackground(value){
+  const source=value&&typeof value==='object'?value:{};
+  if(source.type==='image'){
+    const url=sanitizeLessonImageUrl(source.url);
+    if(url)return{type:'image',url,sourcePage:sanitizeLessonSourceUrl(source.sourcePage),sourceLabel:String(source.sourceLabel||'Wikimedia Commons').slice(0,160),license:String(source.license||'').slice(0,80)};
+  }
+  if(source.type==='solid')return{type:'solid',value:['slate','paper','forest','sand'].includes(source.value)?source.value:'slate'};
+  return{type:'gradient',value:['midnight','aurora','ocean','sunset','violet','clean'].includes(source.value)?source.value:'midnight'};
+}
+function sanitizeLessonImageUrl(value){
+  try{const url=new URL(String(value||''));return url.protocol==='https:'&&url.hostname==='upload.wikimedia.org'?url.href:''}catch(_){return''}
+}
+function sanitizeLessonSourceUrl(value){
+  try{const url=new URL(String(value||''));return url.protocol==='https:'&&['commons.wikimedia.org','www.wikidata.org'].includes(url.hostname)?url.href:''}catch(_){return''}
+}
+function sanitizeLessonWidget(value){
+  if(!value||typeof value!=='object')return null;
+  const type=String(value.type||'');
+  if(!['timer','visual-timer','stopwatch','clock','traffic','draw','dice','score','text','work','image','event','agenda','poll','qr'].includes(type))return null;
+  const pos=n=>Math.max(0,Math.min(100,Number(n)||0));
+  const size=(n,min)=>Math.max(min,Math.min(100,Number(n)||min));
+  return{id:sanitizeIdentifier(value.id,'widget'),type,x:pos(value.x),y:pos(value.y),w:size(value.w,12),h:size(value.h,14),locked:!!value.locked,title:String(value.title||'').slice(0,80),data:sanitizeLessonWidgetData(type,value.data)};
+}
+function sanitizeLessonWidgetData(type,value){
+  const d=value&&typeof value==='object'?value:{};
+  const safeSeconds=(v,max=24*3600)=>Math.max(0,Math.min(max,Math.floor(Number(v)||0)));
+  if(type==='timer'||type==='visual-timer')return{duration:safeSeconds(d.duration||300),remaining:safeSeconds(d.remaining??d.duration??300),running:!!d.running,endsAt:Number.isFinite(Number(d.endsAt))?Number(d.endsAt):null,sound:['bell','chime','soft','none'].includes(d.sound)?d.sound:'bell',showNumbers:d.showNumbers!==false};
+  if(type==='stopwatch')return{elapsed:safeSeconds(d.elapsed,7*24*3600),running:!!d.running,startedAt:Number.isFinite(Number(d.startedAt))?Number(d.startedAt):null,laps:Array.isArray(d.laps)?d.laps.slice(0,30).map(v=>safeSeconds(v,7*24*3600)):[]};
+  if(type==='clock')return{style:['digital','analog','both'].includes(d.style)?d.style:'both',showSeconds:d.showSeconds!==false,alarmTime:/^([01]\d|2[0-3]):[0-5]\d$/.test(String(d.alarmTime||''))?String(d.alarmTime):'',alarmSound:['bell','chime','soft','none'].includes(d.alarmSound)?d.alarmSound:'chime',alarmFiredDate:String(d.alarmFiredDate||'').slice(0,20)};
+  if(type==='traffic')return{active:['red','amber','green'].includes(d.active)?d.active:'green',labels:{red:String(d.labels?.red||'Ticho').slice(0,40),amber:String(d.labels?.amber||'Šeptem').slice(0,40),green:String(d.labels?.green||'Diskuse').slice(0,40)}};
+  if(type==='draw')return{tool:['pen','line','rect','ellipse','eraser'].includes(d.tool)?d.tool:'pen',color:/^#[0-9a-f]{6}$/i.test(String(d.color||''))?String(d.color):'#ffffff',width:Math.max(1,Math.min(16,Number(d.width)||4)),paper:['blank','lines','grid'].includes(d.paper)?d.paper:'blank',strokes:Array.isArray(d.strokes)?d.strokes.slice(-120).map(sanitizeLessonStroke).filter(Boolean):[]};
+  if(type==='dice')return{count:Math.max(1,Math.min(3,Number(d.count)||1)),sides:[6,12,20].includes(Number(d.sides))?Number(d.sides):6,last:Array.isArray(d.last)?d.last.slice(0,3).map(v=>String(v??'').slice(0,80)).filter(Boolean):[],mode:['dice','coin','number','letters','custom'].includes(d.mode)?d.mode:'dice',min:Math.max(-999,Math.min(999,Number(d.min)||1)),max:Math.max(-999,Math.min(999,Number(d.max)||100)),custom:Array.isArray(d.custom)?d.custom.slice(0,30).map(v=>String(v).slice(0,80)).filter(Boolean):[]};
+  if(type==='score')return{mode:['points','duel','race'].includes(d.mode)?d.mode:'points',goal:Math.max(1,Math.min(999,Number(d.goal)||10)),teams:Array.isArray(d.teams)?d.teams.slice(0,12).map((team,index)=>({id:sanitizeIdentifier(team?.id,'board-team'),name:String(team?.name||`Tým ${index+1}`).slice(0,80),score:Math.max(-999,Math.min(9999,Number(team?.score)||0))})):[]};
+  if(type==='text')return{text:String(d.text||'Napište instrukci…').slice(0,2000),size:Math.max(14,Math.min(72,Number(d.size)||28)),align:['left','center','right'].includes(d.align)?d.align:'center'};
+  if(type==='work')return{mode:['silent','whisper','pair','group','discussion'].includes(d.mode)?d.mode:'silent'};
+  if(type==='image')return{url:sanitizeLessonImageUrl(d.url),sourcePage:sanitizeLessonSourceUrl(d.sourcePage),sourceLabel:String(d.sourceLabel||'Wikimedia Commons').slice(0,160),license:String(d.license||'').slice(0,80),fit:['cover','contain'].includes(d.fit)?d.fit:'cover'};
+  if(type==='event')return{title:String(d.title||'Událost').slice(0,120),date:/^\d{4}-\d{2}-\d{2}$/.test(String(d.date||''))?String(d.date):'',schoolDaysOnly:!!d.schoolDaysOnly};
+  if(type==='agenda')return{active:Math.max(0,Math.min(19,Number(d.active)||0)),items:Array.isArray(d.items)?d.items.slice(0,20).map(item=>({title:String(item?.title||'Aktivita').slice(0,120),minutes:Math.max(0,Math.min(180,Number(item?.minutes)||0))})):[]};
+  if(type==='poll')return{question:String(d.question||'Otázka').slice(0,300),options:Array.isArray(d.options)?d.options.slice(0,5).map((option,index)=>({id:sanitizeIdentifier(option?.id||`opt-${index+1}`,'poll-option'),label:String(option?.label||`Možnost ${index+1}`).slice(0,120),votes:Math.max(0,Math.min(9999,Number(option?.votes)||0))})):[],status:['draft','open','closed'].includes(d.status)?d.status:'draft',showResults:d.showResults!==false,remote:sanitizeLessonPollRemote(d.remote)};
+  if(type==='qr')return{url:sanitizeLessonQrUrl(d.url),label:String(d.label||'Odkaz').slice(0,160),qrUrl:sanitizeLessonSelfUrl(d.qrUrl)};
+  return{};
+}
+function sanitizeLessonPollRemote(value){
+  const d=value&&typeof value==='object'?value:{};
+  return{id:String(d.id||'').replace(/[^A-Za-z0-9._:-]/g,'').slice(0,120),token:String(d.token||'').replace(/[^A-Za-z0-9._:-]/g,'').slice(0,240),voteUrl:sanitizeLessonQrUrl(d.voteUrl),qrUrl:sanitizeLessonSelfUrl(d.qrUrl),syncedAt:String(d.syncedAt||'').slice(0,40)};
+}
+function sanitizeLessonQrUrl(value){try{const u=new URL(String(value||''));return ['https:','http:'].includes(u.protocol)?u.href:''}catch(_){return''}}
+function sanitizeLessonSelfUrl(value){try{const loc=globalThis.location;if(!loc?.href||!loc?.origin)return'';const u=new URL(String(value||''),loc.href);return u.origin===loc.origin?u.href:''}catch(_){return''}}
+function sanitizeLessonStroke(value){
+  if(!value||typeof value!=='object')return null;
+  const points=Array.isArray(value.points)?value.points.slice(0,300).map(p=>({x:Math.max(0,Math.min(1,Number(p?.x)||0)),y:Math.max(0,Math.min(1,Number(p?.y)||0))})):[];
+  if(!points.length)return null;
+  return{tool:['pen','line','rect','ellipse','eraser'].includes(value.tool)?value.tool:'pen',color:/^#[0-9a-f]{6}$/i.test(String(value.color||''))?String(value.color):'#ffffff',width:Math.max(1,Math.min(16,Number(value.width)||4)),points};
+}
+
 function sanitizeToolState(value){
   const source=value&&typeof value==='object'?value:{};
   return{scores:Array.isArray(source.scores)?source.scores.map(item=>({id:sanitizeIdentifier(item?.id,'team'),name:String(item?.name||'Tým').slice(0,100),score:Number(item?.score)||0})).slice(0,20):[],decisionOptions:Array.isArray(source.decisionOptions)?source.decisionOptions.map(value=>String(value).slice(0,200)).filter(Boolean).slice(0,50):[],updatedAt:source.updatedAt||null};
@@ -1061,25 +1137,31 @@ function ensureToolClock(){
 }
 function renderTimerDisplays(){$$('[data-timer-display]').forEach(node=>node.textContent=formatClock(currentTimerRemaining()));$$('[data-stopwatch-display]').forEach(node=>node.textContent=formatClock(currentStopwatchElapsed()));const timerBtn=$('[data-action="timer-toggle"]');if(timerBtn)timerBtn.textContent=App.ui.timer.running?'Pozastavit':'Spustit';const swBtn=$('[data-action="stopwatch-toggle"]');if(swBtn)swBtn.textContent=App.ui.stopwatch.running?'Pozastavit':'Spustit'}
 function scoreRows(classItem){return classItem.toolState.scores}
-function renderToolsView(){const root=$('#toolsWorkspace');if(!root)return;const classItem=getSelectedClass();if(!classItem){root.innerHTML=noClassMessage('Třídní nástroje','Nejprve vytvořte nebo vyberte třídu.');return}const stats=engagementStats(classItem);const coverage=engagementCoverage(classItem);const recent=engagementEntries(classItem).slice(0,10);const scores=scoreRows(classItem);root.innerHTML=`<div class="tools-layout">
-<article class="tool-card timer-card"><header><span>ČASOVAČ</span><button data-action="project-tools">Promítnout</button></header><div class="clock-display" data-timer-display>${formatClock(currentTimerRemaining())}</div><div class="preset-row">${[60,180,300,600,900].map(value=>`<button data-timer-preset="${value}">${value<60?value:value/60+' min'}</button>`).join('')}</div><div class="tool-actions"><button class="primary-button compact" data-action="timer-toggle">${App.ui.timer.running?'Pozastavit':'Spustit'}</button><button class="small-button" data-action="timer-reset">Reset</button><label>Vlastní minuty<input id="customTimerMinutes" type="number" min="1" max="180" value="5"></label></div></article>
-<article class="tool-card stopwatch-card"><header><span>STOPKY</span></header><div class="clock-display small" data-stopwatch-display>${formatClock(currentStopwatchElapsed())}</div><div class="tool-actions"><button class="primary-button compact" data-action="stopwatch-toggle">${App.ui.stopwatch.running?'Pozastavit':'Spustit'}</button><button class="small-button" data-action="stopwatch-lap">Mezičas</button><button class="small-button" data-action="stopwatch-reset">Reset</button></div><div class="lap-list" id="lapList">${(App.ui.stopwatch.laps||[]).map(value=>`<span>${formatClock(value)}</span>`).join('')}</div></article>
+function renderToolsView(){
+  const root=$('#toolsWorkspace');if(!root)return;const classItem=getSelectedClass();let classTools='';
+  if(classItem){
+    const stats=engagementStats(classItem);const coverage=engagementCoverage(classItem);const recent=engagementEntries(classItem).slice(0,10);
+    classTools=`<details class="classic-tools-panel"><summary><span>DALŠÍ TŘÍDNÍ NÁSTROJE</span><b>Rychlá náhoda, spravedlivé zapojování a tisk</b></summary><div class="tools-layout compact-tools">
 <article class="tool-card quick-card"><header><span>RYCHLÁ NÁHODA</span></header><div class="quick-result" id="quickResult">${escapeHtml(App.ui.quickResult||'Připraveno')}</div><div class="quick-grid"><button data-quick="dice">Kostka D6</button><button data-quick="coin">Mince</button><button data-quick="number">Číslo 1–100</button><button data-action="volunteer-window">Dobrovolník / náhoda</button><button data-action="volunteer-claimed">Dobrovolník je</button></div><label>Možnosti rozhodovače<textarea id="decisionOptions" rows="4" placeholder="Jedna možnost na řádek">${escapeHtml(classItem.toolState.decisionOptions.join('\n'))}</textarea></label><button class="primary-button compact wide-button" data-action="decision-pick">Vylosovat možnost</button></article>
-<article class="tool-card score-card"><header><span>TÝMOVÉ SKÓRE</span><div><button data-action="scores-from-groups">Načíst skupiny</button><button data-action="score-add-team">+ Tým</button></div></header><div class="score-list">${scores.length?scores.map(team=>`<div class="score-row" data-team-id="${team.id}"><input value="${escapeHtml(team.name)}" data-score-name><button data-score-change="-1">−</button><strong>${team.score}</strong><button data-score-change="1">＋</button><button class="danger-icon" data-score-delete>×</button></div>`).join(''):'<div class="empty-mini wide">Přidejte týmy nebo načtěte aktuální skupiny.</div>'}</div></article>
 <article class="tool-card engagement-card"><header><span>SPRAVEDLIVÉ ZAPOJOVÁNÍ</span><button data-action="engagement-reset">Vymazat historii</button></header><div class="coverage-ring" style="--coverage:${coverage.percent}"><b>${coverage.percent}%</b><span>${coverage.touched} z ${coverage.total} zapojených</span></div><div class="engagement-pick"><select id="engagementKind">${Object.entries(ENGAGEMENT_KINDS).map(([id,name])=>`<option value="${id}">${name}</option>`).join('')}</select><button class="primary-button compact" data-action="fair-pick">Vybrat nejméně zapojeného</button></div><div class="engagement-table"><div class="engagement-head"><span>Student</span><span>Počet</span><span>Naposledy</span><span></span></div>${stats.slice(0,12).map(item=>`<div><b>${escapeHtml(item.student.displayName)}</b><span>${item.count}</span><small>${item.lastAt?formatDateTime(item.lastAt):'—'}</small><button data-engage-student="${item.student.id}">+1</button></div>`).join('')}</div><div class="recent-engagement">${recent.map(item=>{const student=classItem.students.find(s=>s.id===item.studentId);return`<span>${escapeHtml(student?.displayName||'—')} · ${escapeHtml(ENGAGEMENT_KINDS[item.kind]||item.kind)} <button data-undo-engagement="${item.id}">×</button></span>`}).join('')}</div></article>
 <article class="tool-card export-card"><header><span>TISK A PDF</span></header><p>Vytvořte čistý výstup pro kolegy nebo žáky. Pro PDF zvolte v tiskovém dialogu „Uložit jako PDF“.</p><div class="export-grid"><button data-export="groups">Skupiny a role</button><button data-export="seating">Zasedací pořádek</button><button data-export="engagement">Přehled zapojení</button><button data-export="cards">Kartičky se jmény</button></div></article>
-</div>`;renderTimerDisplays();ensureToolClock()}
+</div></details>`;
+  }else{
+    classTools=`<div class="class-tools-note"><b>Třídní funkce jsou zatím skryté.</b><span>Výukový panel funguje i bez třídy. Pro spravedlivé zapojování a třídní výstupy nejprve vyberte třídu.</span></div>`;
+  }
+  root.innerHTML=lessonBoardPanelHtml()+classTools;lessonBoardAfterRender();renderTimerDisplays();ensureToolClock();
+}
 function persistToolState(classItem,event='tools_update'){classItem.toolState.updatedAt=nowIso();saveData({event})}
 function handleToolAction(target){const classItem=getSelectedClass();if(!classItem)return;const action=target.dataset.action;if(target.dataset.timerPreset){const seconds=Number(target.dataset.timerPreset);App.ui.timer={duration:seconds,remaining:seconds,running:false,endsAt:null};renderTimerDisplays();ensureToolClock();return}if(action==='timer-toggle'){const timer=App.ui.timer;if(timer.running){timer.remaining=currentTimerRemaining();timer.running=false;timer.endsAt=null}else{const custom=Math.max(1,Number($('#customTimerMinutes')?.value)||0)*60;if(timer.remaining<=0){timer.duration=custom;timer.remaining=custom}timer.running=true;timer.endsAt=Date.now()+timer.remaining*1000}renderTimerDisplays();ensureToolClock();return}if(action==='timer-reset'){const custom=Math.max(1,Number($('#customTimerMinutes')?.value)||5)*60;App.ui.timer={duration:custom,remaining:custom,running:false,endsAt:null};renderTimerDisplays();ensureToolClock();return}if(action==='stopwatch-toggle'){const sw=App.ui.stopwatch;if(sw.running){sw.elapsed=currentStopwatchElapsed();sw.running=false;sw.startedAt=null}else{sw.running=true;sw.startedAt=Date.now()}renderTimerDisplays();ensureToolClock();return}if(action==='stopwatch-reset'){App.ui.stopwatch={elapsed:0,running:false,startedAt:null,laps:[]};const list=$('#lapList');if(list)list.innerHTML='';renderTimerDisplays();ensureToolClock();return}if(action==='stopwatch-lap'){const value=currentStopwatchElapsed();App.ui.stopwatch.laps=App.ui.stopwatch.laps||[];App.ui.stopwatch.laps.unshift(value);const lap=document.createElement('span');lap.textContent=formatClock(value);$('#lapList')?.prepend(lap);return}if(target.dataset.quick){const type=target.dataset.quick;App.ui.quickResult=type==='dice'?String(randomInt(6)+1):type==='coin'?(randomInt(2)?'Panna':'Orel'):String(randomInt(100)+1);$('#quickResult').textContent=App.ui.quickResult;return}if(action==='volunteer-window'){const token=uid('volunteer');App.ui.volunteerToken=token;let left=5;const node=$('#quickResult');node.textContent=`Dobrovolník? ${left}`;const handle=setInterval(()=>{if(App.ui.volunteerToken!==token){clearInterval(handle);return}left--;if(left>0){if(node.isConnected)node.textContent=`Dobrovolník? ${left}`;return}clearInterval(handle);try{const student=selectFairStudent({kind:'answer'});App.ui.volunteerToken=null;App.ui.quickResult=student.displayName;toast(`Nikdo se nepřihlásil. Vybrán/a: ${student.displayName}`,'success')}catch(error){toast(error.message,'error')}},1000);return}if(action==='volunteer-claimed'){App.ui.volunteerToken=null;App.ui.quickResult='Dobrovolník vybrán';$('#quickResult').textContent=App.ui.quickResult;toast('Dobrovolník dostal prostor.','success');return}if(action==='decision-pick'){const options=$('#decisionOptions').value.split(/\n|,/).map(x=>x.trim()).filter(Boolean);if(!options.length){toast('Vložte alespoň jednu možnost.','error');return}classItem.toolState.decisionOptions=options;App.ui.quickResult=options[randomInt(options.length)];persistToolState(classItem,'decision_pick');renderToolsView();return}if(action==='scores-from-groups'){classItem.toolState.scores=classItem.currentGroups.map(group=>({id:uid('team'),name:group.name,score:0}));persistToolState(classItem,'scores_groups');return}if(action==='score-add-team'){classItem.toolState.scores.push({id:uid('team'),name:`Tým ${classItem.toolState.scores.length+1}`,score:0});persistToolState(classItem,'score_add');return}if(target.dataset.scoreChange){const row=target.closest('[data-team-id]'),team=classItem.toolState.scores.find(item=>item.id===row?.dataset.teamId);if(team){team.score+=Number(target.dataset.scoreChange);persistToolState(classItem,'score_change')}return}if(target.hasAttribute('data-score-delete')){const id=target.closest('[data-team-id]')?.dataset.teamId;classItem.toolState.scores=classItem.toolState.scores.filter(item=>item.id!==id);persistToolState(classItem,'score_delete');return}if(action==='fair-pick'){try{const student=selectFairStudent({kind:$('#engagementKind').value});App.ui.quickResult=student.displayName;toast(`Vybrán/a: ${student.displayName}`,'success');renderToolsView()}catch(error){toast(error.message,'error')}return}if(target.dataset.engageStudent){recordEngagement(target.dataset.engageStudent,$('#engagementKind')?.value||'answer');return}if(target.dataset.undoEngagement){undoEngagement(target.dataset.undoEngagement);return}if(action==='engagement-reset'){if(!App.settings.confirmDestructive||confirm('Vymazat historii zapojování této třídy?'))resetEngagementHistory();return}if(action==='project-tools'){openProjection('tools');return}if(target.dataset.export){printSortioDocument(target.dataset.export);return}}
 function bindToolsUi(){document.addEventListener('click',event=>{const target=event.target.closest('[data-action],[data-timer-preset],[data-quick],[data-score-change],[data-score-delete],[data-engage-student],[data-undo-engagement],[data-export]');if(!target||!target.closest('#toolsWorkspace'))return;handleToolAction(target)});document.addEventListener('change',event=>{if(event.target.matches('[data-score-name]')){const classItem=getSelectedClass();const team=classItem?.toolState.scores.find(item=>item.id===event.target.closest('[data-team-id]')?.dataset.teamId);if(team){team.name=event.target.value.trim()||team.name;persistToolState(classItem,'score_rename')}}})}
 
 ;
-function projectionModeForCurrent(){if(App.ui.projectionMode&&App.ui.projectionMode!=='auto')return App.ui.projectionMode;if(['groups','seating','draw','tools'].includes(App.route))return App.route;return getSelectedClass()?.currentGroups?.length?'groups':'tools'}
+function projectionModeForCurrent(){if(App.ui.projectionMode&&App.ui.projectionMode!=='auto')return App.ui.projectionMode;if(App.route==='tools')return'lesson';if(['groups','seating','draw'].includes(App.route))return App.route;return getSelectedClass()?.currentGroups?.length?'groups':'lesson'}
 function projectionGroups(classItem){if(!classItem?.currentGroups?.length)return'<div class="projection-empty"><b>Skupiny zatím nejsou vytvořené.</b><span>Vraťte se do modulu Skupiny.</span></div>';return`<div class="projection-groups">${classItem.currentGroups.map(group=>`<article><header><span>${escapeHtml(group.topic||'')}</span><h3>${escapeHtml(group.name)}</h3></header><ul>${resolveStudents(group.studentIds,classItem).map(student=>`<li class="${student.id===group.spokespersonId?'speaker':''}">${escapeHtml(student.displayName)}${student.id===group.spokespersonId?'<small>mluvčí</small>':''}</li>`).join('')}</ul>${Object.keys(group.roleAssignments||{}).length?`<footer>${Object.entries(group.roleAssignments).map(([role,id])=>`<span><b>${escapeHtml(role)}</b>${escapeHtml(classItem.students.find(s=>s.id===id)?.displayName||'—')}</span>`).join('')}</footer>`:''}</article>`).join('')}</div>`}
 function projectionSeating(classItem){const seats=classItem?.seatingPlan?.seats||[];if(!seats.some(seat=>seat.studentId))return'<div class="projection-empty"><b>Zasedací pořádek zatím není vytvořený.</b><span>Vraťte se do modulu Místa.</span></div>';const columns=Math.max(...seats.map(seat=>seat.column),0)+1;return`<div class="projection-board">TABULE</div><div class="projection-seats" style="--projection-columns:${columns}">${seats.map(seat=>`<div class="${seat.blocked?'blocked':''}" style="grid-row:${seat.row+1};grid-column:${seat.column+1}">${seat.blocked?'—':escapeHtml(classItem.students.find(s=>s.id===seat.studentId)?.displayName||'Volné místo')}</div>`).join('')}</div>`}
 function projectionDraw(classItem){const last=classItem?.drawState?.lastDraw||classItem?.drawHistory?.[0];if(!last)return'<div class="projection-empty"><b>Zatím neproběhlo žádné losování.</b></div>';return`<div class="projection-draw"><span>VYLOSOVÁNO</span><h2>${last.selectedNames.map(escapeHtml).join('<br>')}</h2><p>${last.mode==='order'?'Pořadí celé třídy':last.noRepeat?'Výběr bez opakování':'Volná náhoda'}</p></div>`}
 function projectionTools(classItem){const scores=classItem?.toolState?.scores||[];return`<div class="projection-tools"><article><span>ČASOVAČ</span><b data-timer-display>${formatClock(currentTimerRemaining())}</b></article><article><span>STOPKY</span><b data-stopwatch-display>${formatClock(currentStopwatchElapsed())}</b></article>${scores.length?`<section><h3>Týmové skóre</h3>${scores.sort((a,b)=>b.score-a.score).map(team=>`<div><span>${escapeHtml(team.name)}</span><b>${team.score}</b></div>`).join('')}</section>`:''}</div>`}
-function renderProjection(){const dialog=$('#projectionDialog'),content=$('#projectionContent'),title=$('#projectionTitle');if(!dialog||!content)return;const classItem=getSelectedClass();const mode=projectionModeForCurrent();const names={groups:'Skupiny',seating:'Zasedací pořádek',draw:'Losování',tools:'Třídní nástroje'};title.textContent=`${classItem?.name||'SORTIO'} · ${names[mode]||'Projekce'}`;content.dataset.mode=mode;content.innerHTML=mode==='groups'?projectionGroups(classItem):mode==='seating'?projectionSeating(classItem):mode==='draw'?projectionDraw(classItem):projectionTools(classItem);renderTimerDisplays()}
+function renderProjection(){const dialog=$('#projectionDialog'),content=$('#projectionContent'),title=$('#projectionTitle');if(!dialog||!content)return;const classItem=getSelectedClass();const mode=projectionModeForCurrent();const names={groups:'Skupiny',seating:'Zasedací pořádek',draw:'Losování',lesson:'Výukový panel',tools:'Původní třídní nástroje'};title.textContent=`${mode==='lesson'?lessonBoardScene().name:(classItem?.name||'SORTIO')} · ${names[mode]||'Projekce'}`;content.dataset.mode=mode;content.innerHTML=mode==='lesson'?lessonBoardProjectionHtml():mode==='groups'?projectionGroups(classItem):mode==='seating'?projectionSeating(classItem):mode==='draw'?projectionDraw(classItem):projectionTools(classItem);renderTimerDisplays();if(mode==='lesson')lessonBoardAfterRender()}
 function openProjection(mode='auto'){App.ui.projectionMode=mode;const select=$('#projectionMode');if(select)select.value=mode;renderProjection();const dialog=$('#projectionDialog');if(dialog&&!dialog.open)dialog.showModal();recordEvent('projection_open',{mode:projectionModeForCurrent()})}
 function closeProjection(){const dialog=$('#projectionDialog');if(document.fullscreenElement?.closest?.('#projectionDialog'))document.exitFullscreen().catch(()=>{});if(dialog?.open)dialog.close()}
 function bindProjection(){$('#projectionBtn')?.addEventListener('click',()=>openProjection('auto'));$('#projectionMode')?.addEventListener('change',event=>{App.ui.projectionMode=event.target.value;renderProjection()});document.addEventListener('click',event=>{if(event.target.closest('[data-action="close-projection"]'))closeProjection();if(event.target.closest('[data-action="projection-fullscreen"]')){$('#projectionDialog .projection-shell')?.requestFullscreen?.().catch(()=>toast('Celou obrazovku se nepodařilo aktivovat.','error'))}});document.addEventListener('sortio:data-changed',()=>{if($('#projectionDialog')?.open)renderProjection()})}
@@ -1087,6 +1169,391 @@ function bindProjection(){$('#projectionBtn')?.addEventListener('click',()=>open
 ;
 function printDocumentShell(title,body){const classItem=getSelectedClass();const html=`<!doctype html><html lang="cs"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title><style>@page{size:A4;margin:13mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#172033;margin:0}header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #172033;padding-bottom:10px;margin-bottom:18px}header h1{font-size:22px;margin:0 0 5px}header p{margin:0;font-size:11px;color:#5b6575}header b{font-size:11px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{break-inside:avoid;border:1px solid #cbd2dc;border-radius:10px;padding:12px}.card h2{font-size:15px;margin:0 0 8px}.card ul{padding-left:18px;margin:0}.card li{margin:5px 0;font-size:11px}.meta{font-size:9px;color:#6c7480}.roles{margin-top:8px;border-top:1px solid #e0e4ea;padding-top:7px;font-size:9px}.seat-grid{display:grid;gap:7px}.seat{min-height:48px;border:1px solid #bfc7d2;border-radius:7px;display:grid;place-items:center;text-align:center;padding:5px;font-size:9px}.seat.blocked{border-style:dashed;color:#9aa1aa}.board{width:65%;margin:0 auto 18px;padding:6px;border:2px solid #172033;text-align:center;font-size:9px;font-weight:bold}.stats{width:100%;border-collapse:collapse}.stats th,.stats td{border-bottom:1px solid #d7dce3;padding:7px;text-align:left;font-size:10px}.name-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.name-card{height:70px;border:1px dashed #8c96a5;display:grid;place-items:center;text-align:center;font-size:14px;font-weight:bold;break-inside:avoid}footer{margin-top:18px;border-top:1px solid #d4d8df;padding-top:8px;font-size:8px;color:#6b7480}@media print{button{display:none}}</style></head><body onload="window.print()"><header><div><h1>${escapeHtml(title)}</h1><p>${escapeHtml(classItem?.name||'SORTIO')} · ${escapeHtml(classItem?.schoolYear||'')}</p></div><b>${new Intl.DateTimeFormat('cs-CZ',{dateStyle:'long'}).format(new Date())}</b></header>${body}<footer>SORTIO · Autor a vývojový garant Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka</footer></body></html>`;const win=window.open('','_blank');if(!win){toast('Prohlížeč zablokoval tiskové okno. Povolte vyskakovací okna.','error');return}win.document.write(html);win.document.close();App.ui.printWindows=(App.ui.printWindows||[]).filter(item=>item&&!item.closed);App.ui.printWindows.push(win);recordEvent('print_export',{title})}
 function printSortioDocument(type){const classItem=getSelectedClass();if(!classItem)throw new Error('Nejprve vyberte třídu.');if(type==='groups'){if(!classItem.currentGroups.length)throw new Error('Nejprve vytvořte skupiny.');const body=`<div class="grid">${classItem.currentGroups.map(group=>`<section class="card"><h2>${escapeHtml(group.name)} ${group.topic?`· ${escapeHtml(group.topic)}`:''}</h2><ul>${resolveStudents(group.studentIds,classItem).map(student=>`<li>${escapeHtml(student.displayName)}${student.id===group.spokespersonId?' – mluvčí':''}</li>`).join('')}</ul>${Object.keys(group.roleAssignments||{}).length?`<div class="roles">${Object.entries(group.roleAssignments).map(([role,id])=>`<b>${escapeHtml(role)}:</b> ${escapeHtml(classItem.students.find(s=>s.id===id)?.displayName||'—')}`).join('<br>')}</div>`:''}</section>`).join('')}</div>`;printDocumentShell('Skupiny, role a témata',body);return}if(type==='seating'){const seats=classItem.seatingPlan.seats;const columns=Math.max(...seats.map(s=>s.column),0)+1;const body=`<div class="board">TABULE</div><div class="seat-grid" style="grid-template-columns:repeat(${columns},1fr)">${seats.map(seat=>`<div class="seat ${seat.blocked?'blocked':''}" style="grid-row:${seat.row+1};grid-column:${seat.column+1}">${seat.blocked?'Nepoužívá se':escapeHtml(classItem.students.find(s=>s.id===seat.studentId)?.displayName||'Volné')}</div>`).join('')}</div>`;printDocumentShell('Zasedací pořádek',body);return}if(type==='engagement'){const rows=engagementStats(classItem).map(item=>`<tr><td>${escapeHtml(item.student.displayName)}</td><td>${item.count}</td><td>${item.lastAt?formatDateTime(item.lastAt):'—'}</td></tr>`).join('');printDocumentShell('Přehled zapojení',`<table class="stats"><thead><tr><th>Student</th><th>Počet zapojení</th><th>Naposledy</th></tr></thead><tbody>${rows}</tbody></table>`);return}if(type==='cards'){printDocumentShell('Kartičky se jmény',`<div class="name-cards">${classStudents(classItem).map(student=>`<div class="name-card">${escapeHtml(student.displayName)}</div>`).join('')}</div>`);return}}
+
+;
+const LESSON_WIDGET_CATALOG=Object.freeze([
+  {type:'timer',icon:'⏱',label:'Timer'},
+  {type:'visual-timer',icon:'◔',label:'Visual timer'},
+  {type:'stopwatch',icon:'⌱',label:'Stopky'},
+  {type:'clock',icon:'◷',label:'Hodiny'},
+  {type:'traffic',icon:'●',label:'Semafor'},
+  {type:'draw',icon:'✎',label:'Tabule'},
+  {type:'dice',icon:'⚄',label:'Kostky'},
+  {type:'score',icon:'★',label:'Skóre'},
+  {type:'text',icon:'T',label:'Text'},
+  {type:'work',icon:'◎',label:'Režim práce'},
+  {type:'image',icon:'▧',label:'Obrázek'},
+  {type:'event',icon:'⌛',label:'Odpočet'},
+  {type:'agenda',icon:'☷',label:'Agenda'},
+  {type:'poll',icon:'▥',label:'Hlasování'},
+  {type:'qr',icon:'⌗',label:'QR odkaz'},
+]);
+const LESSON_BACKGROUND_PRESETS=Object.freeze([
+  {type:'gradient',value:'midnight',name:'Půlnoc'},
+  {type:'gradient',value:'aurora',name:'Aurora'},
+  {type:'gradient',value:'ocean',name:'Oceán'},
+  {type:'gradient',value:'sunset',name:'Západ slunce'},
+  {type:'gradient',value:'violet',name:'Fialová'},
+  {type:'gradient',value:'clean',name:'Světlá'},
+  {type:'solid',value:'slate',name:'Břidlice'},
+  {type:'solid',value:'paper',name:'Papír'},
+  {type:'solid',value:'forest',name:'Les'},
+  {type:'solid',value:'sand',name:'Písek'},
+]);
+let lessonBoardTicker=null;
+let lessonAudioContext=null;
+let lessonPointerState=null;
+let lessonDrawState=null;
+
+function lessonBoardState(){if(!App.data.lessonBoard)App.data.lessonBoard=defaultLessonBoardState();return App.data.lessonBoard}
+function lessonBoardScene(){const board=lessonBoardState();return board.scenes.find(scene=>scene.id===board.activeSceneId)||board.scenes[0]}
+function lessonBoardWidget(id){return lessonBoardScene()?.widgets.find(widget=>widget.id===id)||null}
+function lessonBoardWidgetLabel(type){return LESSON_WIDGET_CATALOG.find(item=>item.type===type)?.label||'Widget'}
+function lessonBoardPersist(event='lesson_board_update',{render=true}={}){const board=lessonBoardState();board.updatedAt=nowIso();saveData({event,render})}
+function lessonBoardSceneBackgroundStyle(scene){const bg=scene?.background||{};if(bg.type==='image'&&bg.url)return`background-image:linear-gradient(rgba(4,10,20,.18),rgba(4,10,20,.18)),url("${escapeHtml(bg.url)}")`;return''}
+function lessonBoardSceneBackgroundClass(scene){const bg=scene?.background||{};return`board-bg-${bg.type||'gradient'}-${bg.value||'midnight'}`}
+function lessonBoardBackgroundCredit(scene){const bg=scene?.background||{};if(bg.type!=='image'||!bg.sourcePage)return'';const label=String(bg.sourceLabel||'Wikimedia Commons'),license=String(bg.license||'');return`<a class="board-background-credit" href="${escapeHtml(bg.sourcePage)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}${license?` · ${escapeHtml(license)}`:''}</a>`}
+function lessonBoardDefaultData(type){
+  const future=new Date(Date.now()+7*86400000).toISOString().slice(0,10);
+  if(type==='timer'||type==='visual-timer')return{duration:300,remaining:300,running:false,endsAt:null,sound:'bell',showNumbers:true};
+  if(type==='stopwatch')return{elapsed:0,running:false,startedAt:null,laps:[]};
+  if(type==='clock')return{style:'both',showSeconds:true,alarmTime:'',alarmSound:'chime',alarmFiredDate:''};
+  if(type==='traffic')return{active:'green',labels:{red:'Ticho',amber:'Šeptem',green:'Diskuse'}};
+  if(type==='draw')return{tool:'pen',color:'#ffffff',width:4,paper:'blank',strokes:[]};
+  if(type==='dice')return{count:1,sides:6,last:[],mode:'dice',min:1,max:100,custom:['Popiš','Porovnej','Vysvětli','Zeptej se']};
+  if(type==='score')return{mode:'points',goal:10,teams:[]};
+  if(type==='text')return{text:'Napište instrukci…',size:28,align:'center'};
+  if(type==='work')return{mode:'silent'};
+  if(type==='image')return{url:'',sourcePage:'',sourceLabel:'Wikimedia Commons',license:'',fit:'cover'};
+  if(type==='event')return{title:'Událost',date:future,schoolDaysOnly:false};
+  if(type==='agenda')return{active:0,items:[{title:'Warm-up',minutes:5},{title:'Hlavní aktivita',minutes:25},{title:'Závěr',minutes:10}]};
+  if(type==='poll')return{question:'Co si myslíte?',options:[{id:uid('poll-option'),label:'A',votes:0},{id:uid('poll-option'),label:'B',votes:0}],status:'draft',showResults:true,remote:{id:'',token:'',voteUrl:'',qrUrl:'',syncedAt:''}};
+  if(type==='qr')return{url:'https://',label:'Odkaz pro studenty',qrUrl:''};
+  return{};
+}
+function lessonBoardDefaultSize(type){
+  const map={timer:[28,31],'visual-timer':[25,35],stopwatch:[25,30],clock:[25,31],traffic:[19,37],draw:[45,48],dice:[25,31],score:[37,40],text:[38,28],work:[25,29],image:[35,38],event:[31,31],agenda:[35,42],poll:[39,44],qr:[28,40]};
+  return map[type]||[28,30];
+}
+function lessonBoardNextPosition(type){const scene=lessonBoardScene();const [w,h]=lessonBoardDefaultSize(type);const index=scene.widgets.length;return{x:3+(index%3)*7,y:4+(index%4)*6,w,h}}
+function lessonBoardAddWidget(type){
+  if(!LESSON_WIDGET_CATALOG.some(item=>item.type===type))return;
+  if(type==='image'){openMediaLibrary('widget');return}
+  const scene=lessonBoardScene();const pos=lessonBoardNextPosition(type);
+  scene.widgets.push({id:uid('widget'),type,...pos,locked:false,title:lessonBoardWidgetLabel(type),data:lessonBoardDefaultData(type)});
+  lessonBoardPersist('lesson_widget_add');
+}
+function lessonBoardAddImageWidget(image){
+  const scene=lessonBoardScene();const pos=lessonBoardNextPosition('image');
+  scene.widgets.push({id:uid('widget'),type:'image',...pos,locked:false,title:'Obrázek',data:{url:image.url,sourcePage:image.sourcePage||'',sourceLabel:image.sourceLabel||'Wikimedia Commons',license:image.license||'',fit:'cover'}});
+  lessonBoardPersist('lesson_image_add');
+}
+function lessonBoardDuplicateWidget(id){const scene=lessonBoardScene();const source=scene.widgets.find(widget=>widget.id===id);if(!source)return;const copy=JSON.parse(JSON.stringify(source));copy.id=uid('widget');copy.x=Math.min(88,source.x+3);copy.y=Math.min(86,source.y+3);copy.locked=false;scene.widgets.push(copy);lessonBoardPersist('lesson_widget_duplicate')}
+function lessonBoardDeleteWidget(id){const scene=lessonBoardScene();scene.widgets=scene.widgets.filter(widget=>widget.id!==id);if(App.ui.lessonSpotlightId===id)App.ui.lessonSpotlightId=null;lessonBoardPersist('lesson_widget_delete')}
+function lessonBoardAddScene(){const board=lessonBoardState();const id=uid('scene');board.scenes.push({id,name:`Scéna ${board.scenes.length+1}`,background:{type:'gradient',value:'midnight'},widgets:[]});board.activeSceneId=id;lessonBoardPersist('lesson_scene_add')}
+function lessonBoardDuplicateScene(){const board=lessonBoardState();const source=lessonBoardScene();const copy=JSON.parse(JSON.stringify(source));copy.id=uid('scene');copy.name=`${source.name} – kopie`;copy.widgets.forEach(widget=>widget.id=uid('widget'));board.scenes.push(copy);board.activeSceneId=copy.id;lessonBoardPersist('lesson_scene_duplicate')}
+function lessonBoardDeleteScene(){const board=lessonBoardState();if(board.scenes.length<=1){toast('Poslední scénu nelze odstranit.','info');return}const index=board.scenes.findIndex(scene=>scene.id===board.activeSceneId);board.scenes.splice(index,1);board.activeSceneId=board.scenes[Math.max(0,index-1)].id;App.ui.lessonSpotlightId=null;lessonBoardPersist('lesson_scene_delete')}
+function lessonBoardSetScene(id){const board=lessonBoardState();if(!board.scenes.some(scene=>scene.id===id))return;board.activeSceneId=id;App.ui.lessonSpotlightId=null;lessonBoardPersist('lesson_scene_select')}
+function lessonBoardRenameScene(name){const scene=lessonBoardScene();const clean=String(name||'').trim().slice(0,80);if(!clean)return;scene.name=clean;lessonBoardPersist('lesson_scene_rename',{render:false})}
+function lessonBoardCurrentTimer(widget){const data=widget.data;if(data.running&&data.endsAt)return Math.max(0,Math.ceil((Number(data.endsAt)-Date.now())/1000));return Math.max(0,Number(data.remaining)||0)}
+function lessonBoardCurrentStopwatch(widget){const data=widget.data;return data.running&&data.startedAt?Math.max(0,(Number(data.elapsed)||0)+Math.floor((Date.now()-Number(data.startedAt))/1000)):Math.max(0,Number(data.elapsed)||0)}
+function lessonBoardEnsureAudio(){try{const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)return null;if(!lessonAudioContext)lessonAudioContext=new AudioCtx();if(lessonAudioContext.state==='suspended')void lessonAudioContext.resume();return lessonAudioContext}catch(_){return null}}
+function lessonBoardPlaySound(kind='bell'){
+  if(kind==='none')return;const ctx=lessonBoardEnsureAudio();if(!ctx)return;
+  const patterns={bell:[[880,0,.16],[660,.18,.16],[880,.36,.28]],chime:[[523,0,.18],[659,.16,.18],[784,.32,.3]],soft:[[440,0,.24],[523,.22,.3]]};
+  const now=ctx.currentTime;for(const[freq,offset,duration]of(patterns[kind]||patterns.bell)){const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='sine';osc.frequency.value=freq;gain.gain.setValueAtTime(.0001,now+offset);gain.gain.exponentialRampToValueAtTime(.17,now+offset+.02);gain.gain.exponentialRampToValueAtTime(.0001,now+offset+duration);osc.connect(gain).connect(ctx.destination);osc.start(now+offset);osc.stop(now+offset+duration+.03)}
+}
+function lessonBoardFormatTime(seconds,{tenths=false}={}){const value=Math.max(0,Number(seconds)||0);if(tenths){const whole=Math.floor(value),t=Math.floor((value-whole)*10);return`${formatClock(whole)}.${t}`}return formatClock(value)}
+function lessonBoardWorkMeta(mode){return({silent:['🤫','Samostatně a potichu'],whisper:['🫢','Pracujte šeptem'],pair:['👥','Práce ve dvojici'],group:['👨‍👩‍👧‍👦','Skupinová práce'],discussion:['💬','Společná diskuse']})[mode]||['◎','Pracovní režim']}
+function lessonBoardDaysUntil(date,schoolDaysOnly=false){if(!date)return null;const end=new Date(`${date}T23:59:59`);if(Number.isNaN(end.getTime()))return null;const start=new Date();start.setHours(0,0,0,0);if(end<start)return 0;if(!schoolDaysOnly)return Math.ceil((end-start)/86400000);let days=0,cursor=new Date(start);while(cursor<end){cursor.setDate(cursor.getDate()+1);const d=cursor.getDay();if(d!==0&&d!==6)days++;if(days>3660)break}return days}
+function lessonBoardWidgetStyle(widget){return`left:${widget.x}%;top:${widget.y}%;width:${widget.w}%;height:${widget.h}%`}
+function lessonBoardAnalogClock(){return'<div class="analog-clock" data-board-analog><i class="hand hour"></i><i class="hand minute"></i><i class="hand second"></i><i class="clock-dot"></i></div>'}
+function lessonBoardQrMarkup(data){if(data.qrUrl)return`<img class="board-qr-image" src="${escapeHtml(data.qrUrl)}" alt="QR kód pro hlasování">`;return'<div class="qr-placeholder"><b>QR</b><span>aktivuje školní server</span></div>'}
+function lessonBoardDrawSvg(widget){const strokes=widget.data.strokes||[];return`<svg class="draw-surface paper-${escapeHtml(widget.data.paper||'blank')}" viewBox="0 0 1000 600" preserveAspectRatio="none" data-draw-surface="${widget.id}" role="img" aria-label="Kreslicí plocha">${strokes.map(lessonBoardStrokeSvg).join('')}</svg>`}
+function lessonBoardStrokeSvg(stroke){const pts=stroke.points||[];if(!pts.length)return'';const x=p=>Math.round(p.x*1000),y=p=>Math.round(p.y*600),color=escapeHtml(stroke.color||'#fff'),width=Math.max(1,Number(stroke.width)||4)*2;
+  if(stroke.tool==='line'&&pts.length>1)return`<line x1="${x(pts[0])}" y1="${y(pts[0])}" x2="${x(pts.at(-1))}" y2="${y(pts.at(-1))}" stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
+  if((stroke.tool==='rect'||stroke.tool==='ellipse')&&pts.length>1){const a=pts[0],b=pts.at(-1),left=Math.min(x(a),x(b)),top=Math.min(y(a),y(b)),w=Math.abs(x(a)-x(b)),h=Math.abs(y(a)-y(b));return stroke.tool==='rect'?`<rect x="${left}" y="${top}" width="${w}" height="${h}" fill="none" stroke="${color}" stroke-width="${width}"/>`:`<ellipse cx="${left+w/2}" cy="${top+h/2}" rx="${w/2}" ry="${h/2}" fill="none" stroke="${color}" stroke-width="${width}"/>`}
+  const path=pts.map((p,index)=>`${index?'L':'M'}${x(p)} ${y(p)}`).join(' ');return`<path d="${path}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round"/>`;
+}
+function lessonBoardWidgetBody(widget,{projection=false}={}){
+  const d=widget.data||{};
+  if(widget.type==='timer')return`<div class="board-time" data-board-timer="${widget.id}">${lessonBoardFormatTime(lessonBoardCurrentTimer(widget))}</div>${projection?'':`<div class="timer-nudges"><button data-board-timer-adjust="-60">−1 min</button><button data-board-timer-adjust="-10">−10 s</button><button class="board-primary" data-board-action="timer-toggle">${d.running?'Pauza':'Start'}</button><button data-board-timer-adjust="10">+10 s</button><button data-board-timer-adjust="60">+1 min</button></div><div class="timer-settings"><button data-board-timer-preset="300">5 min</button><button data-board-timer-preset="600">10 min</button><button data-board-timer-preset="900">15 min</button><select data-board-field="sound" aria-label="Zvuk časovače"><option value="bell" ${d.sound==='bell'?'selected':''}>Zvonek</option><option value="chime" ${d.sound==='chime'?'selected':''}>Cinknutí</option><option value="soft" ${d.sound==='soft'?'selected':''}>Jemný</option><option value="none" ${d.sound==='none'?'selected':''}>Bez zvuku</option></select><button data-board-action="timer-reset">Reset</button></div>`}`;
+  if(widget.type==='visual-timer'){const total=Math.max(1,Number(d.duration)||300),remaining=lessonBoardCurrentTimer(widget),ratio=Math.max(0,Math.min(1,remaining/total));return`<div class="visual-timer-ring" style="--remaining:${ratio}"><div>${d.showNumbers===false?'':`<b data-board-timer="${widget.id}">${lessonBoardFormatTime(remaining)}</b>`}<span>${Math.round(ratio*100)} %</span></div></div>${projection?'':`<div class="timer-nudges compact"><button data-board-timer-adjust="-60">−1 min</button><button class="board-primary" data-board-action="timer-toggle">${d.running?'Pauza':'Start'}</button><button data-board-timer-adjust="60">+1 min</button></div><div class="timer-settings"><select data-board-field="sound"><option value="bell" ${d.sound==='bell'?'selected':''}>Zvonek</option><option value="chime" ${d.sound==='chime'?'selected':''}>Cinknutí</option><option value="soft" ${d.sound==='soft'?'selected':''}>Jemný</option><option value="none" ${d.sound==='none'?'selected':''}>Bez zvuku</option></select><label><input type="checkbox" data-board-field="showNumbers" ${d.showNumbers!==false?'checked':''}> čísla</label><button data-board-action="timer-reset">Reset</button></div>`}`;
+  }
+  if(widget.type==='stopwatch'){
+    const laps=(d.laps||[]).length?`<div class="board-laps">${d.laps.slice(0,6).map((lap,index)=>`<span>${index+1}. ${lessonBoardFormatTime(lap)}</span>`).join('')}</div>`:'';
+    const controls=projection?'':`<div class="timer-nudges compact"><button class="board-primary" data-board-action="stopwatch-toggle">${d.running?'Pauza':'Start'}</button><button data-board-action="stopwatch-lap">Mezičas</button><button data-board-action="stopwatch-reset">Reset</button></div>${laps}`;
+    return`<div class="board-time small" data-board-stopwatch="${widget.id}">${lessonBoardFormatTime(lessonBoardCurrentStopwatch(widget))}</div>${controls}`;
+  }
+  if(widget.type==='clock'){const analog=d.style!=='digital'?lessonBoardAnalogClock():'',digital=d.style!=='analog'?'<div class="digital-clock" data-board-clock></div>':'';return`<div class="clock-combo">${analog}${digital}</div>${projection?'':`<div class="timer-settings"><select data-board-field="style"><option value="both" ${d.style==='both'?'selected':''}>Oboje</option><option value="digital" ${d.style==='digital'?'selected':''}>Digitální</option><option value="analog" ${d.style==='analog'?'selected':''}>Analogové</option></select><input type="time" data-board-field="alarmTime" value="${escapeHtml(d.alarmTime||'')}" title="Alarm"><select data-board-field="alarmSound"><option value="bell" ${d.alarmSound==='bell'?'selected':''}>Zvonek</option><option value="chime" ${d.alarmSound==='chime'?'selected':''}>Cinknutí</option><option value="soft" ${d.alarmSound==='soft'?'selected':''}>Jemný</option><option value="none" ${d.alarmSound==='none'?'selected':''}>Bez zvuku</option></select></div>`}`;
+  }
+  if(widget.type==='traffic')return`<div class="traffic-stack"><button class="traffic-light red ${d.active==='red'?'active':''}" data-board-traffic="red"><i></i><span>${escapeHtml(d.labels?.red||'Ticho')}</span></button><button class="traffic-light amber ${d.active==='amber'?'active':''}" data-board-traffic="amber"><i></i><span>${escapeHtml(d.labels?.amber||'Šeptem')}</span></button><button class="traffic-light green ${d.active==='green'?'active':''}" data-board-traffic="green"><i></i><span>${escapeHtml(d.labels?.green||'Diskuse')}</span></button></div>${projection?'':`<div class="traffic-edit"><input data-board-traffic-label="red" value="${escapeHtml(d.labels?.red||'Ticho')}" aria-label="Text červené"><input data-board-traffic-label="amber" value="${escapeHtml(d.labels?.amber||'Šeptem')}" aria-label="Text oranžové"><input data-board-traffic-label="green" value="${escapeHtml(d.labels?.green||'Diskuse')}" aria-label="Text zelené"></div>`}`;
+  if(widget.type==='draw')return`${projection?lessonBoardDrawSvg(widget):`<div class="draw-toolbar"><select data-board-field="tool"><option value="pen" ${d.tool==='pen'?'selected':''}>Pero</option><option value="line" ${d.tool==='line'?'selected':''}>Čára</option><option value="rect" ${d.tool==='rect'?'selected':''}>Obdélník</option><option value="ellipse" ${d.tool==='ellipse'?'selected':''}>Elipsa</option><option value="eraser" ${d.tool==='eraser'?'selected':''}>Guma</option></select><input type="color" data-board-field="color" value="${escapeHtml(d.color||'#ffffff')}" aria-label="Barva"><input type="range" min="1" max="16" value="${Number(d.width)||4}" data-board-field="width" aria-label="Tloušťka"><select data-board-field="paper"><option value="blank" ${d.paper==='blank'?'selected':''}>Čistá</option><option value="lines" ${d.paper==='lines'?'selected':''}>Linky</option><option value="grid" ${d.paper==='grid'?'selected':''}>Čtverečky</option></select><button data-board-action="draw-undo">↶</button><button data-board-action="draw-clear">Smazat</button></div>${lessonBoardDrawSvg(widget)}`}`;
+  if(widget.type==='dice'){const result=(d.last||[]).length?d.last.join(' · '):'—';return`<div class="dice-result">${escapeHtml(result)}</div>${projection?'':`<div class="dice-controls"><select data-board-field="mode"><option value="dice" ${d.mode==='dice'?'selected':''}>Kostka</option><option value="coin" ${d.mode==='coin'?'selected':''}>Mince</option><option value="number" ${d.mode==='number'?'selected':''}>Číslo</option><option value="letters" ${d.mode==='letters'?'selected':''}>Písmeno</option><option value="custom" ${d.mode==='custom'?'selected':''}>Vlastní</option></select><select data-board-field="count"><option value="1" ${d.count===1?'selected':''}>1×</option><option value="2" ${d.count===2?'selected':''}>2×</option><option value="3" ${d.count===3?'selected':''}>3×</option></select><select data-board-field="sides"><option value="6" ${d.sides===6?'selected':''}>D6</option><option value="12" ${d.sides===12?'selected':''}>D12</option><option value="20" ${d.sides===20?'selected':''}>D20</option></select><button class="board-primary" data-board-action="dice-roll">Hodit</button></div>${d.mode==='custom'?`<textarea rows="3" data-board-field="customText" placeholder="Jedna možnost na řádek">${escapeHtml((d.custom||[]).join('\n'))}</textarea>`:''}`}`;}
+  if(widget.type==='score'){const teams=d.teams||[];const max=Math.max(d.goal||10,...teams.map(t=>t.score),1);return`<div class="board-score-list">${teams.length?teams.map(team=>`<div class="board-score-row" data-board-team="${team.id}"><div><b>${escapeHtml(team.name)}</b>${d.mode==='race'?`<span class="race-track"><i style="width:${Math.max(0,Math.min(100,team.score/max*100))}%"></i></span>`:''}</div><strong>${team.score}</strong>${projection?'':`<button data-board-score="-1">−</button><button data-board-score="1">＋</button><button data-board-score="5">+5</button>`}</div>`).join(''):'<div class="board-empty">Přidejte týmy nebo načtěte aktuální skupiny.</div>'}</div>${projection?'':`<div class="score-actions"><button data-board-action="score-load-groups">Načíst skupiny</button><button data-board-action="score-add-team">+ tým</button><select data-board-field="mode"><option value="points" ${d.mode==='points'?'selected':''}>Body</option><option value="duel" ${d.mode==='duel'?'selected':''}>Duel</option><option value="race" ${d.mode==='race'?'selected':''}>Závod</option></select><label>Cíl <input type="number" min="1" max="999" value="${d.goal||10}" data-board-field="goal"></label></div>`}`;}
+  if(widget.type==='text')return`<div class="board-text-content" style="font-size:${d.size||28}px;text-align:${escapeHtml(d.align||'center')}">${escapeHtml(d.text||'').replace(/\n/g,'<br>')}</div>${projection?'':`<div class="text-editor"><textarea rows="3" data-board-field="text">${escapeHtml(d.text||'')}</textarea><input type="range" min="14" max="72" value="${d.size||28}" data-board-field="size"><select data-board-field="align"><option value="left" ${d.align==='left'?'selected':''}>Vlevo</option><option value="center" ${d.align==='center'?'selected':''}>Střed</option><option value="right" ${d.align==='right'?'selected':''}>Vpravo</option></select></div>`}`;
+  if(widget.type==='work'){const[icon,label]=lessonBoardWorkMeta(d.mode);return`<div class="work-mode"><b>${icon}</b><span>${escapeHtml(label)}</span></div>${projection?'':`<div class="work-buttons">${['silent','whisper','pair','group','discussion'].map(mode=>{const meta=lessonBoardWorkMeta(mode);return`<button data-board-work="${mode}" class="${d.mode===mode?'active':''}">${meta[0]} ${escapeHtml(meta[1])}</button>`}).join('')}</div>`}`;}
+  if(widget.type==='image')return d.url?`<div class="board-image-wrap"><img src="${escapeHtml(d.url)}" alt="${escapeHtml(d.sourceLabel||'Obrázek z Wikimedia Commons')}" style="object-fit:${escapeHtml(d.fit||'cover')}" referrerpolicy="no-referrer">${d.sourcePage?`<a href="${escapeHtml(d.sourcePage)}" target="_blank" rel="noopener noreferrer" class="image-credit">${escapeHtml(d.license||'Wikimedia Commons')}</a>`:''}</div>${projection?'':`<div class="image-actions"><button data-board-action="image-change">Jiný obrázek</button><select data-board-field="fit"><option value="cover" ${d.fit==='cover'?'selected':''}>Vyplnit</option><option value="contain" ${d.fit==='contain'?'selected':''}>Celý</option></select></div>`}`:`<div class="board-empty"><b>Vyberte obrázek z knihovny</b>${projection?'':'<button data-board-action="image-change">Otevřít knihovnu</button>'}</div>`;
+  if(widget.type==='event'){const days=lessonBoardDaysUntil(d.date,d.schoolDaysOnly);return`<div class="event-count"><strong>${days===null?'—':days}</strong><span>${d.schoolDaysOnly?'školních dnů':'dnů'}</span><b>${escapeHtml(d.title||'Událost')}</b><small>${escapeHtml(d.date||'')}</small></div>${projection?'':`<div class="event-edit"><input data-board-field="title" value="${escapeHtml(d.title||'')}"><input type="date" data-board-field="date" value="${escapeHtml(d.date||'')}"><label><input type="checkbox" data-board-field="schoolDaysOnly" ${d.schoolDaysOnly?'checked':''}> bez víkendů</label></div>`}`;}
+  if(widget.type==='agenda'){const items=d.items||[];return`<div class="agenda-list">${items.map((item,index)=>`<button data-board-agenda="${index}" class="${index===d.active?'active':''}"><i>${index<d.active?'✓':index+1}</i><span>${escapeHtml(item.title)}</span><b>${item.minutes?`${item.minutes} min`:''}</b></button>`).join('')}</div>${projection?'':`<div class="agenda-actions"><button data-board-action="agenda-prev">←</button><button class="board-primary" data-board-action="agenda-next">Další</button><button data-board-action="agenda-edit">Upravit</button></div>`}`;}
+  if(widget.type==='poll'){const options=d.options||[],total=options.reduce((sum,o)=>sum+o.votes,0);return`<div class="poll-question">${escapeHtml(d.question||'Otázka')}</div><div class="poll-options">${options.map(option=>{const pct=total?Math.round(option.votes/total*100):0;return`<button data-board-poll-option="${option.id}" ${projection||d.status==='closed'?'disabled':''}><span>${escapeHtml(option.label)}</span>${d.showResults?`<i style="width:${pct}%"></i><b>${option.votes} · ${pct}%</b>`:''}</button>`}).join('')}</div><div class="poll-meta"><span>${total} hlasů</span>${d.remote?.voteUrl?'<strong>QR hlasování aktivní</strong>':d.status==='open'?'<strong>Hlasování na plátně</strong>':''}</div>${d.remote?.qrUrl?`<div class="poll-qr">${lessonBoardQrMarkup(d.remote)}</div>`:''}${projection?'':`<div class="poll-actions"><button data-board-action="poll-edit">Upravit</button><button class="board-primary" data-board-action="poll-toggle">${d.status==='open'?'Ukončit':'Spustit na plátně'}</button><button data-board-action="poll-live">QR hlasování</button><button data-board-action="poll-reset">Vynulovat</button><label><input type="checkbox" data-board-field="showResults" ${d.showResults?'checked':''}> výsledky</label></div>`}`;}
+  if(widget.type==='qr')return`<div class="generic-qr">${d.qrUrl?lessonBoardQrMarkup(d):`<div class="qr-placeholder"><b>QR</b><span>${escapeHtml(d.label||'Odkaz')}</span></div>`}<small>${escapeHtml(d.url||'')}</small></div>${projection?'':`<div class="qr-edit"><input data-board-field="url" value="${escapeHtml(d.url||'')}" placeholder="https://…"><input data-board-field="label" value="${escapeHtml(d.label||'')}"><button data-board-action="qr-generate">Vygenerovat QR</button></div>`}`;
+  return'<div class="board-empty">Widget</div>';
+}
+function lessonBoardWidgetHtml(widget,{projection=false}={}){
+  const spotlight=App.ui.lessonSpotlightId===widget.id;const hidden=App.ui.lessonSpotlightId&&!spotlight;
+  return`<article class="lesson-widget type-${widget.type} ${widget.locked?'locked':''} ${spotlight?'spotlight':''} ${hidden?'spotlight-hidden':''}" data-widget-id="${widget.id}" style="${lessonBoardWidgetStyle(widget)}"><header class="lesson-widget-chrome" data-board-drag><span>${escapeHtml(widget.title||lessonBoardWidgetLabel(widget.type))}</span>${projection?'':`<div><button data-board-action="widget-lock" title="${widget.locked?'Odemknout':'Zamknout'}">${widget.locked?'🔒':'🔓'}</button><button data-board-action="widget-spotlight" title="Spotlight">◉</button><button data-board-action="widget-duplicate" title="Duplikovat">⧉</button><button data-board-action="widget-delete" title="Odstranit">×</button></div>`}</header><div class="lesson-widget-body">${lessonBoardWidgetBody(widget,{projection})}</div>${projection||widget.locked?'':'<button class="widget-resize-handle" data-board-resize aria-label="Změnit velikost">↘</button>'}</article>`;
+}
+function lessonBoardSceneTabs(){const board=lessonBoardState();return`<div class="scene-tabs" role="tablist" aria-label="Scény hodiny">${board.scenes.map((scene,index)=>`<button role="tab" data-board-scene="${scene.id}" aria-selected="${scene.id===board.activeSceneId}" class="${scene.id===board.activeSceneId?'active':''}"><span>${index+1}</span>${escapeHtml(scene.name)}</button>`).join('')}</div>`}
+function lessonBoardToolbar(){return`<div class="lesson-widget-bar">${LESSON_WIDGET_CATALOG.map(item=>`<button data-board-add="${item.type}" title="Přidat ${escapeHtml(item.label)}"><i>${item.icon}</i><span>${escapeHtml(item.label)}</span></button>`).join('')}<button data-board-action="background-library" title="Změnit pozadí"><i>▨</i><span>Pozadí</span></button></div>`}
+function lessonBoardPanelHtml(){const scene=lessonBoardScene();return`<section class="lesson-board-studio"><header class="lesson-board-head"><div><span>VÝUKOVÝ PANEL</span><h2>Pracovní plocha hodiny</h2><p>Přidejte nástroje, přesuňte je a připravte si více scén pro různé fáze hodiny.</p></div><div class="scene-actions"><button data-board-action="scene-add">+ scéna</button><button data-board-action="scene-duplicate">Duplikovat</button><button data-board-action="scene-delete">Smazat</button><button class="primary-button compact" data-board-action="project-board">Promítnout plochu</button></div></header>${lessonBoardSceneTabs()}<div class="scene-name-row"><label>Název scény <input data-board-scene-name value="${escapeHtml(scene.name)}" maxlength="80"></label><div class="background-mini">${LESSON_BACKGROUND_PRESETS.slice(0,6).map(bg=>`<button data-board-background="${bg.type}:${bg.value}" class="${scene.background?.type===bg.type&&scene.background?.value===bg.value?'active':''}" title="${escapeHtml(bg.name)}"></button>`).join('')}<button data-board-action="background-library" class="image-bg-button">Obrázky</button></div></div><div class="lesson-board-frame"><div class="lesson-board ${lessonBoardSceneBackgroundClass(scene)}" style="${lessonBoardSceneBackgroundStyle(scene)}" data-lesson-board>${scene.widgets.length?scene.widgets.map(widget=>lessonBoardWidgetHtml(widget)).join(''):'<div class="lesson-board-empty"><b>Přidejte první nástroj</b><span>Timer, tabule, semafor, kostky, obrázky, hlasování…</span></div>'}${lessonBoardBackgroundCredit(scene)}</div></div>${lessonBoardToolbar()}<div class="lesson-board-note"><span>Obrázky: Wikimedia Commons · bez nahrávání souborů</span><span>QR hlasování se aktivuje po připojení školního serveru.</span></div></section>`}
+function lessonBoardProjectionHtml(){const scene=lessonBoardScene();return`<div class="projection-lesson-board ${lessonBoardSceneBackgroundClass(scene)}" style="${lessonBoardSceneBackgroundStyle(scene)}">${scene.widgets.map(widget=>lessonBoardWidgetHtml(widget,{projection:true})).join('')}${lessonBoardBackgroundCredit(scene)}</div>`}
+function lessonBoardAfterRender(){lessonBoardUpdateClockDom();lessonBoardEnsureTicker();lessonBoardWireDrawSurfaces()}
+function lessonBoardEnsureTicker(){if(lessonBoardTicker)return;lessonBoardTicker=setInterval(lessonBoardTick,250)}
+function lessonBoardTick(){
+  if(!App.data)return;let changed=false;const board=lessonBoardState();const now=Date.now();
+  for(const scene of board.scenes)for(const widget of scene.widgets){
+    if((widget.type==='timer'||widget.type==='visual-timer')&&widget.data.running&&widget.data.endsAt&&now>=widget.data.endsAt){widget.data.running=false;widget.data.remaining=0;widget.data.endsAt=null;changed=true;lessonBoardPlaySound(widget.data.sound);toast(`${widget.title||'Časovač'}: čas vypršel.`,'success')}
+    if(widget.type==='clock'&&widget.data.alarmTime){const date=new Date(),key=date.toISOString().slice(0,10),hm=`${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;if(hm===widget.data.alarmTime&&widget.data.alarmFiredDate!==key){widget.data.alarmFiredDate=key;changed=true;lessonBoardPlaySound(widget.data.alarmSound);toast(`Alarm ${widget.data.alarmTime}`,'success')}}
+  }
+  if(changed)lessonBoardPersist('lesson_timer_complete',{render:false});
+  $$('[data-board-timer]').forEach(node=>{const widget=board.scenes.flatMap(scene=>scene.widgets).find(w=>w.id===node.dataset.boardTimer);if(widget)node.textContent=lessonBoardFormatTime(lessonBoardCurrentTimer(widget))});
+  $$('[data-board-stopwatch]').forEach(node=>{const widget=board.scenes.flatMap(scene=>scene.widgets).find(w=>w.id===node.dataset.boardStopwatch);if(widget)node.textContent=lessonBoardFormatTime(lessonBoardCurrentStopwatch(widget))});
+  $$('.visual-timer-ring').forEach(node=>{const article=node.closest('[data-widget-id]'),widget=article&&lessonBoardWidget(article.dataset.widgetId);if(widget){const total=Math.max(1,widget.data.duration||300),remaining=lessonBoardCurrentTimer(widget);node.style.setProperty('--remaining',Math.max(0,Math.min(1,remaining/total)));const pct=node.querySelector('span');if(pct)pct.textContent=`${Math.round(remaining/total*100)} %`}});
+  lessonBoardUpdateClockDom();
+}
+function lessonBoardUpdateClockDom(){const date=new Date(),time=new Intl.DateTimeFormat('cs-CZ',{hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(date);$$('[data-board-clock]').forEach(node=>node.textContent=time);$$('[data-board-analog]').forEach(clock=>{const sec=date.getSeconds(),min=date.getMinutes()+sec/60,hour=(date.getHours()%12)+min/60;const h=clock.querySelector('.hour'),m=clock.querySelector('.minute'),s=clock.querySelector('.second');if(h)h.style.transform=`rotate(${hour*30}deg)`;if(m)m.style.transform=`rotate(${min*6}deg)`;if(s)s.style.transform=`rotate(${sec*6}deg)`})}
+function lessonBoardUpdateField(widget,field,target){
+  const d=widget.data;if(field==='showNumbers'||field==='schoolDaysOnly'||field==='showResults')d[field]=target.checked;else if(['duration','remaining','elapsed','goal','size','width','count','sides','active'].includes(field))d[field]=Number(target.value)||0;else if(field==='customText')d.custom=target.value.split(/\n/).map(v=>v.trim()).filter(Boolean).slice(0,30);else d[field]=target.value;
+  lessonBoardPersist('lesson_widget_field');
+}
+function lessonBoardHandleAction(target,widget){
+  const action=target.dataset.boardAction;if(!action)return false;
+  if(action==='scene-add'){lessonBoardAddScene();return true}if(action==='scene-duplicate'){lessonBoardDuplicateScene();return true}if(action==='scene-delete'){lessonBoardDeleteScene();return true}if(action==='project-board'){openProjection('lesson');return true}if(action==='background-library'){openMediaLibrary('background');return true}
+  if(!widget)return false;const d=widget.data;
+  if(action==='widget-lock'){widget.locked=!widget.locked;lessonBoardPersist('lesson_widget_lock');return true}if(action==='widget-spotlight'){App.ui.lessonSpotlightId=App.ui.lessonSpotlightId===widget.id?null:widget.id;renderToolsView();return true}if(action==='widget-duplicate'){lessonBoardDuplicateWidget(widget.id);return true}if(action==='widget-delete'){lessonBoardDeleteWidget(widget.id);return true}
+  if(action==='timer-toggle'){lessonBoardEnsureAudio();if(d.running){d.remaining=lessonBoardCurrentTimer(widget);d.running=false;d.endsAt=null}else{if((d.remaining||0)<=0)d.remaining=d.duration||300;d.running=true;d.endsAt=Date.now()+d.remaining*1000}lessonBoardPersist('lesson_timer_toggle');return true}
+  if(action==='timer-reset'){d.running=false;d.endsAt=null;d.remaining=d.duration||300;lessonBoardPersist('lesson_timer_reset');return true}
+  if(action==='stopwatch-toggle'){if(d.running){d.elapsed=lessonBoardCurrentStopwatch(widget);d.running=false;d.startedAt=null}else{d.running=true;d.startedAt=Date.now()}lessonBoardPersist('lesson_stopwatch_toggle');return true}
+  if(action==='stopwatch-lap'){d.laps=d.laps||[];d.laps.unshift(lessonBoardCurrentStopwatch(widget));d.laps=d.laps.slice(0,30);lessonBoardPersist('lesson_stopwatch_lap');return true}if(action==='stopwatch-reset'){d.elapsed=0;d.running=false;d.startedAt=null;d.laps=[];lessonBoardPersist('lesson_stopwatch_reset');return true}
+  if(action==='dice-roll'){lessonBoardRollDice(widget);lessonBoardPersist('lesson_dice_roll');return true}
+  if(action==='score-load-groups'){const classItem=getSelectedClass();if(!classItem?.currentGroups?.length){toast('Nejprve vytvořte skupiny.','info');return true}d.teams=classItem.currentGroups.map(group=>({id:uid('board-team'),name:group.name,score:0}));lessonBoardPersist('lesson_score_groups');return true}
+  if(action==='score-add-team'){d.teams=d.teams||[];d.teams.push({id:uid('board-team'),name:`Tým ${d.teams.length+1}`,score:0});lessonBoardPersist('lesson_score_add');return true}
+  if(action==='draw-undo'){d.strokes=(d.strokes||[]).slice(0,-1);lessonBoardPersist('lesson_draw_undo');return true}if(action==='draw-clear'){if(!App.settings.confirmDestructive||confirm('Smazat obsah této tabule?')){d.strokes=[];lessonBoardPersist('lesson_draw_clear')}return true}
+  if(action==='image-change'){openMediaLibrary('replace-widget',widget.id);return true}
+  if(action==='agenda-prev'){d.active=Math.max(0,(d.active||0)-1);lessonBoardPersist('lesson_agenda_prev');return true}if(action==='agenda-next'){d.active=Math.min(Math.max(0,(d.items||[]).length-1),(d.active||0)+1);lessonBoardPersist('lesson_agenda_next');return true}if(action==='agenda-edit'){lessonBoardEditAgenda(widget);return true}
+  if(action==='poll-edit'){lessonBoardEditPoll(widget);return true}if(action==='poll-toggle'){if(d.status==='open'){d.status='closed';livePollStopSchedule(widget.id);if(d.remote?.id)void livePollClose(widget)}else{d.remote={id:'',token:'',voteUrl:'',qrUrl:'',syncedAt:''};d.status='open'}lessonBoardPersist('lesson_poll_toggle');return true}if(action==='poll-reset'){(d.options||[]).forEach(option=>option.votes=0);lessonBoardPersist('lesson_poll_reset');return true}if(action==='poll-live'){void livePollStart(widget);return true}
+  if(action==='qr-generate'){void livePollGenerateGenericQr(widget);return true}
+  return false;
+}
+function lessonBoardRollDice(widget){const d=widget.data,mode=d.mode||'dice';if(mode==='coin'){d.last=Array.from({length:d.count||1},()=>randomInt(2)?'Panna':'Orel');return}if(mode==='letters'){d.last=Array.from({length:d.count||1},()=>String.fromCharCode(65+randomInt(26)));return}if(mode==='number'){let min=Math.min(Number(d.min)||1,Number(d.max)||100),max=Math.max(Number(d.min)||1,Number(d.max)||100);d.last=Array.from({length:d.count||1},()=>String(min+randomInt(max-min+1)));return}if(mode==='custom'){const values=(d.custom||[]);d.last=Array.from({length:d.count||1},()=>values.length?values[randomInt(values.length)]:'—');return}d.last=Array.from({length:d.count||1},()=>String(randomInt(d.sides||6)+1))}
+function lessonBoardEditAgenda(widget){const current=(widget.data.items||[]).map(item=>`${item.title} | ${item.minutes||0}`).join('\n');const value=prompt('Agenda: jeden řádek = název | minuty',current);if(value===null)return;widget.data.items=value.split(/\n/).map(line=>{const[title,minutes]=line.split('|');return{title:String(title||'').trim(),minutes:Math.max(0,Math.min(180,Number(minutes)||0))}}).filter(item=>item.title).slice(0,20);widget.data.active=Math.min(widget.data.active||0,Math.max(0,widget.data.items.length-1));lessonBoardPersist('lesson_agenda_edit')}
+function lessonBoardEditPoll(widget){const question=prompt('Otázka hlasování',widget.data.question||'');if(question===null)return;const options=prompt('Možnosti – jedna na řádek',(widget.data.options||[]).map(option=>option.label).join('\n'));if(options===null)return;widget.data.question=question.trim().slice(0,300)||'Otázka';widget.data.options=options.split(/\n/).map(v=>v.trim()).filter(Boolean).slice(0,5).map((label,index)=>({id:uid('poll-option'),label,votes:0}));if(widget.data.options.length<2){toast('Hlasování potřebuje alespoň dvě možnosti.','error');return}widget.data.status='draft';widget.data.remote={id:'',token:'',voteUrl:'',qrUrl:'',syncedAt:''};lessonBoardPersist('lesson_poll_edit')}
+function lessonBoardHandleClick(event){
+  const target=event.target.closest('[data-board-add],[data-board-action],[data-board-scene],[data-board-background],[data-board-timer-adjust],[data-board-timer-preset],[data-board-traffic],[data-board-work],[data-board-score],[data-board-agenda],[data-board-poll-option]');if(!target||!target.closest('#toolsWorkspace'))return;
+  const article=target.closest('[data-widget-id]'),widget=article?lessonBoardWidget(article.dataset.widgetId):null;
+  if(target.dataset.boardAdd){lessonBoardAddWidget(target.dataset.boardAdd);return}
+  if(target.dataset.boardScene){lessonBoardSetScene(target.dataset.boardScene);return}
+  if(target.dataset.boardBackground){const[type,value]=target.dataset.boardBackground.split(':');lessonBoardScene().background={type,value};lessonBoardPersist('lesson_background_preset');return}
+  if(lessonBoardHandleAction(target,widget))return;
+  if(!widget)return;
+  if(target.dataset.boardTimerAdjust){const delta=Number(target.dataset.boardTimerAdjust)||0;widget.data.running=false;widget.data.endsAt=null;widget.data.remaining=Math.max(0,Math.min(86400,lessonBoardCurrentTimer(widget)+delta));widget.data.duration=Math.max(1,widget.data.remaining);lessonBoardPersist('lesson_timer_adjust');return}
+  if(target.dataset.boardTimerPreset){const seconds=Number(target.dataset.boardTimerPreset)||300;widget.data.duration=seconds;widget.data.remaining=seconds;widget.data.running=false;widget.data.endsAt=null;lessonBoardPersist('lesson_timer_preset');return}
+  if(target.dataset.boardTraffic){widget.data.active=target.dataset.boardTraffic;lessonBoardPersist('lesson_traffic');return}
+  if(target.dataset.boardWork){widget.data.mode=target.dataset.boardWork;lessonBoardPersist('lesson_work_mode');return}
+  if(target.dataset.boardScore){const row=target.closest('[data-board-team]'),team=widget.data.teams?.find(item=>item.id===row?.dataset.boardTeam);if(team){team.score=Math.max(-999,Math.min(9999,team.score+Number(target.dataset.boardScore)));lessonBoardPersist('lesson_score_change')}return}
+  if(target.dataset.boardAgenda!==undefined){widget.data.active=Math.max(0,Math.min((widget.data.items||[]).length-1,Number(target.dataset.boardAgenda)||0));lessonBoardPersist('lesson_agenda_select');return}
+  if(target.dataset.boardPollOption){if(widget.data.status!=='open')return;const option=widget.data.options?.find(item=>item.id===target.dataset.boardPollOption);if(option){option.votes++;lessonBoardPersist('lesson_poll_vote')}return}
+}
+function lessonBoardHandleChange(event){const target=event.target;if(!target.closest('#toolsWorkspace'))return;const article=target.closest('[data-widget-id]'),widget=article?lessonBoardWidget(article.dataset.widgetId):null;if(target.matches('[data-board-scene-name]')){lessonBoardRenameScene(target.value);return}if(target.matches('[data-board-traffic-label]')&&widget){widget.data.labels[target.dataset.boardTrafficLabel]=target.value.trim().slice(0,40);lessonBoardPersist('lesson_traffic_label');return}if(target.matches('[data-board-field]')&&widget){lessonBoardUpdateField(widget,target.dataset.boardField,target)}}
+function lessonBoardPointerDown(event){
+  const resize=event.target.closest('[data-board-resize]'),drag=event.target.closest('[data-board-drag]');if(!resize&&!drag)return;const article=event.target.closest('[data-widget-id]');if(!article||!article.closest('#toolsWorkspace'))return;const widget=lessonBoardWidget(article.dataset.widgetId);if(!widget||widget.locked)return;if(drag&&event.target.closest('button,input,select,textarea'))return;
+  const board=article.closest('[data-lesson-board]');if(!board)return;const rect=board.getBoundingClientRect();lessonPointerState={kind:resize?'resize':'drag',pointerId:event.pointerId,widget,startX:event.clientX,startY:event.clientY,origin:{x:widget.x,y:widget.y,w:widget.w,h:widget.h},rect,article};article.setPointerCapture?.(event.pointerId);event.preventDefault();
+}
+function lessonBoardPointerMove(event){if(!lessonPointerState||event.pointerId!==lessonPointerState.pointerId)return;const s=lessonPointerState,dx=(event.clientX-s.startX)/s.rect.width*100,dy=(event.clientY-s.startY)/s.rect.height*100;if(s.kind==='drag'){s.widget.x=Math.max(0,Math.min(100-s.widget.w,s.origin.x+dx));s.widget.y=Math.max(0,Math.min(100-s.widget.h,s.origin.y+dy))}else{s.widget.w=Math.max(12,Math.min(100-s.widget.x,s.origin.w+dx));s.widget.h=Math.max(14,Math.min(100-s.widget.y,s.origin.h+dy))}s.article.style.cssText=lessonBoardWidgetStyle(s.widget)}
+function lessonBoardPointerUp(event){if(!lessonPointerState||event.pointerId!==lessonPointerState.pointerId)return;lessonPointerState.article.releasePointerCapture?.(event.pointerId);lessonPointerState=null;lessonBoardPersist('lesson_widget_layout',{render:false})}
+function lessonBoardWireDrawSurfaces(){/* Delegované pointer handlery pracují přímo nad SVG. */}
+function lessonBoardDrawPointerDown(event){const svg=event.target.closest('[data-draw-surface]');if(!svg||!svg.closest('#toolsWorkspace'))return;const widget=lessonBoardWidget(svg.dataset.drawSurface);if(!widget)return;if(widget.data.tool==='eraser'){lessonBoardEraseNearest(widget,event,svg);return}const p=lessonBoardDrawPoint(event,svg);const stroke={tool:widget.data.tool,color:widget.data.color,width:widget.data.width,points:[p]};widget.data.strokes=widget.data.strokes||[];widget.data.strokes.push(stroke);lessonDrawState={pointerId:event.pointerId,widget,svg,stroke};svg.setPointerCapture?.(event.pointerId);event.preventDefault()}
+function lessonBoardDrawPointerMove(event){if(!lessonDrawState||event.pointerId!==lessonDrawState.pointerId)return;const{widget,svg,stroke}=lessonDrawState;const p=lessonBoardDrawPoint(event,svg);if(stroke.tool==='pen')stroke.points.push(p);else stroke.points=[stroke.points[0],p];lessonBoardRenderDrawSurface(svg,widget)}
+function lessonBoardRenderDrawSurface(svg,widget){const ns='http://www.w3.org/2000/svg',fragment=document.createDocumentFragment();for(const stroke of widget.data.strokes||[]){const pts=stroke.points||[];if(!pts.length)continue;const x=p=>Math.round(p.x*1000),y=p=>Math.round(p.y*600),color=/^#[0-9a-f]{6}$/i.test(String(stroke.color||''))?String(stroke.color):'#ffffff',width=Math.max(1,Number(stroke.width)||4)*2;let el;if(stroke.tool==='line'&&pts.length>1){el=document.createElementNS(ns,'line');for(const[k,v]of Object.entries({x1:x(pts[0]),y1:y(pts[0]),x2:x(pts.at(-1)),y2:y(pts.at(-1))}))el.setAttribute(k,String(v));el.setAttribute('stroke-linecap','round')}else if((stroke.tool==='rect'||stroke.tool==='ellipse')&&pts.length>1){const a=pts[0],b=pts.at(-1),left=Math.min(x(a),x(b)),top=Math.min(y(a),y(b)),w=Math.abs(x(a)-x(b)),h=Math.abs(y(a)-y(b));el=document.createElementNS(ns,stroke.tool==='rect'?'rect':'ellipse');if(stroke.tool==='rect'){for(const[k,v]of Object.entries({x:left,y:top,width:w,height:h}))el.setAttribute(k,String(v))}else{for(const[k,v]of Object.entries({cx:left+w/2,cy:top+h/2,rx:w/2,ry:h/2}))el.setAttribute(k,String(v))}el.setAttribute('fill','none')}else{el=document.createElementNS(ns,'path');el.setAttribute('d',pts.map((point,index)=>`${index?'L':'M'}${x(point)} ${y(point)}`).join(' '));el.setAttribute('fill','none');el.setAttribute('stroke-linecap','round');el.setAttribute('stroke-linejoin','round')}el.setAttribute('stroke',color);el.setAttribute('stroke-width',String(width));fragment.append(el)}svg.replaceChildren(fragment)}
+function lessonBoardDrawPointerUp(event){if(!lessonDrawState||event.pointerId!==lessonDrawState.pointerId)return;lessonDrawState.svg.releasePointerCapture?.(event.pointerId);lessonDrawState=null;lessonBoardPersist('lesson_draw_stroke',{render:false})}
+function lessonBoardDrawPoint(event,svg){const r=svg.getBoundingClientRect();return{x:Math.max(0,Math.min(1,(event.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(event.clientY-r.top)/r.height))}}
+function lessonBoardEraseNearest(widget,event,svg){const p=lessonBoardDrawPoint(event,svg),strokes=widget.data.strokes||[];if(!strokes.length)return;let best=-1,dist=Infinity;strokes.forEach((stroke,index)=>{stroke.points.forEach(pt=>{const d=(pt.x-p.x)**2+(pt.y-p.y)**2;if(d<dist){dist=d;best=index}})});if(best>=0&&dist<.02){strokes.splice(best,1);lessonBoardPersist('lesson_draw_erase')}}
+function bindLessonBoard(){document.addEventListener('click',lessonBoardHandleClick);document.addEventListener('change',lessonBoardHandleChange);document.addEventListener('input',event=>{const target=event.target;if(!target.closest('#toolsWorkspace'))return;const article=target.closest('[data-widget-id]'),widget=article?lessonBoardWidget(article.dataset.widgetId):null;if(widget&&target.matches('[data-board-field="text"],[data-board-field="size"],[data-board-field="align"]'))lessonBoardUpdateField(widget,target.dataset.boardField,target)});document.addEventListener('pointerdown',lessonBoardPointerDown);document.addEventListener('pointermove',lessonBoardPointerMove);document.addEventListener('pointerup',lessonBoardPointerUp);document.addEventListener('pointercancel',lessonBoardPointerUp);document.addEventListener('pointerdown',lessonBoardDrawPointerDown);document.addEventListener('pointermove',lessonBoardDrawPointerMove);document.addEventListener('pointerup',lessonBoardDrawPointerUp);document.addEventListener('pointercancel',lessonBoardDrawPointerUp)}
+
+;
+const MEDIA_LIBRARY_CATEGORIES=Object.freeze([
+  ['Příroda','nature landscape'],['Zvířata','animals wildlife'],['Vesmír','space astronomy'],['Geografie','world geography landscape'],
+  ['Historie','history historical'],['Umění','art painting'],['Architektura','architecture building'],['Věda','science laboratory'],
+  ['Roční období','season landscape'],['Škola','school education'],['Jídlo','food cuisine'],['Sport','sport athletics'],
+]);
+let mediaLibraryRequestId=0;
+
+function mediaLibraryDialog(){return $('#mediaLibraryDialog')}
+function mediaLibraryPlainText(value){
+  const text=String(value||'');
+  if(!text.includes('<'))return text.replace(/\s+/g,' ').trim();
+  try{return(new DOMParser().parseFromString(text,'text/html').body.textContent||'').replace(/\s+/g,' ').trim()}catch(_){return text.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim()}
+}
+function mediaLibrarySafeImage(page){
+  const info=page?.imageinfo?.[0]||{};
+  const url=sanitizeLessonImageUrl(info.thumburl||info.url);
+  if(!url)return null;
+  const meta=info.extmetadata||{};
+  return{
+    id:String(page.pageid||page.title||url),
+    url,
+    sourcePage:sanitizeLessonSourceUrl(page.fullurl||`https://commons.wikimedia.org/wiki/${encodeURIComponent(String(page.title||'').replace(/ /g,'_'))}`),
+    sourceLabel:String(page.title||'Wikimedia Commons').replace(/^File:/i,'').slice(0,160),
+    license:mediaLibraryPlainText(meta.LicenseShortName?.value||meta.UsageTerms?.value||'Wikimedia Commons').slice(0,80),
+    author:mediaLibraryPlainText(meta.Artist?.value||meta.Credit?.value||'').slice(0,120),
+  };
+}
+function mediaLibraryButton(label,datasetKey,datasetValue,className=''){
+  const button=document.createElement('button');button.type='button';button.textContent=label;if(className)button.className=className;button.dataset[datasetKey]=datasetValue;return button;
+}
+function mediaLibraryRenderCategories(){
+  const root=$('#mediaLibraryCategories');if(!root)return;root.replaceChildren();
+  for(const[label,query]of MEDIA_LIBRARY_CATEGORIES)root.append(mediaLibraryButton(label,'mediaQuery',query));
+}
+function mediaLibraryRenderPresets(){
+  const root=$('#mediaLibraryPresets');if(!root)return;root.replaceChildren();
+  for(const bg of LESSON_BACKGROUND_PRESETS){const button=mediaLibraryButton('','mediaPreset',`${bg.type}:${bg.value}`,`media-preset board-bg-${bg.type}-${bg.value}`);button.title=bg.name;const span=document.createElement('span');span.textContent=bg.name;button.append(span);root.append(button)}
+}
+function mediaLibraryRenderStatus(text,{error=false}={}){
+  const root=$('#mediaLibraryResults');if(!root)return;const status=document.createElement('div');status.className=`media-library-status${error?' error':''}`;status.textContent=String(text||'');root.replaceChildren(status);
+}
+function mediaLibraryRenderResults(items){
+  const root=$('#mediaLibraryResults');if(!root)return;App.ui.mediaLibraryResults=items;
+  if(!items.length){mediaLibraryRenderStatus('Pro tento výraz jsem nenašel vhodné obrázky. Zkuste jiné slovo.');return}
+  const fragment=document.createDocumentFragment();
+  items.forEach((item,index)=>{const button=mediaLibraryButton('','mediaResult',String(index),'media-card');const image=document.createElement('img');image.src=item.url;image.alt=item.sourceLabel;image.loading='lazy';image.referrerPolicy='no-referrer';const text=document.createElement('span'),title=document.createElement('b'),meta=document.createElement('small');title.textContent=item.sourceLabel;meta.textContent=[item.author,item.license].filter(Boolean).join(' · ');text.append(title,meta);button.append(image,text);fragment.append(button)});
+  root.replaceChildren(fragment);
+}
+async function mediaLibrarySearch(query){
+  const clean=String(query||'').trim().slice(0,120);if(!clean)return;
+  const requestId=++mediaLibraryRequestId;App.ui.mediaLibraryBusy=true;mediaLibraryRenderStatus('Načítám obrázky z Wikimedia Commons…');
+  try{
+    const params=new URLSearchParams({action:'query',format:'json',formatversion:'2',generator:'search',gsrsearch:`${clean} filetype:bitmap`,gsrnamespace:'6',gsrlimit:'30',prop:'imageinfo|info',iiprop:'url|extmetadata',iiurlwidth:'1280',inprop:'url',origin:'*'});
+    const response=await fetch(`https://commons.wikimedia.org/w/api.php?${params.toString()}`,{method:'GET',credentials:'omit',referrerPolicy:'no-referrer',headers:{Accept:'application/json'}});
+    if(!response.ok)throw new Error(`Commons ${response.status}`);
+    const json=await response.json();if(requestId!==mediaLibraryRequestId)return;
+    const items=(json?.query?.pages||[]).map(mediaLibrarySafeImage).filter(Boolean).slice(0,30);
+    mediaLibraryRenderResults(items);
+  }catch(error){
+    if(requestId!==mediaLibraryRequestId)return;
+    captureError(error,'media-library');
+    mediaLibraryRenderStatus(navigator.onLine===false?'Knihovna obrázků vyžaduje připojení k internetu.':'Knihovnu Wikimedia Commons se nepodařilo načíst. Zkuste hledání zopakovat.',{error:true});
+  }finally{if(requestId===mediaLibraryRequestId)App.ui.mediaLibraryBusy=false}
+}
+function openMediaLibrary(target='background',widgetId=''){
+  const dialog=mediaLibraryDialog();if(!dialog){toast('Knihovna obrázků není dostupná.','error');return}
+  App.ui.mediaLibraryTarget={kind:target,widgetId:String(widgetId||'')};
+  mediaLibraryRenderCategories();mediaLibraryRenderPresets();
+  const presets=$('#mediaLibraryPresetSection');if(presets)presets.hidden=target!=='background';
+  const title=$('#mediaLibraryTitle');if(title)title.textContent=target==='background'?'Knihovna pozadí':'Knihovna obrázků';
+  const input=$('#mediaLibrarySearch');if(input&&!input.value)input.value='nature landscape';
+  if(!dialog.open)dialog.showModal();
+  requestAnimationFrame(()=>input?.focus());
+  void mediaLibrarySearch(input?.value||'nature landscape');
+}
+function closeMediaLibrary(){const dialog=mediaLibraryDialog();if(dialog?.open)dialog.close();App.ui.mediaLibraryTarget=null}
+function mediaLibraryChoose(item){
+  if(!item)return;const target=App.ui.mediaLibraryTarget||{kind:'background'};
+  if(target.kind==='background'){
+    lessonBoardScene().background={type:'image',url:item.url,sourcePage:item.sourcePage,sourceLabel:item.sourceLabel,license:item.license};
+    closeMediaLibrary();lessonBoardPersist('lesson_background_image');return;
+  }
+  if(target.kind==='replace-widget'){
+    const widget=lessonBoardWidget(target.widgetId);if(widget&&widget.type==='image')widget.data={...widget.data,url:item.url,sourcePage:item.sourcePage,sourceLabel:item.sourceLabel,license:item.license};
+    closeMediaLibrary();lessonBoardPersist('lesson_image_replace');return;
+  }
+  closeMediaLibrary();lessonBoardAddImageWidget(item);
+}
+function bindMediaLibrary(){
+  document.addEventListener('submit',event=>{if(!event.target.matches('#mediaLibraryForm'))return;event.preventDefault();void mediaLibrarySearch($('#mediaLibrarySearch')?.value)});
+  document.addEventListener('click',event=>{
+    const query=event.target.closest('[data-media-query]');if(query){const input=$('#mediaLibrarySearch');if(input)input.value=query.dataset.mediaQuery;void mediaLibrarySearch(query.dataset.mediaQuery);return}
+    const result=event.target.closest('[data-media-result]');if(result){mediaLibraryChoose(App.ui.mediaLibraryResults?.[Number(result.dataset.mediaResult)]);return}
+    const preset=event.target.closest('[data-media-preset]');if(preset){const[type,value]=preset.dataset.mediaPreset.split(':');lessonBoardScene().background={type,value};closeMediaLibrary();lessonBoardPersist('lesson_background_preset');return}
+    if(event.target.closest('[data-media-close]'))closeMediaLibrary();
+  });
+}
+
+;
+const LIVE_POLL_SCHEMA='sortio-live-poll-v1';
+const LIVE_POLL_REFRESH_MS=1800;
+
+function livePollDeployment(){return globalThis.__GHRAB_DEPLOYMENT_CONFIG__||{}}
+function livePollApiBase(){
+  const config=livePollDeployment();const raw=String(config.apiBaseUrl||'').trim();if(!raw)return null;
+  try{return new URL(raw,globalThis.location?.href||'http://localhost/')}catch(_){return null}
+}
+function livePollEndpoint(path){const base=livePollApiBase();if(!base)return null;try{return new URL(String(path||'').replace(/^\/+/,''),base).href}catch(_){return null}}
+function livePollServerAvailable(){return !!livePollApiBase()}
+async function livePollJson(url,options={}){
+  const response=await fetch(url,{credentials:'same-origin',cache:'no-store',...options,headers:{Accept:'application/json',...(options.body?{'Content-Type':'application/json'}:{}),...(options.headers||{})}});
+  if(!response.ok)throw new Error(`SORTIO live API ${response.status}`);
+  return response.json();
+}
+function livePollValidateRemote(json){
+  const id=String(json?.id||'').replace(/[^A-Za-z0-9._:-]/g,'').slice(0,120);
+  const token=String(json?.teacherToken||json?.token||'').replace(/[^A-Za-z0-9._:-]/g,'').slice(0,240);
+  const voteUrl=sanitizeLessonQrUrl(json?.voteUrl);
+  const qrUrl=sanitizeLessonSelfUrl(json?.qrUrl);
+  if(!id||!token||!voteUrl||!qrUrl)throw new Error('Neúplná odpověď live poll API.');
+  return{id,token,voteUrl,qrUrl,syncedAt:nowIso()};
+}
+async function livePollStart(widget){
+  if(!widget||widget.type!=='poll')return;
+  if((widget.data.options||[]).length<2){toast('Hlasování potřebuje alespoň dvě možnosti.','error');return}
+  const endpoint=livePollEndpoint('sortio/polls');
+  if(!endpoint){
+    widget.data.status='open';lessonBoardPersist('lesson_poll_local_open');
+    toast('Hlasování na plátně je spuštěné. QR hlasování bude dostupné po připojení školního serveru.','info');return;
+  }
+  try{
+    const appBase=String(livePollDeployment().appBaseUrl||'/apps/sortio/');
+    const json=await livePollJson(endpoint,{method:'POST',body:JSON.stringify({schema:LIVE_POLL_SCHEMA,question:widget.data.question,options:(widget.data.options||[]).map(option=>({id:option.id,label:option.label})),anonymous:true,expiresInMinutes:60,voterPath:`${appBase.replace(/\/$/,'')}/poll/`})});
+    widget.data.remote=livePollValidateRemote(json);widget.data.status='open';(widget.data.options||[]).forEach(option=>option.votes=0);
+    lessonBoardPersist('lesson_poll_live_start');livePollSchedule(widget.id);toast('QR hlasování je spuštěné. Výsledky se budou obnovovat živě.','success');
+  }catch(error){captureError(error,'live-poll-start');toast('QR hlasování se nepodařilo spustit. Hlasování na plátně zůstává dostupné.','error')}
+}
+function livePollStopSchedule(widgetId){const handle=App.ui.pollSyncHandles?.[widgetId];if(handle)clearInterval(handle);if(App.ui.pollSyncHandles)delete App.ui.pollSyncHandles[widgetId]}
+async function livePollClose(widget){
+  const remote=widget?.data?.remote;if(!remote?.id||!remote?.token)return;
+  livePollStopSchedule(widget.id);const endpoint=livePollEndpoint(`sortio/polls/${encodeURIComponent(remote.id)}/close?token=${encodeURIComponent(remote.token)}`);if(!endpoint)return;
+  try{await livePollJson(endpoint,{method:'POST'});widget.data.status='closed';lessonBoardPersist('lesson_poll_live_close',{render:false});livePollUpdateVisibleResults(widget)}catch(error){captureError(error,'live-poll-close')}
+}
+function livePollSchedule(widgetId){
+  livePollStopSchedule(widgetId);if(!App.ui.pollSyncHandles)App.ui.pollSyncHandles={};
+  App.ui.pollSyncHandles[widgetId]=setInterval(()=>{const widget=lessonBoardState().scenes.flatMap(scene=>scene.widgets).find(item=>item.id===widgetId);if(!widget||widget.type!=='poll'||widget.data.status!=='open'||!widget.data.remote?.id){livePollStopSchedule(widgetId);return}void livePollRefresh(widget)},LIVE_POLL_REFRESH_MS);
+  const widget=lessonBoardState().scenes.flatMap(scene=>scene.widgets).find(item=>item.id===widgetId);if(widget)void livePollRefresh(widget);
+}
+async function livePollRefresh(widget){
+  const remote=widget?.data?.remote;if(!remote?.id||!remote?.token)return;
+  const endpoint=livePollEndpoint(`sortio/polls/${encodeURIComponent(remote.id)}/results?token=${encodeURIComponent(remote.token)}`);if(!endpoint)return;
+  try{
+    const json=await livePollJson(endpoint);const counts=new Map((json?.options||[]).map(option=>[String(option.id),Math.max(0,Number(option.votes)||0)]));
+    for(const option of widget.data.options||[])if(counts.has(option.id))option.votes=counts.get(option.id);
+    if(['open','closed'].includes(json?.status))widget.data.status=json.status;widget.data.remote.syncedAt=nowIso();
+    lessonBoardPersist('lesson_poll_live_sync',{render:false});livePollUpdateVisibleResults(widget);
+    if(widget.data.status!=='open')livePollStopSchedule(widget.id);
+  }catch(error){captureError(error,'live-poll-refresh')}
+}
+function livePollUpdateVisibleResults(widget){
+  const options=widget.data.options||[],total=options.reduce((sum,option)=>sum+(Number(option.votes)||0),0);
+  $$(`[data-widget-id="${CSS.escape(widget.id)}"]`).forEach(article=>{const projection=!!article.closest('#projectionModal');for(const option of options){const button=article.querySelector(`[data-board-poll-option="${CSS.escape(option.id)}"]`);if(!button)continue;const pct=total?Math.round((Number(option.votes)||0)/total*100):0,bar=button.querySelector('i'),count=button.querySelector('b');if(bar)bar.style.width=`${pct}%`;if(count)count.textContent=`${Number(option.votes)||0} · ${pct}%`;button.disabled=projection||widget.data.status==='closed'}const meta=article.querySelector('.poll-meta span');if(meta)meta.textContent=`${total} hlasů`;const state=article.querySelector('.poll-meta strong');if(state)state.textContent=widget.data.remote?.voteUrl?'QR hlasování aktivní':widget.data.status==='open'?'Hlasování na plátně':'';const toggle=article.querySelector('[data-board-action="poll-toggle"]');if(toggle)toggle.textContent=widget.data.status==='open'?'Ukončit':'Spustit na plátně'});
+}
+async function livePollGenerateGenericQr(widget){
+  if(!widget||widget.type!=='qr')return;const url=sanitizeLessonQrUrl(widget.data.url);if(!url){toast('Nejprve vložte platný odkaz.','error');return}
+  const endpoint=livePollEndpoint('sortio/qr');if(!endpoint){toast('QR generátor bude dostupný po připojení školního serveru.','info');return}
+  try{const json=await livePollJson(endpoint,{method:'POST',body:JSON.stringify({schema:'sortio-qr-v1',url,label:widget.data.label||'Odkaz'})});widget.data.qrUrl=sanitizeLessonSelfUrl(json?.qrUrl);if(!widget.data.qrUrl)throw new Error('Chybí QR URL');lessonBoardPersist('lesson_qr_generate')}catch(error){captureError(error,'qr-generate');toast('QR kód se nepodařilo vygenerovat.','error')}
+}
+function bindLivePoll(){
+  for(const widget of lessonBoardState().scenes.flatMap(scene=>scene.widgets))if(widget.type==='poll'&&widget.data.status==='open'&&widget.data.remote?.id)livePollSchedule(widget.id);
+  addEventListener('beforeunload',()=>{Object.keys(App.ui.pollSyncHandles||{}).forEach(livePollStopSchedule)},{once:true});
+}
 
 ;
 const SORTIO_OUTPUT_BY_EVENT=Object.freeze({
@@ -1129,7 +1596,7 @@ function productionReadiness(){const health=storageHealthSnapshot();return{ready
 
 ;
 function sanitizeDiagnosticMessage(value=''){let text=String(value||'');for(const classItem of getClasses({includeArchived:true}))for(const student of classItem.students||[])if(student.displayName)text=text.split(student.displayName).join('[STUDENT]');return text.replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,'[EMAIL]').slice(0,500)}
-function diagnosticSnapshot(){const classes=getClasses({includeArchived:true});return{schema:'sortio-diagnostic-v5',appId:APP_ID,version:SORTIO_VERSION,createdAt:nowIso(),role:studioAccessRole(),route:App.route,online:navigator.onLine,storageAvailable:!!safeStorage(),serviceWorker:'serviceWorker'in navigator,motion:App.settings.motion,theme:App.settings.theme,moduleCount:MODULES.length,classCount:classes.length,studentCount:classes.reduce((sum,item)=>sum+classStudents(item,{includeArchived:true}).length,0),ruleCount:classes.reduce((sum,item)=>sum+item.groupRules.together.length+item.groupRules.apart.length+Object.keys(item.groupRules.pins).length,0),roleAssignmentCount:classes.reduce((sum,item)=>sum+item.roleHistory.length,0),seatingPlanCount:classes.filter(item=>item.seatingPlan.seats.length).length,engagementCount:classes.reduce((sum,item)=>sum+(item.engagementHistory?.length||0),0),scoreboardCount:classes.filter(item=>item.toolState?.scores?.length).length,lastOperation:App.lastOperation,lastError:App.lastError?{name:App.lastError.name,message:sanitizeDiagnosticMessage(App.lastError.message)}:null,storageError:App.storageError?{message:sanitizeDiagnosticMessage(App.storageError.message),createdAt:App.storageError.createdAt}:null,recovery:{recovered:!!App.recoveryState?.recovered,source:App.recoveryState?.source||null},privacy:{studentNamesStoredLocally:true,emailDataStored:false,externalDataTransfer:false,externalStudentDataTransfer:false,telemetryContainsPersonalData:false,diagnosticContainsStudentNames:false}}}
+function diagnosticSnapshot(){const classes=getClasses({includeArchived:true});return{schema:'sortio-diagnostic-v5',appId:APP_ID,version:SORTIO_VERSION,createdAt:nowIso(),role:studioAccessRole(),route:App.route,online:navigator.onLine,storageAvailable:!!safeStorage(),serviceWorker:'serviceWorker'in navigator,motion:App.settings.motion,theme:App.settings.theme,moduleCount:MODULES.length,classCount:classes.length,studentCount:classes.reduce((sum,item)=>sum+classStudents(item,{includeArchived:true}).length,0),ruleCount:classes.reduce((sum,item)=>sum+item.groupRules.together.length+item.groupRules.apart.length+Object.keys(item.groupRules.pins).length,0),roleAssignmentCount:classes.reduce((sum,item)=>sum+item.roleHistory.length,0),seatingPlanCount:classes.filter(item=>item.seatingPlan.seats.length).length,engagementCount:classes.reduce((sum,item)=>sum+(item.engagementHistory?.length||0),0),scoreboardCount:classes.filter(item=>item.toolState?.scores?.length).length,lastOperation:App.lastOperation,lastError:App.lastError?{name:App.lastError.name,message:sanitizeDiagnosticMessage(App.lastError.message)}:null,storageError:App.storageError?{message:sanitizeDiagnosticMessage(App.storageError.message),createdAt:App.storageError.createdAt}:null,recovery:{recovered:!!App.recoveryState?.recovered,source:App.recoveryState?.source||null},privacy:{studentNamesStoredLocally:true,emailDataStored:false,externalDataTransfer:true,externalStudentDataTransfer:false,mediaLibraryExternalQueryOnly:true,telemetryContainsPersonalData:false,diagnosticContainsStudentNames:false}}}
 window.SORTIO_DIAGNOSTICS={snapshot:diagnosticSnapshot,report:()=>typeof diagnosticReport==='function'?diagnosticReport():diagnosticSnapshot(),runChecks:()=>typeof runProductionChecks==='function'?runProductionChecks():[]};
 
 ;
@@ -1215,7 +1682,7 @@ async function init(){
   App.settings={...App.settings,...loadSettings()};
   App.data=loadData();
   applyTheme();applyMotion();
-  bindNavigation();bindSettings();bindClassUi();bindDrawUi();bindGroupsUi();bindRolesUi();bindSeatingUi();bindToolsUi();bindProjection();bindProductionTools();bindKeyboardShortcuts();bindRuntimeHealth();bindPwaInstall();bindCrossTabStorageSync();
+  bindNavigation();bindSettings();bindClassUi();bindDrawUi();bindGroupsUi();bindRolesUi();bindSeatingUi();bindLessonBoard();bindMediaLibrary();bindToolsUi();bindProjection();bindLivePoll();bindProductionTools();bindKeyboardShortcuts();bindRuntimeHealth();bindPwaInstall();bindCrossTabStorageSync();
   renderRoadmap();enhanceAccessibility();registerServiceWorker();
   document.addEventListener('sortio:data-changed',()=>{
     const transient=captureTransientViewState();
