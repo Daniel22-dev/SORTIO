@@ -5,9 +5,9 @@
   "platformVersion": "1.1.2",
   "contract": "ghrab-suite-session-v1",
   "syntheticOnly": true,
-  "runId": "da1e4402ee694adb",
-  "canary": "GARP-STUDENT-CANARY-SORTIO-1.1.0-da1e4402ee694adb",
-  "syntheticEmail": "garp.student.canary.da1e4402ee694adb@example.invalid",
+  "runId": "b31e82ad666a4eb5",
+  "canary": "GARP-STUDENT-CANARY-SORTIO-1.1.0-b31e82ad666a4eb5",
+  "syntheticEmail": "garp.student.canary.b31e82ad666a4eb5@example.invalid",
   "execution": {
     "browser": "system Chromium via CDP",
     "application": "actual dist/index.html with access gate bypassed and platform/app scripts executed",
@@ -23,7 +23,7 @@
     {
       "name": "open-child-suite-end",
       "status": "PASS",
-      "generation": "garp-open-child-1788634736091-000c49d7",
+      "generation": "garp-open-child-1788635287136-e7ca0e27",
       "clean": {
         "ok": true,
         "remainingContent": [],
@@ -36,10 +36,10 @@
         "acknowledged": true,
         "state": {
           "schema": "sortio-suite-session-state-v1",
-          "observedGeneration": "garp-open-child-1788634736091-000c49d7",
-          "observedAt": "2026-09-05T18:58:56.092Z",
-          "cleanupCompletedGeneration": "garp-open-child-1788634736091-000c49d7",
-          "cleanupCompletedAt": "2026-09-05T18:58:56.092Z"
+          "observedGeneration": "garp-open-child-1788635287136-e7ca0e27",
+          "observedAt": "2026-09-05T19:08:07.137Z",
+          "cleanupCompletedGeneration": "garp-open-child-1788635287136-e7ca0e27",
+          "cleanupCompletedAt": "2026-09-05T19:08:07.138Z"
         }
       },
       "settingsPreserved": true,
@@ -49,7 +49,7 @@
     {
       "name": "delayed-open-replay",
       "status": "PASS",
-      "generation": "garp-delayed-open-1788634736096-de10fbf4",
+      "generation": "garp-delayed-open-1788635287141-61ef31cc",
       "clean": {
         "ok": true,
         "remainingContent": [],
@@ -62,10 +62,10 @@
         "acknowledged": true,
         "state": {
           "schema": "sortio-suite-session-state-v1",
-          "observedGeneration": "garp-delayed-open-1788634736096-de10fbf4",
-          "observedAt": "2026-09-05T18:58:56.170Z",
-          "cleanupCompletedGeneration": "garp-delayed-open-1788634736096-de10fbf4",
-          "cleanupCompletedAt": "2026-09-05T18:58:56.170Z"
+          "observedGeneration": "garp-delayed-open-1788635287141-61ef31cc",
+          "observedAt": "2026-09-05T19:08:07.214Z",
+          "cleanupCompletedGeneration": "garp-delayed-open-1788635287141-61ef31cc",
+          "cleanupCompletedAt": "2026-09-05T19:08:07.215Z"
         }
       },
       "reloadDidNotRepeatCleanup": true,
@@ -74,7 +74,7 @@
     {
       "name": "multi-tab",
       "status": "PASS",
-      "generation": "garp-multi-tab-1788634736687-797e3d13",
+      "generation": "garp-multi-tab-1788635287718-87eddc05",
       "staleAttempt": {
         "threw": false,
         "blocked": true
@@ -95,7 +95,7 @@
     {
       "name": "browser-back-forward",
       "status": "PASS",
-      "generation": "garp-history-1788634736877-2d935733",
+      "generation": "garp-history-1788635287974-1c328e2a",
       "clean": {
         "ok": true,
         "remainingContent": [],
@@ -107,7 +107,7 @@
     {
       "name": "fail-closed",
       "status": "PASS",
-      "generation": "garp-fail-closed-1788634737174-0eae9a23",
+      "generation": "garp-fail-closed-1788635288293-24d18c0e",
       "failureProof": {
         "acknowledged": false,
         "observed": true,

@@ -6,9 +6,12 @@ Datum: 2026-09-05
 
 Funkční rozšíření „Výukový panel“ je sestaveno a prošlo aktuální automatizovanou regresní a bezpečnostní sadou.
 
+Po prvním GitHub publish pokusu byla opravena jedna CI regrese `email-not-stored`: při doplnění textu o Wikimedia byla změněna přesná bezpečnostní věta očekávaná interním testem. Datové chování se nezměnilo; po obnovení explicitní formulace interní sada prochází 35/35.
+
 ### PASS
 
 - `npm test` — PASS;
+- `test:internal` — 35/35 PASS po opravě `email-not-stored`;
 - GHRAB Platform 1.1.2 conformance — 108/108;
 - nový `test:lesson-board` — 30/30;
 - doménové a package 3/4/5 testy — PASS;

@@ -1,5 +1,11 @@
 ## 1.1.0 — Výukový panel (2026-09-05)
 
+### CI hotfix 2026-09-05 — email-not-stored regression
+
+- Obnovena přesná bezpečnostní formulace „Importované e-mailové adresy se po vytvoření náhledu neukládají.“ v informační kartě aplikace.
+- Funkční chování se nemění: importované e-mailové adresy se nadále nepersistují; oprava znovu splňuje interní regresní kontrolu `email-not-stored`.
+- Po opravě `test:internal` prošel 35/35 a celý `npm test` zůstal PASS.
+
 - SORTIO přejmenováno z „Organizátor třídy“ na „Výukový panel“ a rozšířeno o scénovou pracovní plochu pro živou výuku.
 - Přidán obecný widget engine: přesun, resize, lock, duplicate, delete a spotlight.
 - Přidány Timer 2.0, Visual timer, Stopky, Hodiny, Semafor, Tabule, Kostky 2.0, Skóre 2.0, Text, Režim práce, Obrázek, Event countdown, Agenda, Hlasování a QR odkaz.

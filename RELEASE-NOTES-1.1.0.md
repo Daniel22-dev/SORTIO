@@ -53,3 +53,7 @@ SORTIO se rozšiřuje z nástroje pro organizaci třídy na **Výukový panel** 
 - mikrofon zůstává zakázaný; měřič hluku nebyl přidán;
 - původní správa tříd, import, losování, skupiny, role, místa, historie a zálohy zůstávají zachovány.
 - kvůli novému widgetovému modulu byly vědomě aktualizovány dva P3 výkonové rozpočty: `entryCriticalBytes` 450 → 550 kB a `precacheBytes` 680 → 800 kB; limity celkového buildu a největšího souboru zůstaly beze změny.
+
+## CI hotfix po prvním publish pokusu
+
+První GitHub deploy verze 1.1.0 zastavila interní kontrola `email-not-stored`. Příčinou nebylo ukládání e-mailů, ale změna přesné bezpečnostní formulace v informační kartě při doplnění textu o Wikimedia Commons. Původní explicitní věta byla obnovena a doplněk o Wikimedia zachován. Po opravě interní sada prochází 35/35.
