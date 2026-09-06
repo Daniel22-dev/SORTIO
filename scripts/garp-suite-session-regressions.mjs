@@ -185,29 +185,41 @@ try{
     pass('fail-closed',{generation,failureProof,retrySucceeded:true,clean});
   }catch(error){fail('fail-closed',error);}
 
-  // 6) Mandatory negative control: disposable weakened copy bypasses the app cleanup handler.
+  // 6) Mandatory negative control: disposable weakened copy bypasses the actual cleanup implementation.
+  // The previous control replaced only session.onEnd(). SORTIO also has storage/pageshow/focus guards,
+  // so those guards could still invoke handleSuiteSessionEnd() and clean the canary. That made the
+  // supposedly weakened copy safe and produced a false CI failure. Here we weaken the single cleanup
+  // primitive itself; every lifecycle path remains active, but none can remove content in this copy.
   try{
-    const registration=/App\.suiteSession\.unsubscribe\s*=\s*session\.onEnd\(detail\s*=>\s*handleSuiteSessionEnd\(detail\),\s*\{replay:false\}\);/;
-    assert(registration.test(appJsRaw),'Negative control nemůže najít produkční suite-session registrační bod.');
-    const weakenedRaw=appJsRaw.replace(registration,"App.suiteSession.unsubscribe=session.onEnd(()=>({ok:true,negativeControl:true}),{replay:false});");
+    const cleanupEntry="async function performSuiteSessionCleanup(generation){\n  const storage=safeStorage();";
+    assert(appJsRaw.includes(cleanupEntry),'Negative control nemůže najít produkční cleanup primitive.');
+    const weakenedRaw=appJsRaw.replace(cleanupEntry,`async function performSuiteSessionCleanup(generation){
+  return {ok:true,negativeControl:true,removed:[],cleanupCompletedAt:null};
+}
+async function __garpOriginalPerformSuiteSessionCleanup(generation){
+  const storage=safeStorage();`);
     assert(weakenedRaw!==appJsRaw,'Negative control nevytvořil oslabenou kopii.');
     const disposableDir=path.join(outDir,'negative-control-disposable');
     await fsp.mkdir(disposableDir,{recursive:true});
-    await fsp.writeFile(path.join(disposableDir,'app.js'),weakenedRaw);
-    const sourceSha256=createHash('sha256').update(appJsRaw).digest('hex');
-    const weakenedSha256=createHash('sha256').update(weakenedRaw).digest('hex');
-    const weakenedInline=weakenedRaw.replace(/<\/script/gi,'<\\/script');
-    const app=await appPage({},weakenedInline);clients.push(app);await waitAppReady(app);
-    const canary=`${baseCanary}-NEGATIVE`;const seeded=await seedOpenApp(app,canary);assert(seeded.storageCanary,'Negative-control canary nebyl vložen.');
-    const end=await app.eval(`GHRAB_PLATFORM.session.end({reason:'garp-negative-control',clearApplicationData:true})`);
-    const generation=end?.generation||await app.eval(`localStorage.getItem(${JSON.stringify(SUITE_KEY)})`);
-    await sleep(160);
-    const dump=await storageDump(app);const clean=cleanupSnapshotOk(dump,canary);const lifecycle=lifecycleSnapshot(dump,generation);
-    const securityAssertionPassed=clean.ok&&lifecycle.acknowledged;
-    assert(securityAssertionPassed===false,'Negative control neočekávaně prošel bezpečnostní podmínkou.');
-    assert(clean.anyCanary===true||clean.remainingContent.length>0,'Oslabená kopie neprokázala zachování canary obsahu.');
-    pass('negative-control-disabled-cleanup',{expectedSecurityOutcome:'FAIL',observedSecurityOutcome:'FAIL',generation,clean,lifecycle,sourceSha256,weakenedSha256,disposableCopy:true});
-    await fsp.rm(disposableDir,{recursive:true,force:true});
+    try{
+      await fsp.writeFile(path.join(disposableDir,'app.js'),weakenedRaw);
+      const sourceSha256=createHash('sha256').update(appJsRaw).digest('hex');
+      const weakenedSha256=createHash('sha256').update(weakenedRaw).digest('hex');
+      const weakenedInline=weakenedRaw.replace(/<\/script/gi,'<\\/script');
+      const app=await appPage({},weakenedInline);clients.push(app);await waitAppReady(app);
+      const canary=`${baseCanary}-NEGATIVE`;const seeded=await seedOpenApp(app,canary);assert(seeded.storageCanary,'Negative-control canary nebyl vložen.');
+      const end=await app.eval(`GHRAB_PLATFORM.session.end({reason:'garp-negative-control',clearApplicationData:true})`);
+      const generation=end?.generation||await app.eval(`localStorage.getItem(${JSON.stringify(SUITE_KEY)})`);
+      await sleep(200);
+      const dump=await storageDump(app);const clean=cleanupSnapshotOk(dump,canary);const lifecycle=lifecycleSnapshot(dump,generation);
+      const productionSafetyPassed=clean.ok&&lifecycle.observed&&lifecycle.completed&&lifecycle.acknowledged;
+      assert(productionSafetyPassed===false,'Negative control neočekávaně prošel produkční bezpečnostní podmínkou.');
+      assert(clean.anyCanary===true||clean.remainingContent.length>0,'Oslabená kopie neprokázala zachování canary obsahu.');
+      assert(lifecycle.completed===false,'Oslabená kopie falešně obsahuje cleanup-completed důkaz.');
+      pass('negative-control-disabled-cleanup',{expectedSecurityOutcome:'FAIL',observedSecurityOutcome:'FAIL',generation,clean,lifecycle,sourceSha256,weakenedSha256,disposableCopy:true,weakenedPrimitive:'performSuiteSessionCleanup'});
+    }finally{
+      await fsp.rm(disposableDir,{recursive:true,force:true});
+    }
   }catch(error){fail('negative-control-disabled-cleanup',error);}
 
   // 7) Restore control: the untouched production copy must pass immediately after the negative control.

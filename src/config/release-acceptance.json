@@ -2,7 +2,7 @@
   "schema": "ghrab-release-acceptance-v1",
   "stage": "P5",
   "appId": "sortio",
-  "appVersion": "1.1.4",
+  "appVersion": "1.1.5",
   "releaseStatus": "ecosystem-wave-candidate",
   "primaryRuntime": {
     "mode": "standalone-github-pages",
@@ -10,7 +10,7 @@
     "offlineCapable": true,
     "currentUseApproved": false,
     "candidateSyntheticOnly": true,
-    "note": "1.1.4 is a manual-discoverability hotfix and requires the standard controlled release validation before production approval."
+    "note": "1.1.5 corrects the suite-session negative-control harness; production cleanup logic is unchanged and the standard controlled release validation remains required before production approval."
   },
   "github": {
     "status": "candidate-not-released",

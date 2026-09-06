@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.5 — 2026-09-06
+
+- Opraven suite-session negative-control harness: verze 1.1.4 vypínala jen `session.onEnd()`, ale bezpečnostní storage/pageshow/focus guardy stále legitimně provedly cleanup a způsobily falešný CI FAIL.
+- Odhoditelná kopie nyní vypíná přímo `performSuiteSessionCleanup()`, takže negative control prokazatelně zachová syntetický canary a produkční safety assertion očekávaně selže.
+- Produkční cleanup a Platform 1.1.2 runtime se nemění.
+
 ## 1.1.4 — 2026-09-06
 
 - Doplněn povinný suite-session negative control pro Platform 1.1.2: oslabená odhoditelná kopie musí FAIL a čistý produkční kód následně PASS.

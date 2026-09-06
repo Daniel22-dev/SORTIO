@@ -1,6 +1,6 @@
 {
   "name": "sortio-organizator-tridy",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "private": true,
   "description": "SORTIO – produkční local-first výukový panel s odolným ukládáním, diagnostikou, projekcí a tiskem",
   "type": "module",
