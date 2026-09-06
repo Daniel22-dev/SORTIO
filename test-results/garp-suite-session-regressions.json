@@ -1,13 +1,13 @@
 {
   "schema": "sortio-ghrab-suite-session-regressions-v1",
   "appId": "sortio",
-  "appVersion": "1.1.3",
+  "appVersion": "1.1.4",
   "platformVersion": "1.1.2",
   "contract": "ghrab-suite-session-v1",
   "syntheticOnly": true,
-  "runId": "f2eadd7bef174976",
-  "canary": "GARP-STUDENT-CANARY-SORTIO-1.1.3-f2eadd7bef174976",
-  "syntheticEmail": "garp.student.canary.f2eadd7bef174976@example.invalid",
+  "runId": "ffe8942418ff4d31",
+  "canary": "GARP-STUDENT-CANARY-SORTIO-1.1.4-ffe8942418ff4d31",
+  "syntheticEmail": "garp.student.canary.ffe8942418ff4d31@example.invalid",
   "execution": {
     "browser": "system Chromium via CDP",
     "application": "actual dist/index.html with access gate bypassed and platform/app scripts executed",
@@ -23,7 +23,7 @@
     {
       "name": "open-child-suite-end",
       "status": "PASS",
-      "generation": "garp-open-child-1788640715491-45b5127f",
+      "generation": "garp-open-child-1788696428352-94aa1dcd",
       "clean": {
         "ok": true,
         "remainingContent": [],
@@ -36,10 +36,10 @@
         "acknowledged": true,
         "state": {
           "schema": "sortio-suite-session-state-v1",
-          "observedGeneration": "garp-open-child-1788640715491-45b5127f",
-          "observedAt": "2026-09-05T20:38:35.498Z",
-          "cleanupCompletedGeneration": "garp-open-child-1788640715491-45b5127f",
-          "cleanupCompletedAt": "2026-09-05T20:38:35.499Z"
+          "observedGeneration": "garp-open-child-1788696428352-94aa1dcd",
+          "observedAt": "2026-09-06T12:07:08.354Z",
+          "cleanupCompletedGeneration": "garp-open-child-1788696428352-94aa1dcd",
+          "cleanupCompletedAt": "2026-09-06T12:07:08.354Z"
         }
       },
       "settingsPreserved": true,
@@ -49,7 +49,7 @@
     {
       "name": "delayed-open-replay",
       "status": "PASS",
-      "generation": "garp-delayed-open-1788640715503-7b67bf84",
+      "generation": "garp-delayed-open-1788696428363-02de964c",
       "clean": {
         "ok": true,
         "remainingContent": [],
@@ -62,10 +62,10 @@
         "acknowledged": true,
         "state": {
           "schema": "sortio-suite-session-state-v1",
-          "observedGeneration": "garp-delayed-open-1788640715503-7b67bf84",
-          "observedAt": "2026-09-05T20:38:35.581Z",
-          "cleanupCompletedGeneration": "garp-delayed-open-1788640715503-7b67bf84",
-          "cleanupCompletedAt": "2026-09-05T20:38:35.581Z"
+          "observedGeneration": "garp-delayed-open-1788696428363-02de964c",
+          "observedAt": "2026-09-06T12:07:08.460Z",
+          "cleanupCompletedGeneration": "garp-delayed-open-1788696428363-02de964c",
+          "cleanupCompletedAt": "2026-09-06T12:07:08.460Z"
         }
       },
       "reloadDidNotRepeatCleanup": true,
@@ -74,7 +74,7 @@
     {
       "name": "multi-tab",
       "status": "PASS",
-      "generation": "garp-multi-tab-1788640716066-351fbeab",
+      "generation": "garp-multi-tab-1788696428992-1b59e2b2",
       "staleAttempt": {
         "threw": false,
         "blocked": true
@@ -95,7 +95,7 @@
     {
       "name": "browser-back-forward",
       "status": "PASS",
-      "generation": "garp-history-1788640716268-a0f9b410",
+      "generation": "garp-history-1788696429221-c629c37d",
       "clean": {
         "ok": true,
         "remainingContent": [],
@@ -107,7 +107,7 @@
     {
       "name": "fail-closed",
       "status": "PASS",
-      "generation": "garp-fail-closed-1788640716542-f22cb7eb",
+      "generation": "garp-fail-closed-1788696429534-f581646c",
       "failureProof": {
         "acknowledged": false,
         "observed": true,
@@ -120,11 +120,67 @@
         "remainingContent": [],
         "anyCanary": false
       }
+    },
+    {
+      "name": "negative-control-disabled-cleanup",
+      "status": "PASS",
+      "expectedSecurityOutcome": "FAIL",
+      "observedSecurityOutcome": "FAIL",
+      "generation": "1788696429813-5trlsqb0",
+      "clean": {
+        "ok": false,
+        "remainingContent": [
+          "ghrab.sortio.data.v5",
+          "ghrab.sortio.data.v5.last-good",
+          "ghrab.sortio.data.v5.pre-import",
+          "ghrab.sortio.data.v5.corrupt",
+          "ghrab.sortio.data.v4",
+          "ghrab.sortio.data.v3",
+          "ghrab.sortio.data.v2",
+          "ghrab.sortio.migration.p2-storage-namespace-v1.backup"
+        ],
+        "anyCanary": true
+      },
+      "lifecycle": {
+        "suiteSignal": true,
+        "observed": false,
+        "completed": false,
+        "acknowledged": true,
+        "state": null
+      },
+      "sourceSha256": "fe638c8b858eb55f9223ddafcda8997b78bbd0ab5834bc38feb3c67d3763b7da",
+      "weakenedSha256": "f08f4330aacc380c321f82c7bf33fa1e6c4f249a673c03ab719b61fe379456bf",
+      "disposableCopy": true
+    },
+    {
+      "name": "negative-control-clean-restored-pass",
+      "status": "PASS",
+      "expectedSecurityOutcome": "PASS",
+      "observedSecurityOutcome": "PASS",
+      "generation": "1788696430134-7i2tnqsu",
+      "clean": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      },
+      "lifecycle": {
+        "suiteSignal": true,
+        "observed": true,
+        "completed": true,
+        "acknowledged": true,
+        "state": {
+          "schema": "sortio-suite-session-state-v1",
+          "observedGeneration": "1788696430134-7i2tnqsu",
+          "observedAt": "2026-09-06T12:07:10.134Z",
+          "cleanupCompletedGeneration": "1788696430134-7i2tnqsu",
+          "cleanupCompletedAt": "2026-09-06T12:07:10.135Z"
+        }
+      }
     }
   ],
   "summary": {
-    "total": 5,
-    "passed": 5,
+    "total": 7,
+    "passed": 7,
     "failed": 0
   },
   "status": "passed"

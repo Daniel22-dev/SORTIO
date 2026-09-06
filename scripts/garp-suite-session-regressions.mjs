@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { findChromiumPath } from './chromium-path.mjs';
@@ -42,7 +42,8 @@ function syntheticData(canary){
 }
 
 const appSource=await fsp.readFile(path.join(dist,'index.html'),'utf8');
-const appJs=(await fsp.readFile(path.join(dist,'app.js'),'utf8')).replace(/<\/script/gi,'<\\/script');
+const appJsRaw=await fsp.readFile(path.join(dist,'app.js'),'utf8');
+const appJs=appJsRaw.replace(/<\/script/gi,'<\\/script');
 const platformCss=await fsp.readFile(path.join(dist,'ghrab','ghrab-platform.css'),'utf8');
 const accessCss=await fsp.readFile(path.join(dist,'access','access-gate.css'),'utf8');
 const platformJs=(await fsp.readFile(path.join(dist,'ghrab','ghrab-platform.js'),'utf8'))
@@ -50,7 +51,7 @@ const platformJs=(await fsp.readFile(path.join(dist,'ghrab','ghrab-platform.js')
 function memoryPrelude(seed={}){
   return `<script data-ghrab-suite-test-prelude>(()=>{const __seed=${JSON.stringify(seed)};class GarpStorage{constructor(initial){this.m=new Map(Object.entries(initial||{}).map(([k,v])=>[String(k),String(v)]))}get length(){return this.m.size}key(i){return [...this.m.keys()][i]??null}getItem(k){k=String(k);return this.m.has(k)?this.m.get(k):null}setItem(k,v){this.m.set(String(k),String(v))}removeItem(k){this.m.delete(String(k))}clear(){this.m.clear()}};Object.defineProperty(window,'Storage',{value:GarpStorage,configurable:true});Object.defineProperty(window,'localStorage',{value:new GarpStorage(__seed),configurable:true});Object.defineProperty(window,'sessionStorage',{value:new GarpStorage(),configurable:true});window.__garpRawStorage=Object.freeze({getItem:GarpStorage.prototype.getItem,setItem:GarpStorage.prototype.setItem,removeItem:GarpStorage.prototype.removeItem,key:GarpStorage.prototype.key});window.matchMedia=window.matchMedia||(()=>({matches:false,addEventListener(){},removeEventListener(){}}));window.alert=()=>{};window.confirm=()=>true;window.prompt=()=>'';window.__suiteErrors=[];addEventListener('error',e=>window.__suiteErrors.push(String(e.error?.stack||e.message||e.error||'error')));addEventListener('unhandledrejection',e=>window.__suiteErrors.push(String(e.reason?.stack||e.reason||'rejection')));try{if(globalThis.ServiceWorkerContainer?.prototype?.register){globalThis.ServiceWorkerContainer.prototype.register=async()=>({update:async()=>{},addEventListener:()=>{},installing:null,waiting:null,active:null});}}catch{}})();<\/script>`;
 }
-function transformAppHtml(seed={}){
+function transformAppHtml(seed={},inlineAppJs=appJs){
   let html=appSource
     .replace(/data-ghrab-access=["']checking["']/gi,'data-ghrab-access="granted"')
     .replace(/<script\b(?=[^>]*data-ghrab-access-bootstrap)[^>]*>[\s\S]*?<\/script>/gi,'')
@@ -61,7 +62,7 @@ function transformAppHtml(seed={}){
     .replace(/<link\b[^>]*href=["']\.\/access\/access-gate\.css["'][^>]*>/gi,`<style data-garp-inline-access>${accessCss}</style>`)
     .replace(/<link\b[^>]*href=["']\.\/ghrab\/ghrab-platform\.css["'][^>]*>/gi,`<style data-garp-inline-platform>${platformCss}</style>`)
     .replace(/<script\b[^>]*src=["']\.\/ghrab\/ghrab-platform\.js["'][^>]*><\/script>/gi,()=>`<script data-garp-inline-platform>${platformJs}<\/script>`)
-    .replace(/<script\b[^>]*src=["']\.\/app\.js["'][^>]*><\/script>/gi,()=>`<script data-garp-inline-app>${appJs}<\/script>`);
+    .replace(/<script\b[^>]*src=["']\.\/app\.js["'][^>]*><\/script>/gi,()=>`<script data-garp-inline-app>${inlineAppJs}<\/script>`);
   return html.replace(/<head\b[^>]*>/i,m=>`${m}\n${memoryPrelude(seed)}`);
 }
 
@@ -73,7 +74,7 @@ class Cdp{
   close(){try{this.ws.close();}catch{}}
 }
 async function blankPage(){const target=await waitJson(`http://127.0.0.1:${debugPort}/json/new?about:blank`,{method:'PUT'});const c=new Cdp(target.webSocketDebuggerUrl);await c.call('Runtime.enable');await c.call('Page.enable');return c;}
-async function appPage(seed={}){const c=await blankPage();const tree=await c.call('Page.getFrameTree');await c.call('Page.setDocumentContent',{frameId:tree.frameTree.frame.id,html:transformAppHtml(seed)});return c;}
+async function appPage(seed={},inlineAppJs=appJs){const c=await blankPage();const tree=await c.call('Page.getFrameTree');await c.call('Page.setDocumentContent',{frameId:tree.frameTree.frame.id,html:transformAppHtml(seed,inlineAppJs)});return c;}
 async function waitEval(client,expression,predicate=value=>Boolean(value),label='condition',tries=300){let last;for(let i=0;i<tries;i++){try{last=await client.eval(expression);if(predicate(last))return last;}catch{}await sleep(40);}throw new Error(`Timeout waiting for ${label}; last=${JSON.stringify(last)}`);}
 async function waitAppReady(client){return waitEval(client,"document.readyState==='complete'&&document.documentElement.dataset.appReady==='true'",Boolean,'SORTIO appReady');}
 async function waitSuiteEnd(client,expected='ended'){return waitEval(client,`document.documentElement.dataset.sortioSuiteSession||''`,v=>v===expected,`suite state ${expected}`);}
@@ -183,6 +184,44 @@ try{
     dump=await storageDump(app);const clean=cleanupSnapshotOk(dump,canary);assert(clean.ok,'Retry po fail-closed poruše neodstranil zbylý canary.');
     pass('fail-closed',{generation,failureProof,retrySucceeded:true,clean});
   }catch(error){fail('fail-closed',error);}
+
+  // 6) Mandatory negative control: disposable weakened copy bypasses the app cleanup handler.
+  try{
+    const registration=/App\.suiteSession\.unsubscribe\s*=\s*session\.onEnd\(detail\s*=>\s*handleSuiteSessionEnd\(detail\),\s*\{replay:false\}\);/;
+    assert(registration.test(appJsRaw),'Negative control nemůže najít produkční suite-session registrační bod.');
+    const weakenedRaw=appJsRaw.replace(registration,"App.suiteSession.unsubscribe=session.onEnd(()=>({ok:true,negativeControl:true}),{replay:false});");
+    assert(weakenedRaw!==appJsRaw,'Negative control nevytvořil oslabenou kopii.');
+    const disposableDir=path.join(outDir,'negative-control-disposable');
+    await fsp.mkdir(disposableDir,{recursive:true});
+    await fsp.writeFile(path.join(disposableDir,'app.js'),weakenedRaw);
+    const sourceSha256=createHash('sha256').update(appJsRaw).digest('hex');
+    const weakenedSha256=createHash('sha256').update(weakenedRaw).digest('hex');
+    const weakenedInline=weakenedRaw.replace(/<\/script/gi,'<\\/script');
+    const app=await appPage({},weakenedInline);clients.push(app);await waitAppReady(app);
+    const canary=`${baseCanary}-NEGATIVE`;const seeded=await seedOpenApp(app,canary);assert(seeded.storageCanary,'Negative-control canary nebyl vložen.');
+    const end=await app.eval(`GHRAB_PLATFORM.session.end({reason:'garp-negative-control',clearApplicationData:true})`);
+    const generation=end?.generation||await app.eval(`localStorage.getItem(${JSON.stringify(SUITE_KEY)})`);
+    await sleep(160);
+    const dump=await storageDump(app);const clean=cleanupSnapshotOk(dump,canary);const lifecycle=lifecycleSnapshot(dump,generation);
+    const securityAssertionPassed=clean.ok&&lifecycle.acknowledged;
+    assert(securityAssertionPassed===false,'Negative control neočekávaně prošel bezpečnostní podmínkou.');
+    assert(clean.anyCanary===true||clean.remainingContent.length>0,'Oslabená kopie neprokázala zachování canary obsahu.');
+    pass('negative-control-disabled-cleanup',{expectedSecurityOutcome:'FAIL',observedSecurityOutcome:'FAIL',generation,clean,lifecycle,sourceSha256,weakenedSha256,disposableCopy:true});
+    await fsp.rm(disposableDir,{recursive:true,force:true});
+  }catch(error){fail('negative-control-disabled-cleanup',error);}
+
+  // 7) Restore control: the untouched production copy must pass immediately after the negative control.
+  try{
+    const app=await appPage();clients.push(app);await waitAppReady(app);
+    const canary=`${baseCanary}-RESTORED`;const seeded=await seedOpenApp(app,canary);assert(seeded.storageCanary,'Restore-control canary nebyl vložen.');
+    const end=await app.eval(`GHRAB_PLATFORM.session.end({reason:'garp-negative-control-restored',clearApplicationData:true})`);
+    const generation=end?.generation||await app.eval(`localStorage.getItem(${JSON.stringify(SUITE_KEY)})`);
+    await waitSuiteEnd(app,'ended');
+    await waitEval(app,`localStorage.getItem(${JSON.stringify(SEEN_KEY)})===${JSON.stringify(generation)}`,Boolean,'restored production ack');
+    const dump=await storageDump(app);const clean=cleanupSnapshotOk(dump,canary);const lifecycle=lifecycleSnapshot(dump,generation);
+    assert(clean.ok&&lifecycle.observed&&lifecycle.completed&&lifecycle.acknowledged,'Čistý produkční kód po negative control neprošel.');
+    pass('negative-control-clean-restored-pass',{expectedSecurityOutcome:'PASS',observedSecurityOutcome:'PASS',generation,clean,lifecycle});
+  }catch(error){fail('negative-control-clean-restored-pass',error);}
 
 } finally {
   for(const c of clients)c.close();

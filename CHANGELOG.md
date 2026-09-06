@@ -1,3 +1,10 @@
+# Changelog
+
+## 1.1.4 — 2026-09-06
+
+- Doplněn povinný suite-session negative control pro Platform 1.1.2: oslabená odhoditelná kopie musí FAIL a čistý produkční kód následně PASS.
+- Přidána hashová evidence oslabené kopie; produkční cleanup logika se nemění.
+
 ## 1.1.3 — 2026-09-05
 - Přidáno viditelné tlačítko **Manuál** do horní lišty aplikace.
 - Tlačítko otevírá existující interaktivní manuál v nové kartě, takže učitel nepřijde o rozpracovaný stav SORTIO.

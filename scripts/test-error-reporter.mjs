@@ -112,7 +112,7 @@ function staticAudit() {
   const adapter = text(config.adapterPath);
 
   check('Ochrana jediné instance používá ghrab-error-reporter', reporter.includes('const REPORTER_ID = "ghrab-error-reporter"'));
-  check('Kanonický reportér má verzi 1.1.3', reporter.includes('const REPORTER_VERSION = "1.1.3"'));
+  check('Kanonický reportér má verzi 1.1.4', reporter.includes('const REPORTER_VERSION = "1.1.4"'));
   check('Limit je přesně pět screenshotů', reporter.includes('const MAX_SCREENSHOTS = 5'));
   check('Finální compose URL je omezena na 7000 znaků', reporter.includes('const MAX_COMPOSE_URL_LENGTH = 7000') && reporter.includes('export function fitMailBodyToComposeUrl'));
   check('Zkracování zachovává plné tělo a krátí diagnostiku jako první', reporter.includes('const fullBody = makeBody') && reporter.includes('currentDiagnostics = currentDiagnostics.slice(0, 3)'));

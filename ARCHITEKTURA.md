@@ -1,4 +1,4 @@
-# Architektura SORTIO 1.1.3
+# Architektura SORTIO 1.1.4
 
 SORTIO je modulární local-first PWA. Od verze 1.1 spojuje dvě rovnocenné části: **organizaci třídy** a **Výukový panel pro živou hodinu**. Uživatelské rozhraní, doménové algoritmy, datová vrstva, widgetová plocha, projekce, tisk a diagnostika zůstávají oddělené a testovatelné.
 
