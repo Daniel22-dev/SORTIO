@@ -96,6 +96,16 @@ for(const [template,rows,columns,count]of [['rows',4,6,24],['pairs',4,3,24],['is
   assert.equal(context.createSeatLayout(template,rows,columns).length,count,template);
 }
 
+// 1.1.9: jedna buňka editoru představuje jednu dvojmístnou lavici.
+let deskShapeClass=freshClass(4);
+context.configureSeatingShape([{row:2,column:4},{row:2,column:5}]);
+assert.equal(deskShapeClass.seatingPlan.template,'custom');
+assert.equal(deskShapeClass.seatingPlan.seats.length,4);
+assert.deepEqual(plain(deskShapeClass.seatingPlan.seats.map(seat=>[seat.deskRow,seat.deskColumn,seat.deskSlot])),[[2,4,0],[2,4,1],[2,5,0],[2,5,1]]);
+assert.equal(context.seatingDeskGroups(deskShapeClass.seatingPlan).length,2);
+assert.equal(context.seatingCapacityText('custom',3,6,deskShapeClass.seatingPlan.seats),'2 lavic po dvou · celkem 4 míst');
+
+
 // Jmenovci jsou legitimní, ale vyžadují výslovné potvrzení volající vrstvy.
 let namesakeClass=freshClass(1);
 const existing=namesakeClass.students[0];

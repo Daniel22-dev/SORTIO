@@ -1,13 +1,13 @@
 {
   "schema": "sortio-ghrab-suite-session-regressions-v1",
   "appId": "sortio",
-  "appVersion": "1.1.7",
+  "appVersion": "1.1.9",
   "platformVersion": "1.1.2",
   "contract": "ghrab-suite-session-v1",
   "syntheticOnly": true,
-  "runId": "c4eb6a4be62047f6",
-  "canary": "GARP-STUDENT-CANARY-SORTIO-1.1.7-c4eb6a4be62047f6",
-  "syntheticEmail": "garp.student.canary.c4eb6a4be62047f6@example.invalid",
+  "runId": "81492e04d76a499e",
+  "canary": "GARP-STUDENT-CANARY-SORTIO-1.1.9-81492e04d76a499e",
+  "syntheticEmail": "garp.student.canary.81492e04d76a499e@example.invalid",
   "execution": {
     "browser": "system Chromium via CDP",
     "application": "actual dist/index.html with access gate bypassed and platform/app scripts executed",
@@ -23,7 +23,7 @@
     {
       "name": "open-child-suite-end",
       "status": "PASS",
-      "generation": "garp-open-child-1788887430754-0e37abe9",
+      "generation": "garp-open-child-1788889943735-d36084f9",
       "clean": {
         "ok": true,
         "remainingContent": [],
@@ -36,10 +36,10 @@
         "acknowledged": true,
         "state": {
           "schema": "sortio-suite-session-state-v1",
-          "observedGeneration": "garp-open-child-1788887430754-0e37abe9",
-          "observedAt": "2026-09-08T17:10:30.757Z",
-          "cleanupCompletedGeneration": "garp-open-child-1788887430754-0e37abe9",
-          "cleanupCompletedAt": "2026-09-08T17:10:30.758Z"
+          "observedGeneration": "garp-open-child-1788889943735-d36084f9",
+          "observedAt": "2026-09-08T17:52:23.739Z",
+          "cleanupCompletedGeneration": "garp-open-child-1788889943735-d36084f9",
+          "cleanupCompletedAt": "2026-09-08T17:52:23.740Z"
         }
       },
       "settingsPreserved": true,
@@ -49,7 +49,7 @@
     {
       "name": "delayed-open-replay",
       "status": "PASS",
-      "generation": "garp-delayed-open-1788887430764-7af08795",
+      "generation": "garp-delayed-open-1788889943750-b21f97cc",
       "clean": {
         "ok": true,
         "remainingContent": [],
@@ -62,10 +62,10 @@
         "acknowledged": true,
         "state": {
           "schema": "sortio-suite-session-state-v1",
-          "observedGeneration": "garp-delayed-open-1788887430764-7af08795",
-          "observedAt": "2026-09-08T17:10:30.861Z",
-          "cleanupCompletedGeneration": "garp-delayed-open-1788887430764-7af08795",
-          "cleanupCompletedAt": "2026-09-08T17:10:30.861Z"
+          "observedGeneration": "garp-delayed-open-1788889943750-b21f97cc",
+          "observedAt": "2026-09-08T17:52:23.836Z",
+          "cleanupCompletedGeneration": "garp-delayed-open-1788889943750-b21f97cc",
+          "cleanupCompletedAt": "2026-09-08T17:52:23.837Z"
         }
       },
       "reloadDidNotRepeatCleanup": true,
@@ -74,7 +74,7 @@
     {
       "name": "multi-tab",
       "status": "PASS",
-      "generation": "garp-multi-tab-1788887431357-2aa3a5bc",
+      "generation": "garp-multi-tab-1788889944324-25e3d6f4",
       "staleAttempt": {
         "threw": false,
         "blocked": true
@@ -95,7 +95,7 @@
     {
       "name": "browser-back-forward",
       "status": "PASS",
-      "generation": "garp-history-1788887431543-c7532882",
+      "generation": "garp-history-1788889944531-ce069a63",
       "clean": {
         "ok": true,
         "remainingContent": [],
@@ -107,7 +107,7 @@
     {
       "name": "fail-closed",
       "status": "PASS",
-      "generation": "garp-fail-closed-1788887431827-b8342181",
+      "generation": "garp-fail-closed-1788889944803-dd68824b",
       "failureProof": {
         "acknowledged": false,
         "observed": true,
@@ -126,7 +126,7 @@
       "status": "PASS",
       "expectedSecurityOutcome": "FAIL",
       "observedSecurityOutcome": "FAIL",
-      "generation": "1788887432105-klzyxu92",
+      "generation": "1788889945092-gyrvcw5q",
       "clean": {
         "ok": false,
         "remainingContent": [
@@ -148,12 +148,12 @@
         "acknowledged": true,
         "state": {
           "schema": "sortio-suite-session-state-v1",
-          "observedGeneration": "1788887432105-klzyxu92",
-          "observedAt": "2026-09-08T17:10:32.106Z"
+          "observedGeneration": "1788889945092-gyrvcw5q",
+          "observedAt": "2026-09-08T17:52:25.092Z"
         }
       },
-      "sourceSha256": "e02720d4e0d618afcfc6a097d07a71368d1b317a2b1cb49276d94c37fd3767fc",
-      "weakenedSha256": "d61ab1669885b87b383d1624dbe67b0c430bad1b4b05e0647c15f3a1dca4de0d",
+      "sourceSha256": "0fb9fa86c669071866a3639adb7130c106ca95c4787a7e707a821bd095dc6f40",
+      "weakenedSha256": "2397bf406c349a885c3e49a7bb023603f22fed1b512f3aabb6bc9562cdb9ebd8",
       "disposableCopy": true,
       "weakenedPrimitive": "performSuiteSessionCleanup"
     },
@@ -162,7 +162,7 @@
       "status": "PASS",
       "expectedSecurityOutcome": "PASS",
       "observedSecurityOutcome": "PASS",
-      "generation": "1788887432465-yhzqtz15",
+      "generation": "1788889945420-iihjjd8c",
       "clean": {
         "ok": true,
         "remainingContent": [],
@@ -175,10 +175,10 @@
         "acknowledged": true,
         "state": {
           "schema": "sortio-suite-session-state-v1",
-          "observedGeneration": "1788887432465-yhzqtz15",
-          "observedAt": "2026-09-08T17:10:32.465Z",
-          "cleanupCompletedGeneration": "1788887432465-yhzqtz15",
-          "cleanupCompletedAt": "2026-09-08T17:10:32.466Z"
+          "observedGeneration": "1788889945420-iihjjd8c",
+          "observedAt": "2026-09-08T17:52:25.421Z",
+          "cleanupCompletedGeneration": "1788889945420-iihjjd8c",
+          "cleanupCompletedAt": "2026-09-08T17:52:25.422Z"
         }
       }
     }

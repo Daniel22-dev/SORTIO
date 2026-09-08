@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.1.9 — 2026-09-08
+
+- Vlastní tvar učebny nyní kreslí **dvojlavice**: jedno označené políčko = jedna lavice pro 2 studenty; kapacita se automaticky počítá jako počet lavic × 2.
+- Nepravidelný tvar učebny se normalizuje a jako celek automaticky vystřeďuje v hlavním zasedacím plánu, bezpečné projekci i exportu PDF A4 naležato.
+- Vyčištění Výukového panelu používá vlastní potvrzovací modal; ve fullscreen režimu potvrzení ani samotné vyčištění neopouští celou obrazovku.
+- Zesíleno vykreslení tlačítka „Promítnout“ a barevných miniatur pozadí, aby je nepřebíjely starší/theme styly AI Studia.
+- Knihovna pozadí nově upřednostňuje široké barevné scenérie a architekturu a potlačuje portréty, známky, mince, televizory/obrazovky, dokumenty, loga a další nevhodné encyklopedické motivy.
+- Obrázkové pozadí se zobrazuje **celé bez ořezu** (`contain`); případný volný prostor vyplní rozostřená kopie stejného snímku, takže plocha zůstává vizuálně plná.
+- Wikimedia knihovna byla přesunuta do lazy modulu, aby nové filtrování a řazení nezvýšilo kritický vstupní balík ani PWA precache nad GHRAB performance budget.
+
+## 1.1.8 — 2026-09-08
+
+- Nový zasedací plán začíná s úplně prázdnou mřížkou bez automaticky předkreslených míst.
+- Rychlé tvary jsou nyní skutečně volitelné: u prázdného plánu se zobrazuje neutrální volba „Vyberte předlohu…“.
+- Počet míst u nového plánu začíná na 0; existující uložené zasedací plány zůstávají beze změny.
+
 ## 1.1.7 — 2026-09-08
 
 - Losování a projekce bez technických textů o cyklu.
@@ -137,6 +153,12 @@
 
 # Changelog
 
+## 1.1.8 — 2026-09-08
+
+- Nový zasedací plán začíná s úplně prázdnou mřížkou bez automaticky předkreslených míst.
+- Rychlé tvary jsou nyní skutečně volitelné: u prázdného plánu se zobrazuje neutrální volba „Vyberte předlohu…“.
+- Počet míst u nového plánu začíná na 0; existující uložené zasedací plány zůstávají beze změny.
+
 ## 1.0.9 — P4 FINAL (2026-08-04)
 
 - Finální certifikace, čisté buildy, přístupnost, výkon, bezpečnost a release evidence.
@@ -160,6 +182,12 @@
 - AI Core: not-applicable; společná serverová platforma bez AI transportu.
 
 # Changelog
+
+## 1.1.8 — 2026-09-08
+
+- Nový zasedací plán začíná s úplně prázdnou mřížkou bez automaticky předkreslených míst.
+- Rychlé tvary jsou nyní skutečně volitelné: u prázdného plánu se zobrazuje neutrální volba „Vyberte předlohu…“.
+- Počet míst u nového plánu začíná na 0; existující uložené zasedací plány zůstávají beze změny.
 
 ## 1.0.5 — 2026-08-04
 

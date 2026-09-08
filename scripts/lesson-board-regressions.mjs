@@ -8,7 +8,7 @@ const checks=[];
 function expect(name,condition,detail=''){checks.push({name,ok:Boolean(condition),detail});if(!condition)process.exitCode=1}
 
 const board=read('src/js/87-lesson-board.js');
-const media=read('src/js/88-media-library.js');
+const media=read('src/js/88-media-library.js')+'\n'+read('src/lazy/media-library.js');
 const live=read('src/js/89-live-poll.js');
 const importParser=read('src/js/45-import-parser.js');
 const body=read('src/body.html');
@@ -34,6 +34,9 @@ expect('dice uses visible objects and animations',board.includes('real-die')&&bo
 expect('projection uses lesson board',board.includes('lessonBoardProjectionHtml'));
 expect('image background attribution visible',board.includes('lessonBoardBackgroundCredit')&&css.includes('.board-background-credit'));
 expect('Wikimedia search only',media.includes('commons.wikimedia.org/w/api.php')&&media.includes('sanitizeLessonImageUrl'));
+expect('backgrounds are ranked for wide aesthetic use',media.includes('MEDIA_LIBRARY_BACKGROUND_BAD_TITLE')&&media.includes('MEDIA_LIBRARY_BACKGROUND_GOOD_TITLE')&&media.includes("iiprop:'url|size|mime|mediatype|extmetadata'"));
+expect('backgrounds render without cropping',board.includes('lesson-board-background-backdrop')&&board.includes('lesson-board-background-image')&&css.includes('object-fit:contain!important'));
+expect('media library is lazy-loaded and precached',read('src/js/88-media-library.js').includes('./lazy/media-library.js')&&read('src/sw.js').includes('./lazy/media-library.js'));
 expect('Wikimedia returns 50 and pagination',media.includes("gsrlimit:'50'")&&media.includes('gsroffset')&&media.includes('Načíst dalších 50 obrázků'));
 const mediaDialog=body.split('<dialog id="mediaLibraryDialog"')[1]?.split('</dialog>')[0]||'';
 expect('no image upload control',!mediaDialog.match(/<input[^>]+type=["']file["'][^>]*>/i));

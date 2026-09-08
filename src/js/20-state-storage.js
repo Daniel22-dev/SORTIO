@@ -229,7 +229,7 @@ function sanitizePins(value,ids,studentRefMap=null){
 }
 function sanitizeSeatingPlan(value,ids,studentRefMap=null){
   const plan={...defaultSeatingPlan(),...(value&&typeof value==='object'?value:{})};plan.template=['rows','pairs','islands','u','custom'].includes(plan.template)?plan.template:'rows';const minDimension=plan.template==='custom'?1:2;plan.rows=Math.max(minDimension,Math.min(10,Number(plan.rows)||4));plan.columns=Math.max(minDimension,Math.min(plan.template==='custom'?16:12,Number(plan.columns)||6));
-  plan.seats=Array.isArray(plan.seats)?plan.seats.slice(0,240).map(seat=>({id:sanitizeIdentifier(seat.id,'seat'),row:Number(seat.row||0),column:Number(seat.column||0),island:Number.isFinite(Number(seat.island))?Number(seat.island):null,label:String(seat.label||'').slice(0,30),studentId:sanitizeStudentRef(seat.studentId,ids,studentRefMap),blocked:!!seat.blocked,locked:!!seat.locked})):[];return plan;
+  plan.seats=Array.isArray(plan.seats)?plan.seats.slice(0,240).map(seat=>({id:sanitizeIdentifier(seat.id,'seat'),row:Number(seat.row||0),column:Number(seat.column||0),island:Number.isFinite(Number(seat.island))?Number(seat.island):null,deskRow:Number.isFinite(Number(seat.deskRow))?Number(seat.deskRow):null,deskColumn:Number.isFinite(Number(seat.deskColumn))?Number(seat.deskColumn):null,deskSlot:Number.isFinite(Number(seat.deskSlot))?Math.max(0,Math.min(1,Number(seat.deskSlot))):null,label:String(seat.label||'').slice(0,30),studentId:sanitizeStudentRef(seat.studentId,ids,studentRefMap),blocked:!!seat.blocked,locked:!!seat.locked})):[];return plan;
 }
 function sanitizeEngagementHistory(value,ids,studentRefMap=null){
   if(!Array.isArray(value))return[];

@@ -1,4 +1,4 @@
-# Architektura SORTIO 1.1.7
+# Architektura SORTIO 1.1.9
 
 SORTIO je modulární local-first PWA. Od verze 1.1 spojuje dvě rovnocenné části: **organizaci třídy** a **Výukový panel pro živou hodinu**. Uživatelské rozhraní, doménové algoritmy, datová vrstva, widgetová plocha, projekce, tisk a diagnostika zůstávají oddělené a testovatelné.
 
@@ -27,7 +27,7 @@ Widget ukládá typ, pozici, rozměr, zámek, titulek, samostatné měřítko vn
 
 ## Knihovna obrázků
 
-SORTIO neobsahuje upload obrázků. `88-media-library.js` používá anonymní Wikimedia Commons API přes HTTPS. Do Wikimedia se neposílají jména, třídy ani jiná školní data; síťová komunikace obsahuje pouze hledaný výraz a následné načtení vybraného obrázku. URL obrázků a zdrojů jsou při ukládání omezeny sanitizací na povolené Wikimedia domény. Zdroj a licence se uchovávají spolu s obrázkem a zobrazují se i u obrazového pozadí.
+SORTIO neobsahuje upload obrázků. `88-media-library.js` je malý lazy-loader; vlastní anonymní Wikimedia Commons integrace, filtrování a řazení výsledků jsou v `lazy/media-library.js`. Do Wikimedia se neposílají jména, třídy ani jiná školní data; síťová komunikace obsahuje pouze hledaný výraz a následné načtení vybraného obrázku. URL obrázků a zdrojů jsou při ukládání omezeny sanitizací na povolené Wikimedia domény. Zdroj a licence se uchovávají spolu s obrázkem a zobrazují se i u obrazového pozadí. Pro pozadí se výsledky hodnotí podle orientace, poměru stran, rozlišení a vizuální vhodnosti; portréty, známky, mince, obrazovky, dokumenty a podobné nevhodné motivy jsou potlačeny. Samotné pozadí se vykresluje bez ořezu (`contain`) nad rozostřenou výplní (`cover`), takže je vždy vidět celý snímek bez prázdných okrajů.
 
 ## QR hlasování
 
@@ -67,7 +67,8 @@ Rozšíření 1.1 zvyšuje velikost klientského balíku. Kontrolované rozpočt
 
 - `20-state-storage.js` – datový trezor v5 a sanitizace Výukového panelu;
 - `87-lesson-board.js` – třídní pracovní plocha, widget engine a nástroje živé hodiny;
-- `88-media-library.js` – Wikimedia Commons knihovna;
+- `88-media-library.js` – lazy-loader knihovny obrázků;
+- `lazy/media-library.js` – Wikimedia Commons vyhledávání, filtrování, estetické řazení a výběr pozadí;
 - `89-live-poll.js` – učitelská část anonymního QR hlasování;
 - `poll/poll.js` – veřejná hlasovací stránka pro telefon studenta;
 - `85-projection.js` – bezpečná projekce;

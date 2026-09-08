@@ -31,6 +31,7 @@ expect('manual role assignment exists',rolesEngine.includes('function setRoleAss
 expect('manual topic assignment exists',rolesEngine.includes('function setGroupTopic')&&rolesUi.includes('data-action="manual-topic"'));
 expect('seating module is clearly named',body.includes('<b>Zasedací plán</b>')&&!body.includes('<b>Místa</b>'));
 expect('word-like seating shape editor exists',seatingUi.includes('SEATING_SHAPE_ROWS=10')&&seatingUi.includes('SEATING_SHAPE_COLUMNS=16')&&seatingUi.includes('data-seating-shape-cell')&&seatingEngine.includes('function configureSeatingShape'));
+expect('fresh seating grid starts empty',seatingUi.includes("displayTemplate=plan.seats.length?plan.template:'none'")&&seatingUi.includes("return(plan?.seats||[]).filter")&&!seatingUi.includes("return cells.length?cells:seatingShapePresetCells")&&seatingUi.includes('— Vyberte předlohu —'));
 expect('seating shape supports custom persistence',storage.includes("'u','custom'")&&seatingEngine.includes("template:'custom'"));
 expect('seating uses clearer preset names',seatingUi.includes('Souvislé řady')&&seatingUi.includes('Dvojmístné lavice s uličkami')&&seatingUi.includes('Skupinové stoly (ostrůvky)'));
 expect('seating drag and drop exists',seatingUi.includes("document.addEventListener('dragstart'")&&seatingUi.includes("document.addEventListener('drop'"));
@@ -49,5 +50,5 @@ expect('timer uses compact start button',board.includes('timer-start-compact')&&
 expect('agenda edits inline without prompt',board.includes('data-board-agenda-title')&&!board.includes("prompt('Agenda"));
 expect('widget scale wrapper no longer scrolls/scales controls',css.includes('.lesson-widget-scale{width:100%!important;height:100%!important')&&css.includes('transform:none!important')&&css.includes('overflow:hidden!important'));
 const failed=checks.filter(item=>!item.ok);
-console.log(`\nSORTIO 1.1.7 UX regressions: ${checks.length-failed.length}/${checks.length} PASS`);
+console.log(`\nSORTIO 1.1.8 UX regressions: ${checks.length-failed.length}/${checks.length} PASS`);
 if(failed.length)process.exit(1);

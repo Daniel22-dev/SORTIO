@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-ghrab-access="checking" data-theme="dark" data-ghrab-app-id="sortio" data-ghrab-app-version="1.1.7" data-ghrab-platform-contract="ghrab-platform-v1" data-theme-preference="dark">
+<html lang="cs" data-ghrab-access="checking" data-theme="dark" data-ghrab-app-id="sortio" data-ghrab-app-version="1.1.9" data-ghrab-platform-contract="ghrab-platform-v1" data-theme-preference="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -180,7 +180,7 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
 @media(max-width:900px){.draw-result .draw-multi-names.many{grid-template-columns:1fr}.seating-stats{grid-template-columns:1fr 1fr}.seating-output-actions{grid-template-columns:1fr}.manual-role-list>label{grid-template-columns:1fr}.dashboard-class-picker{width:100%}.dashboard-class-picker select{width:100%}}
 }
 
-/* SORTIO 1.1.7 – seating shape editor and lesson-board fixes */
+/* SORTIO 1.1.8 – seating shape editor and lesson-board fixes */
 @layer components{
 .scene-actions .primary-button{border:0;background:linear-gradient(135deg,var(--cyan),#70a7ff);color:#04111f;box-shadow:0 10px 26px rgba(94,231,255,.18)}
 .scene-actions .primary-button:hover{background:linear-gradient(135deg,#7eedff,#86b7ff);box-shadow:0 14px 32px rgba(94,231,255,.26)}
@@ -207,11 +207,50 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
 .seating-output-actions{grid-template-columns:.8fr 1.35fr}
 .seat-map.template-custom{grid-auto-rows:auto}.seat-map.template-custom .seat{grid-row:var(--seat-row);grid-column:var(--seat-column)}
 }
+
+/* SORTIO 1.1.9 · dvojmístné lavice, centrování, bezpečné potvrzení a obrazová pozadí */
+.seating-shape-cell{aspect-ratio:1.45/1;border-radius:4px}
+.seating-shape-cell::after{content:"";position:absolute;left:50%;top:18%;bottom:18%;width:1px;background:rgba(255,255,255,.08);transform:translateX(-50%)}
+.seating-shape-cell.active::after{background:rgba(4,17,31,.25)}
+.desk-map-shell{display:flex;justify-content:center;width:100%;min-width:100%;padding:2px 0 8px}
+.desk-map{display:grid;grid-template-columns:repeat(var(--desk-columns),minmax(176px,196px));grid-template-rows:repeat(var(--desk-rows),auto);gap:18px 22px;width:max-content;margin-inline:auto}
+.desk-unit{overflow:hidden;border:1px solid rgba(94,231,255,.18);border-radius:14px;background:rgba(94,231,255,.025);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+.desk-unit>header{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.08);color:var(--cyan);font-size:6px;font-weight:900;letter-spacing:.08em;text-align:center;text-transform:uppercase}
+.desk-unit-seats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;padding:4px}
+.desk-unit .seat{min-width:0;min-height:108px;padding:7px;border-radius:9px}
+.desk-unit .seat header{font-size:6px}.desk-unit .seat>div{min-height:31px;margin:5px 0}.desk-unit .seat>div b{font-size:7px}.desk-unit .seat>div small{font-size:5.5px}.desk-unit .seat select{height:27px;font-size:6px}.desk-unit .seat-block-button{font-size:5.5px}
+.projection-desk-shell{display:flex;justify-content:center;width:100%;min-width:100%;overflow:auto;padding:2px 0}
+.projection-desks{display:grid;grid-template-columns:repeat(var(--projection-desk-columns),minmax(190px,240px));grid-template-rows:repeat(var(--projection-desk-rows),auto);gap:20px 26px;width:max-content;margin-inline:auto}
+.projection-desk{overflow:hidden;min-height:92px;border:1px solid rgba(94,231,255,.23);border-radius:13px;background:rgba(17,30,52,.88);box-shadow:0 12px 28px rgba(0,0,0,.14)}
+.projection-desk>small{display:block;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.1);color:#5ee7ff;font-size:7px;font-weight:900;text-align:center;letter-spacing:.08em;text-transform:uppercase}
+.projection-desk>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));min-height:64px}
+.projection-desk>div>span{display:grid;place-items:center;min-width:0;padding:9px;border-right:1px solid rgba(255,255,255,.1);text-align:center;font-size:12px;font-weight:800;line-height:1.2}.projection-desk>div>span:last-child{border-right:0}.projection-desk>div>span.blocked{opacity:.38}
+
+.scene-actions .primary-button[data-board-action="project-board"]{display:inline-flex!important;align-items:center!important;justify-content:center!important;visibility:visible!important;opacity:1!important;border:0!important;background:linear-gradient(135deg,#5ee7ff,#70a7ff)!important;color:#04111f!important;font-weight:900!important;box-shadow:0 7px 20px rgba(94,231,255,.18)!important}
+.background-mini .background-swatch{display:inline-block!important;visibility:visible!important;opacity:1!important;background-color:#17283c!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+.background-mini .background-swatch.board-bg-gradient-midnight{background-image:radial-gradient(circle at 75% 15%,rgba(94,231,255,.55),transparent 34%),linear-gradient(145deg,#07111f,#101b35 55%,#0a1325)!important}
+.background-mini .background-swatch.board-bg-gradient-aurora{background-image:radial-gradient(circle at 15% 20%,rgba(99,230,170,.62),transparent 33%),radial-gradient(circle at 82% 24%,rgba(139,123,255,.62),transparent 35%),linear-gradient(135deg,#071c24,#10223a)!important}
+.background-mini .background-swatch.board-bg-gradient-ocean{background-image:radial-gradient(circle at 75% 10%,rgba(94,231,255,.62),transparent 38%),linear-gradient(150deg,#061522,#07314d 55%,#081e34)!important}
+.background-mini .background-swatch.board-bg-gradient-sunset{background-image:radial-gradient(circle at 70% 15%,rgba(255,184,92,.72),transparent 36%),linear-gradient(145deg,#261333,#71394e 55%,#1a1938)!important}
+.background-mini .background-swatch.board-bg-gradient-violet{background-image:radial-gradient(circle at 25% 20%,rgba(139,123,255,.78),transparent 38%),linear-gradient(135deg,#100e29,#2b2054,#0c1631)!important}
+.background-mini .background-swatch.board-bg-gradient-clean{background-image:linear-gradient(135deg,#dce8f2,#fff)!important;background-color:#eef5fb!important}
+
+.lesson-board-background-backdrop{position:absolute;inset:-3%;z-index:0;width:106%;height:106%;object-fit:cover;object-position:center;filter:blur(18px) saturate(1.18) brightness(.7);transform:scale(1.04);pointer-events:none;user-select:none}
+.lesson-board-background-image{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:contain!important;object-position:center!important;background:transparent;pointer-events:none;user-select:none}
+.lesson-board>.lesson-widget,.projection-lesson-board>.lesson-widget{z-index:3}.lesson-board-empty{z-index:3}.board-background-credit{z-index:8}
+.board-image-wrap img{object-fit:contain;background:rgba(3,10,18,.42)}
+.media-card img{object-fit:contain!important;background:#091321!important;padding:3px}
+
+.lesson-clear-overlay{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:20px;background:rgba(2,8,16,.72);backdrop-filter:blur(8px)}
+.lesson-clear-card{width:min(460px,92vw);padding:24px;border:1px solid rgba(94,231,255,.28);border-radius:18px;background:linear-gradient(145deg,#0c192a,#101e33);box-shadow:0 30px 90px rgba(0,0,0,.5);color:#fff}
+.lesson-clear-card>span{color:#5ee7ff;font-size:8px;font-weight:950;letter-spacing:.16em}.lesson-clear-card h3{margin:7px 0 9px;font-size:22px}.lesson-clear-card p{color:#aebdd0;font-size:9px;line-height:1.6}.lesson-clear-card>div{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}.lesson-clear-card button{min-height:38px;padding:0 14px;border:1px solid rgba(255,255,255,.15);border-radius:9px;background:#132238;color:#fff;font-weight:850}.lesson-clear-card .danger-confirm{border-color:rgba(255,111,134,.45);background:linear-gradient(135deg,#ff6f86,#ff8c73);color:#22070c}
+
+@media(max-width:900px){.desk-map{grid-template-columns:repeat(var(--desk-columns),minmax(160px,180px));gap:14px}.projection-desks{grid-template-columns:repeat(var(--projection-desk-columns),minmax(175px,210px));gap:16px}}
 </style>
 
     <!-- GHRAB Platform 1.1.2 · generated -->
     <link rel="stylesheet" href="./ghrab/ghrab-platform.css" data-ghrab-platform-style>
-    <script id="ghrab-platform-config" type="application/json">{"appId":"sortio","appName":"SORTIO · Výukový panel","appVersion":"1.1.7","requiredPlatformRange":">=1.1.2 \u003c2.0.0","platformContract":"ghrab-platform-v1","brandVersion":"1.0.0","autoFooter":true,"theme":{"supported":["light","dark","system"],"default":"dark","systemFallback":"dark"},"storageMigration":{"id":"p2-storage-namespace-v1","backup":"full","mappings":[{"legacyPrefix":"sortio.","canonicalPrefix":"ghrab.sortio."}]},"bridgeMaxBytes":500000,"artifactContract":"ghrab-artifact-envelope-v1","quality":{"schema":"ghrab-quality-consumer-v1","accessibilityContract":"ghrab-a11y-v1","performanceContract":"ghrab-performance-v1","moduleContract":"ghrab-lazy-modules-v1","requireBudget":true,"performanceBudget":{"distBytes":900000,"entryHtmlBytes":270000,"entryCriticalBytes":550000,"largestInlineScriptBytes":170000,"precacheBytes":800000,"largestFileBytes":270000,"duplicateLargeBytes":140000},"modules":{"required":[]},"referenceProfile":{"cpuSlowdown":4,"viewport":"1366x768","memoryClassGb":4,"viewportWidths":[1280,390,320]},"stage":"P5","a11yContract":"ghrab-a11y-v1","requireRuntimeBudget":true,"runtimeBudget":{"maxDomNodes":1000,"maxRenderReadyMs":2500,"maxJsHeapUsedBytes":8000000,"maxLayoutDurationMs":1800,"maxTaskDurationMs":2500},"finalRelease":false,"cleanInstallRequired":true,"a11yGate":"ghrab-p5-runtime-a11y-v2","releaseGate":"ghrab-p5-release-v2","runtimeAudit":{"scriptsExecuted":true,"transport":"local-http","dialogStates":true,"viewports":[1280,390,320]}}}</script>
+    <script id="ghrab-platform-config" type="application/json">{"appId":"sortio","appName":"SORTIO · Výukový panel","appVersion":"1.1.9","requiredPlatformRange":">=1.1.2 \u003c2.0.0","platformContract":"ghrab-platform-v1","brandVersion":"1.0.0","autoFooter":true,"theme":{"supported":["light","dark","system"],"default":"dark","systemFallback":"dark"},"storageMigration":{"id":"p2-storage-namespace-v1","backup":"full","mappings":[{"legacyPrefix":"sortio.","canonicalPrefix":"ghrab.sortio."}]},"bridgeMaxBytes":500000,"artifactContract":"ghrab-artifact-envelope-v1","quality":{"schema":"ghrab-quality-consumer-v1","accessibilityContract":"ghrab-a11y-v1","performanceContract":"ghrab-performance-v1","moduleContract":"ghrab-lazy-modules-v1","requireBudget":true,"performanceBudget":{"distBytes":900000,"entryHtmlBytes":270000,"entryCriticalBytes":550000,"largestInlineScriptBytes":170000,"precacheBytes":800000,"largestFileBytes":270000,"duplicateLargeBytes":140000},"modules":{"required":[]},"referenceProfile":{"cpuSlowdown":4,"viewport":"1366x768","memoryClassGb":4,"viewportWidths":[1280,390,320]},"stage":"P5","a11yContract":"ghrab-a11y-v1","requireRuntimeBudget":true,"runtimeBudget":{"maxDomNodes":1000,"maxRenderReadyMs":2500,"maxJsHeapUsedBytes":8000000,"maxLayoutDurationMs":1800,"maxTaskDurationMs":2500},"finalRelease":false,"cleanInstallRequired":true,"a11yGate":"ghrab-p5-runtime-a11y-v2","releaseGate":"ghrab-p5-release-v2","runtimeAudit":{"scriptsExecuted":true,"transport":"local-http","dialogStates":true,"viewports":[1280,390,320]}}}</script>
     <script defer src="./ghrab/ghrab-platform.js" data-ghrab-platform-loader></script>
   </head>
 <body>
@@ -222,7 +261,7 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
       <img class="brand-mark" src="./assets/sortio-mark.svg" alt="">
       <span><strong>SORTIO</strong><small>výukový panel</small></span>
     </a>
-    <div class="release-pill"><span></span> SORTIO 1.1.7 · výukový panel</div>
+    <div class="release-pill"><span></span> SORTIO 1.1.9 · výukový panel</div>
     <div class="top-actions">
       <button class="icon-button" id="motionToggle" type="button" title="Zapnout nebo vypnout pohybové efekty a animace"><span>◎</span><b>Pohyb</b></button>
       <button class="icon-button" id="themeToggle" type="button" title="Přepnout tmavý, světlý nebo systémový motiv"><span>◐</span><b>Motiv</b></button>
@@ -268,7 +307,7 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
           <div class="floating-card card-a"><i>01</i><b>Třídy</b><span data-stat="classCount">0</span></div>
           <div class="floating-card card-b"><i>02</i><b>Studenti</b><span data-stat="studentCount">0</span></div>
           <div class="floating-card card-c"><i>03</i><b>Dnešní losování</b><span data-stat="drawCount">0</span></div>
-          <div class="sortio-core"><img src="./assets/sortio-mark.svg" alt=""><strong>SORTIO</strong><small>jádro 1.1.7</small></div>
+          <div class="sortio-core"><img src="./assets/sortio-mark.svg" alt=""><strong>SORTIO</strong><small>jádro 1.1.9</small></div>
           <div class="flow-line line-a"></div><div class="flow-line line-b"></div><div class="flow-line line-c"></div>
           <div class="stage-caption"><span>LOCAL-FIRST</span><b>Data zůstávají v tomto prohlížeči</b></div>
         </article>
@@ -303,29 +342,29 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
     </section>
 
     <section class="view" data-view="draw" id="draw">
-      <div class="page-title"><div><span>NÁHODNÝ VÝBĚR</span><h1>Spravedlivé losování</h1><p>Jeden student, více studentů nebo celé pořadí. Režim bez opakování hlídá, aby se třída nejprve vystřídala.</p></div><div class="page-badge accent">SORTIO 1.1.7</div></div>
+      <div class="page-title"><div><span>NÁHODNÝ VÝBĚR</span><h1>Spravedlivé losování</h1><p>Jeden student, více studentů nebo celé pořadí. Režim bez opakování hlídá, aby se třída nejprve vystřídala.</p></div><div class="page-badge accent">SORTIO 1.1.9</div></div>
       <div id="drawWorkspace"></div>
     </section>
 
     <section class="view" data-view="groups" id="groups">
-      <div class="page-title"><div><span>CHYTRÁ TVORBA SKUPIN</span><h1>Skupiny podle vašich pravidel</h1><p>Náhodně, vyváženě, podle podobné úrovně nebo s omezením opakovaných kombinací. Pravidla „spolu“ a „od sebe“ jsou závazná.</p></div><div class="page-badge accent">SORTIO 1.1.7</div></div>
+      <div class="page-title"><div><span>CHYTRÁ TVORBA SKUPIN</span><h1>Skupiny podle vašich pravidel</h1><p>Náhodně, vyváženě, podle podobné úrovně nebo s omezením opakovaných kombinací. Pravidla „spolu“ a „od sebe“ jsou závazná.</p></div><div class="page-badge accent">SORTIO 1.1.9</div></div>
       <div id="groupsWorkspace"></div>
     </section>
 
 
     <section class="view" data-view="roles" id="roles">
-      <div class="page-title"><div><span>ROLE, TÉMATA A ÚKOLY</span><h1>Každý ví, co má dělat</h1><p>Přidělte členům skupin role se spravedlivou rotací a rozdělte témata, otázky nebo stanoviště.</p></div><div class="page-badge accent">SORTIO 1.1.7</div></div>
+      <div class="page-title"><div><span>ROLE, TÉMATA A ÚKOLY</span><h1>Každý ví, co má dělat</h1><p>Přidělte členům skupin role se spravedlivou rotací a rozdělte témata, otázky nebo stanoviště.</p></div><div class="page-badge accent">SORTIO 1.1.9</div></div>
       <div id="rolesWorkspace"></div>
     </section>
 
     <section class="view" data-view="seating" id="seating">
-      <div class="page-title"><div><span>ZASEDACÍ POŘÁDEK</span><h1>Učebna pod kontrolou</h1><p>Nakreslete skutečný tvar učebny v mřížce – každá řada může být jinak dlouhá a mezi místy mohou zůstat uličky. SORTIO respektuje přední místa, uzamčené pozice a pravidla „od sebe“.</p></div><div class="page-badge accent">SORTIO 1.1.7</div></div>
+      <div class="page-title"><div><span>ZASEDACÍ POŘÁDEK</span><h1>Učebna pod kontrolou</h1><p>Nakreslete skutečný tvar učebny v mřížce – každá řada může být jinak dlouhá a mezi místy mohou zůstat uličky. SORTIO respektuje přední místa, uzamčené pozice a pravidla „od sebe“.</p></div><div class="page-badge accent">SORTIO 1.1.9</div></div>
       <div id="seatingWorkspace"></div>
     </section>
 
 
     <section class="view" data-view="tools" id="tools">
-      <div class="page-title"><div><span>VÝUKOVÝ PANEL</span><h1>Hodina pod kontrolou</h1><p>Každá aktivní třída má vlastní projekční plochu s časovači, hodinami, semaforem, tabulí, kostkami, skóre, obrázky, agendou a hlasováním.</p></div><div class="page-badge accent">SORTIO 1.1.7</div></div>
+      <div class="page-title"><div><span>VÝUKOVÝ PANEL</span><h1>Hodina pod kontrolou</h1><p>Každá aktivní třída má vlastní projekční plochu s časovači, hodinami, semaforem, tabulí, kostkami, skóre, obrázky, agendou a hlasováním.</p></div><div class="page-badge accent">SORTIO 1.1.9</div></div>
       <div id="toolsWorkspace"></div>
     </section>
 
@@ -357,14 +396,14 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
     </section>
 
     <section class="view" data-view="about" id="about">
-      <div class="page-title"><div><span>IDENTITA A VLASTNICTVÍ</span><h1>O aplikaci</h1><p>Školní aplikace pro rychlou organizaci živé výuky, vyvíjená modulárně jako součást AI Studia GHRAB.</p></div><div class="page-badge accent">v1.1.7</div></div>
+      <div class="page-title"><div><span>IDENTITA A VLASTNICTVÍ</span><h1>O aplikaci</h1><p>Školní aplikace pro rychlou organizaci živé výuky, vyvíjená modulárně jako součást AI Studia GHRAB.</p></div><div class="page-badge accent">v1.1.9</div></div>
       <div class="about-layout">
         <article class="about-brand glass-panel"><img src="./assets/sortio-mark.svg" alt="Značka SORTIO"><span>SORTIO</span><h2>Výukový panel</h2><p>Organizace třídy a živé výuky: import, losování, skupiny, role, zasedací pořádek, třídní pracovní plocha, projekční widgety, obrázky a hlasování.</p></article>
         <div class="about-details">
           <article><span>AUTOR A VÝVOJOVÝ GARANT</span><h3>Daniel Baláž</h3><p>Koncepce, návrh funkcí, metodické vedení a vývoj aplikace.</p></article>
           <article><span>ŠKOLNÍ PROJEKT</span><h3>Gymnázium, Ostrava-Hrabůvka</h3><p>Aplikace je připravována pro interní školní využití v rámci AI Studia GHRAB.</p></article>
           <article><span>OCHRANA DAT</span><h3>Local-first architektura</h3><p>Jména a historie zůstávají v konkrétním prohlížeči. Importované e-mailové adresy se po vytvoření náhledu neukládají. Při hledání obrázků odchází do Wikimedia Commons pouze hledaný výraz, nikdy data třídy.</p></article>
-          <article><span>TECHNICKÝ STAV</span><h3>1.1.7 · Výukový panel</h3><p>Pracovní plocha navázaná na aktivní třídu, škálovatelný obsah widgetů, rozšířené projekční nástroje, knihovna Wikimedia Commons a připravené anonymní QR hlasování pro školní server.</p></article>
+          <article><span>TECHNICKÝ STAV</span><h3>1.1.9 · Výukový panel</h3><p>Pracovní plocha navázaná na aktivní třídu, škálovatelný obsah widgetů, rozšířené projekční nástroje, knihovna Wikimedia Commons a připravené anonymní QR hlasování pro školní server.</p></article>
         </div>
       </div>
       <article class="privacy-card"><span>PRAVIDLO PRO TESTOVÁNÍ</span><h3>Do veřejného repozitáře ani screenshotů nevkládat skutečné seznamy studentů.</h3><p>Pro vývojové testy jsou v balíčku použity pouze smyšlené adresy a jména. Při sdílení diagnostiky se osobní údaje automaticky nevypisují.</p></article>

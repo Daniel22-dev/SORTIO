@@ -1,9 +1,9 @@
 {
   "schema": "sortio-garp-canary-sweep-v1",
-  "version": "1.1.7",
+  "version": "1.1.9",
   "syntheticOnly": true,
-  "marker": "GARP-STUDENT-CANARY-SORTIO-1.1.7-10d371aebf524919",
-  "email": "garp.student.canary.10d371aebf524919@example.invalid",
+  "marker": "GARP-STUDENT-CANARY-SORTIO-1.1.9-d18b11c5c9c1410b",
+  "email": "garp.student.canary.d18b11c5c9c1410b@example.invalid",
   "before": {
     "storageMarker": true,
     "storageEmail": false,
