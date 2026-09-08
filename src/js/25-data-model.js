@@ -14,7 +14,7 @@ function touchClass(classItem,{rosterChanged=false,attendanceChanged=false}={}){
   }
   if(attendanceChanged)syncDrawDeck(classItem);
 }
-function makeStudent(firstName,lastName){firstName=titleCase(firstName);lastName=titleCase(lastName);return sanitizeStudent({id:uid('student'),firstName,lastName,present:true,archived:false,groupLevel:'B',frontPreference:false,createdAt:nowIso(),updatedAt:nowIso()})}
+function makeStudent(firstName,lastName){firstName=titleCase(firstName);lastName=titleCase(lastName);return sanitizeStudent({id:uid('student'),firstName,lastName,present:true,archived:false,groupLevel:'B',frontPreference:false,soloPreference:false,pairingSex:'',createdAt:nowIso(),updatedAt:nowIso()})}
 function createClass({name,schoolYear='',students=[]}){const classItem=sanitizeClass({id:uid('class'),name:String(name||'Nová třída').trim(),schoolYear:String(schoolYear||'').trim(),students,createdAt:nowIso(),updatedAt:nowIso()});App.data.classes.unshift(classItem);App.data.selectedClassId=classItem.id;saveData({event:'class_create'});recordEvent('class_create',{studentCount:classItem.students.length});return classItem}
 function updateClassMeta(classId,{name,schoolYear}){const item=App.data.classes.find(entry=>entry.id===classId);if(!item)return false;if(name?.trim())item.name=name.trim();if(schoolYear!==undefined)item.schoolYear=String(schoolYear).trim();touchClass(item);saveData({event:'class_update'});return true}
 function duplicateClass(classId){const source=App.data.classes.find(item=>item.id===classId);if(!source)return null;const copy=createClass({name:`${source.name} – kopie`,schoolYear:source.schoolYear,students:source.students.filter(s=>!s.archived).map(s=>sanitizeStudent({...s,id:uid('student'),createdAt:nowIso(),updatedAt:nowIso()}))});copy.roleCatalog=[...source.roleCatalog];copy.topicCatalog=[...source.topicCatalog];saveData({event:'class_duplicate'});return copy}
@@ -38,6 +38,8 @@ function updateStudent(classId,studentId,patch={}, {allowDuplicate=false}={}){
   if('archived'in patch)student.archived=!!patch.archived;
   if('groupLevel'in patch&&['A','B','C'].includes(patch.groupLevel))student.groupLevel=patch.groupLevel;
   if('frontPreference'in patch)student.frontPreference=!!patch.frontPreference;
+  if('soloPreference'in patch)student.soloPreference=!!patch.soloPreference;
+  if('pairingSex'in patch)student.pairingSex=['boy','girl'].includes(patch.pairingSex)?patch.pairingSex:'';
   student.displayName=`${student.firstName} ${student.lastName}`.trim();
   student.key=normalizeText(student.displayName);
   student.updatedAt=nowIso();

@@ -2,7 +2,7 @@
   "schema": "ghrab-release-acceptance-v1",
   "stage": "P5",
   "appId": "sortio",
-  "appVersion": "1.1.9",
+  "appVersion": "1.1.10",
   "releaseStatus": "ecosystem-wave-candidate",
   "primaryRuntime": {
     "mode": "standalone-github-pages",
@@ -10,7 +10,7 @@
     "offlineCapable": true,
     "currentUseApproved": false,
     "candidateSyntheticOnly": true,
-    "note": "1.1.9 makes the fresh seating-shape grid empty by default and keeps classroom presets opt-in; existing saved seating plans remain unchanged. The standard controlled release validation remains required before production approval."
+    "note": "1.1.10 makes the fresh seating-shape grid empty by default and keeps classroom presets opt-in; existing saved seating plans remain unchanged. The standard controlled release validation remains required before production approval."
   },
   "github": {
     "status": "candidate-not-released",

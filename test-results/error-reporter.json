@@ -2,8 +2,8 @@
   "schema": "ghrab-error-reporter-test-v1",
   "appId": "sortio",
   "appName": "SORTIO",
-  "version": "1.1.7",
-  "createdAt": "2026-09-08T17:10:45.179Z",
+  "version": "1.1.10",
+  "createdAt": "2026-09-08T18:34:55.289Z",
   "browser": {
     "status": "not-ready",
     "reason": "Spravovaná politika URLBlocklist blokuje všechny testovací stránky (/etc/chromium/policies/managed/000_policy_merge.json)."
@@ -14,7 +14,7 @@
     {
       "name": "Patch verze v package.json",
       "ok": true,
-      "detail": "1.1.7"
+      "detail": "1.1.10"
     },
     {
       "name": "Existuje src/access/error-reporter.js",
@@ -37,7 +37,7 @@
       "detail": ""
     },
     {
-      "name": "Kanonický reportér má verzi 1.1.7",
+      "name": "Kanonický reportér má verzi 1.1.10",
       "ok": true,
       "detail": ""
     },
@@ -247,17 +247,17 @@
       "detail": ""
     },
     {
-      "name": "src/manual/index.html: obsahuje verzi 1.1.7",
+      "name": "src/manual/index.html: obsahuje verzi 1.1.10",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "README.md: obsahuje verzi 1.1.7",
+      "name": "README.md: obsahuje verzi 1.1.10",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "RELEASE-NOTES-1.1.7.md: obsahuje verzi 1.1.7",
+      "name": "RELEASE-NOTES-1.1.10.md: obsahuje verzi 1.1.10",
       "ok": true,
       "detail": ""
     },

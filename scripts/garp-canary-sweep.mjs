@@ -15,7 +15,7 @@ const titleCase=value=>String(value||'').trim().split(/([\s-]+)/).map(part=>/[\s
 const normalizeText=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 const context={console,Map,Set,Math,Date,Object,Array,String,Number,Boolean,Error,JSON,Blob,App,window:{localStorage:storage},document:{dispatchEvent(){},querySelector(){return null},querySelectorAll(){return[]}},CustomEvent:class{constructor(type,options={}){this.type=type;this.detail=options.detail}},nowIso,titleCase,normalizeText,randomInt:max=>max?counter++%max:0,shuffle:v=>[...v],uid:(prefix='id')=>`${prefix}-${++counter}`,captureError:()=>{},recordEvent:()=>{},downloadText:()=>{},confirm:()=>true,navigator:{onLine:true,language:'cs-CZ',platform:'synthetic'},APP_ID:'sortio',SORTIO_VERSION:version,MODULES:[],studioAccessRole:()=> 'synthetic-auditor',suiteSessionContentWriteAllowed:()=>true,assertSuiteSessionContentWriteAllowed:()=>true,setTimeout,clearTimeout};
 vm.createContext(context);
-for(const file of ['src/js/20-state-storage.js','src/js/25-data-model.js','src/js/45-import-parser.js','src/js/95-diagnostics.js'])vm.runInContext(readFileSync(path.join(process.cwd(),file),'utf8'),context,{filename:file});
+for(const file of ['src/js/20-state-storage.js','src/js/25-data-model.js','src/js/45-import-parser.js','src/lazy/production-tools.js'])vm.runInContext(readFileSync(path.join(process.cwd(),file),'utf8'),context,{filename:file});
 const runId=randomUUID().replaceAll('-','').slice(0,16);
 const marker=`GARP-STUDENT-CANARY-SORTIO-${version}-${runId}`;
 const email=[`garp.student.canary.${runId}`,'example.invalid'].join('@');
@@ -27,7 +27,7 @@ const persistedMarker=marker;
 context.createClass({name:marker,schoolYear:'2026/27',students:[student]});
 const storedText=[...storage.values.values()].join('\n');
 const backupText=JSON.stringify(context.buildBackupPayload());
-const diagnosticText=JSON.stringify(context.diagnosticSnapshot());
+const diagnosticText=JSON.stringify(context.window.SORTIO_DIAGNOSTICS.snapshot());
 const lower=x=>String(x).toLowerCase();
 const before={storageMarker:lower(storedText).includes(lower(persistedMarker)),storageEmail:lower(storedText).includes(email),backupMarker:lower(backupText).includes(lower(persistedMarker)),backupEmail:lower(backupText).includes(email),diagnosticMarker:lower(diagnosticText).includes(lower(persistedMarker)),diagnosticEmail:lower(diagnosticText).includes(email)};
 context.clearAllData();

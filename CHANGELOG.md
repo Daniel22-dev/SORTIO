@@ -1,3 +1,10 @@
+# SORTIO changelog
+
+## 1.1.10 — 2026-09-08
+- Zasedací editor 3 × 7 dvojlavic, pravidlo „sedí sám“, volitelná preference kluk + holka a zvýraznění volných míst.
+- Rozšířená knihovna pozadí s automatickým načtením více výsledků.
+- Zelený provozní stav, procentuální průběh kontrol a changelog přímo v aplikaci.
+
 # Changelog
 
 ## 1.1.9 — 2026-09-08

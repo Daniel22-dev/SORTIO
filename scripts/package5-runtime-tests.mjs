@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 const storage=await readFile(new URL('../src/js/20-state-storage.js',import.meta.url),'utf8');
-const production=await readFile(new URL('../src/js/92-production-tools.js',import.meta.url),'utf8');
+const production=(await readFile(new URL('../src/js/92-production-tools.js',import.meta.url),'utf8'))+'\n'+(await readFile(new URL('../src/lazy/production-tools.js',import.meta.url),'utf8'));
 const keyboard=await readFile(new URL('../src/js/93-keyboard-accessibility.js',import.meta.url),'utf8');
 const diagnostics=await readFile(new URL('../src/js/95-diagnostics.js',import.meta.url),'utf8');
 for(const marker of ["DATA_KEY='sortio.data.v5'","LAST_GOOD_KEY='sortio.data.v5.last-good'","RECOVERY_KEY='sortio.data.v5.pre-import'","schema:'sortio-data-v5'",'validateBackupPayload','checksumText','MAX_BACKUP_BYTES'])assert.ok(storage.includes(marker),`Chybí ${marker}`);

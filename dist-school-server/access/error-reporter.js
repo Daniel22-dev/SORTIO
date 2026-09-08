@@ -1,5 +1,5 @@
 const REPORTER_ID = "ghrab-error-reporter";
-const REPORTER_VERSION = "1.1.9";
+const REPORTER_VERSION = "1.1.10";
 const MAX_COMPOSE_URL_LENGTH = 7000;
 const LOCAL_REPORTER_STYLE_URL = new URL("./error-reporter.css", import.meta.url);
 const MAX_SCREENSHOTS = 5;

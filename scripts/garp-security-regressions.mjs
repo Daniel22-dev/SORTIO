@@ -7,7 +7,7 @@ const read=(p)=>fs.readFileSync(path.join(root,p),'utf8');
 const json=(p)=>JSON.parse(read(p));
 const expect=(ok,msg)=>{if(!ok)failures.push(msg)};
 const pkg=json('package.json');
-expect(pkg.version==='1.1.9','package version není 1.1.9');
+expect(pkg.version==='1.1.10','package version není 1.1.10');
 const dep=json('src/config/deployment.json');
 expect(dep.sharedAccessVersion==='access-p1-20260824175535Z-k_wtm7Zj','produkční sharedAccessVersion není synchronizována');
 expect(dep.authMode==='signed-permit','produkční authMode není signed-permit');

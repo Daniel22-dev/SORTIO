@@ -96,15 +96,29 @@ for(const [template,rows,columns,count]of [['rows',4,6,24],['pairs',4,3,24],['is
   assert.equal(context.createSeatLayout(template,rows,columns).length,count,template);
 }
 
-// 1.1.9: jedna buňka editoru představuje jednu dvojmístnou lavici.
+// 1.1.10: jedna buňka editoru představuje jednu dvojmístnou lavici; nový editor má nejvýše 3 × 7 lavic.
 let deskShapeClass=freshClass(4);
-context.configureSeatingShape([{row:2,column:4},{row:2,column:5}]);
+context.configureSeatingShape([{row:2,column:1},{row:2,column:2}]);
 assert.equal(deskShapeClass.seatingPlan.template,'custom');
 assert.equal(deskShapeClass.seatingPlan.seats.length,4);
-assert.deepEqual(plain(deskShapeClass.seatingPlan.seats.map(seat=>[seat.deskRow,seat.deskColumn,seat.deskSlot])),[[2,4,0],[2,4,1],[2,5,0],[2,5,1]]);
+assert.deepEqual(plain(deskShapeClass.seatingPlan.seats.map(seat=>[seat.deskRow,seat.deskColumn,seat.deskSlot])),[[2,1,0],[2,1,1],[2,2,0],[2,2,1]]);
 assert.equal(context.seatingDeskGroups(deskShapeClass.seatingPlan).length,2);
-assert.equal(context.seatingCapacityText('custom',3,6,deskShapeClass.seatingPlan.seats),'2 lavic po dvou · celkem 4 míst');
+assert.equal(context.seatingCapacityText('custom',3,3,deskShapeClass.seatingPlan.seats),'2 lavic po dvou · celkem 4 míst');
 
+
+
+// 1.1.10: „Sám“ je tvrdá podmínka a ručně zadané kluk/holka je jen měkká preference.
+let soloClass=freshClass(3);
+soloClass.students[0].soloPreference=true;
+soloClass.students[1].pairingSex='boy';
+soloClass.students[2].pairingSex='girl';
+context.configureSeatingShape([{row:0,column:0},{row:0,column:1}],{preserve:false});
+context.setSeatingMixedPairing(true);
+context.assignSeating();
+const soloSeat=soloClass.seatingPlan.seats.find(seat=>seat.studentId===soloClass.students[0].id);
+const soloDesk=soloClass.seatingPlan.seats.filter(seat=>context.seatingDeskKey(seat)===context.seatingDeskKey(soloSeat));
+assert.equal(soloDesk.filter(seat=>seat.studentId).length,1,'Student s požadavkem Sám nesmí mít spolužáka u dvojlavice.');
+assert.equal(soloClass.seatingPlan.mixedGenderPairing,true);
 
 // Jmenovci jsou legitimní, ale vyžadují výslovné potvrzení volající vrstvy.
 let namesakeClass=freshClass(1);
