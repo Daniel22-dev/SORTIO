@@ -1,16 +1,16 @@
 {
   "schema": "ghrab-platform-build-v1",
   "appId": "sortio",
-  "appVersion": "1.1.4",
+  "appVersion": "1.1.6",
   "platformVersion": "1.1.2",
   "platformContract": "ghrab-platform-v1",
   "brandVersion": "1.0.0",
-  "cacheName": "ghrab-sortio-v1.1.4",
+  "cacheName": "ghrab-sortio-v1.1.6",
   "processedHtmlFiles": 3,
   "qualityContracts": {
     "accessibility": "ghrab-a11y-v1",
     "performance": "ghrab-performance-v1",
     "modules": "ghrab-lazy-modules-v1"
   },
-  "builtAt": "2026-09-06T12:07:16.571Z"
+  "builtAt": "2026-09-07T19:29:55.807Z"
 }

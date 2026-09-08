@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-ghrab-access="checking" data-theme="dark" data-ghrab-app-id="sortio" data-ghrab-app-version="1.1.4" data-ghrab-platform-contract="ghrab-platform-v1" data-theme-preference="dark">
+<html lang="cs" data-ghrab-access="checking" data-theme="dark" data-ghrab-app-id="sortio" data-ghrab-app-version="1.1.6" data-ghrab-platform-contract="ghrab-platform-v1" data-theme-preference="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -165,11 +165,25 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
 }
 
 @layer components{.shortcut-section-label{padding:8px 18px 0;color:var(--cyan);font-size:8px;font-weight:950;letter-spacing:.16em}.top-control-grid{padding-top:8px}.top-control-grid kbd{min-width:92px;justify-self:start}}
+
+/* SORTIO 1.1.6 – teacher workflow, seating and lesson-board UX refinement */
+@layer components{
+.dashboard-class-picker{display:grid;gap:4px;min-width:190px}.dashboard-class-picker>span{color:var(--muted);font-size:7px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.dashboard-class-picker select{height:36px;min-width:170px;padding:0 30px 0 10px;border:1px solid var(--line-strong);border-radius:10px;background:var(--panel-solid);color:var(--text);font-size:10px;font-weight:800}.active-class-actions{align-items:flex-end}
+.draw-result .draw-multi-names{width:min(96%,860px);max-height:410px;grid-template-columns:1fr;gap:9px;margin:18px auto;padding:0 4px;list-style:none}.draw-result .draw-multi-names.many{grid-template-columns:repeat(2,minmax(0,1fr))}.draw-result .draw-multi-names li{display:grid;place-items:center;min-height:54px;padding:10px 15px;font-size:var(--draw-name-size,26px);line-height:1.05;letter-spacing:-.025em}.group-plan-preview{display:block;min-height:28px;margin-top:7px;color:var(--cyan);font-size:8px;font-weight:750;line-height:1.4}.group-result-toolbar>div:last-child{display:flex;gap:6px;flex-wrap:wrap}
+.assignment-preview-actions{display:flex;gap:6px;flex-wrap:wrap}.role-topic-picker{display:grid!important;gap:5px;margin-top:7px!important;color:var(--muted);font-size:7px}.role-topic-picker b{font-size:7px;letter-spacing:.06em;text-transform:uppercase}.role-topic-picker select,.manual-role-list select{width:100%;min-height:34px;padding:0 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg2);color:var(--text);font-size:9px}.manual-role-list{display:grid;gap:5px;padding:9px}.manual-role-list>label{display:grid;grid-template-columns:minmax(90px,.78fr) minmax(130px,1.22fr);align-items:center;gap:8px;padding:6px 7px;border-radius:9px;background:rgba(255,255,255,.022)}.manual-role-list>label>b{font-size:8px;color:var(--muted)}.role-group-card header>div{min-width:0;flex:1}.role-group-card header{align-items:flex-start}.role-group-card header i{flex:0 0 auto}.assignment-actions .secondary-button{min-height:38px;font-size:9px}
+.seating-template-help,.seating-capacity-note,.seating-drag-help{margin-top:8px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.022);color:var(--muted);font-size:8px;line-height:1.5}.seating-capacity-note{color:var(--cyan);font-weight:850;background:rgba(94,231,255,.04);border-color:rgba(94,231,255,.16)}.seating-dimensions input{width:100%;height:44px;padding:0 8px;border:1px solid var(--line-strong);border-radius:9px;background:var(--bg2);color:var(--text);font-size:17px;font-weight:950;text-align:center;font-variant-numeric:tabular-nums}.seating-stats{grid-template-columns:repeat(4,1fr)}.seating-stats div{padding:9px 4px}.seating-stats b{font-size:21px}.seating-stats span{font-size:6.5px}.seating-output-actions{display:grid;grid-template-columns:.8fr 1.25fr 1fr;gap:7px;margin-top:8px}.seating-output-actions button{width:100%;padding-inline:8px}.seating-drag-help{margin:20px auto 0;max-width:720px;text-align:center}.seat[draggable="true"]{cursor:grab}.seat[draggable="true"]:active{cursor:grabbing}.seat.dragging{opacity:.5}.seat.drag-over{border-color:var(--cyan)!important;box-shadow:0 0 0 2px rgba(94,231,255,.35),0 12px 30px rgba(94,231,255,.1)!important;transform:translateY(-3px) scale(1.015)}
+.projection-groups{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.projection-groups article{padding:18px}.projection-groups header{gap:6px}.projection-groups .projection-topic{display:block;margin-bottom:7px;color:var(--cyan);font-size:clamp(13px,1.15vw,21px)!important;font-weight:900;line-height:1.2}.projection-groups h3{font-size:clamp(24px,2.1vw,38px)!important}.projection-groups li{min-height:42px;padding:8px 10px;font-size:clamp(15px,1.22vw,22px)!important}.projection-groups li small{font-size:clamp(9px,.72vw,13px)!important}.projection-groups footer{gap:6px}.projection-groups footer span{padding:8px 10px;font-size:clamp(12px,.9vw,17px)!important}.projection-groups footer b{font-size:clamp(9px,.68vw,12px)!important}.projection-draw.multiple h2{font-size:clamp(34px,5.5vw,74px);line-height:1.16}
+.background-mini .background-swatch{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}.background-mini .background-swatch.board-bg-gradient-clean{box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.lesson-widget-body{overflow:hidden!important}.lesson-widget-scale{width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;transform:none!important;transform-origin:center center!important;overflow:hidden!important;align-items:stretch;justify-content:center}.board-laps,.board-text-content{overflow:hidden!important}.timer-start-compact{min-height:34px!important;padding:0 13px!important;border-radius:9px!important;font-size:9px!important;font-weight:900!important}.visual-timer-actions select,.timer-bottom select{max-width:155px}.classroom-timer{width:100%;height:100%;align-content:center}.timer-stepper{flex:1;min-height:0}.timer-unit b,.timer-colon,.type-stopwatch .board-time,.type-clock .clock-combo,.type-visual-timer .visual-timer-dial,.type-traffic .traffic-housing,.type-dice .dice-stage,.type-text .board-text-content,.type-work .work-mode{transform:scale(var(--content-scale,1));transform-origin:center center;transition:transform .16s ease}.type-score .board-score-row b,.type-score .board-score-row strong{transform:scale(var(--content-scale,1));transform-origin:center center;transition:transform .16s ease}.visual-timer-dial{width:min(66cqw,48cqh,250px);max-width:none}.visual-timer-actions{width:100%;gap:5px}.traffic-housing{width:min(68cqw,28cqh,176px);max-width:none;gap:min(2.2cqh,11px);padding:min(2.5cqh,15px)}.traffic-bulb{width:min(82%,105px)!important}.real-die.d6 i.pip:before{width:68%;min-width:7px;background:#05070a;box-shadow:0 0 0 1px rgba(0,0,0,.25),inset 1px 1px 2px rgba(255,255,255,.14)}.board-score-row b{font-size:clamp(12px,4.7cqw,30px)}.board-score-row strong{font-size:clamp(27px,10cqw,74px)}.board-score-row{grid-template-columns:minmax(0,1fr) minmax(52px,11cqw) repeat(3,minmax(30px,6cqw))}.agenda-list.editable{gap:6px}.agenda-edit-row{display:grid;grid-template-columns:30px minmax(0,1fr) 76px 28px;gap:5px;align-items:center;padding:4px;border:1px solid transparent;border-radius:8px;background:rgba(255,255,255,.025)}.agenda-edit-row.active{border-color:rgba(94,231,255,.35);background:rgba(94,231,255,.06)}.agenda-edit-row .agenda-index{width:30px!important;min-height:30px!important;padding:0!important;color:var(--cyan);font-weight:950}.agenda-edit-row>input{min-width:0;height:30px;font-size:8px}.agenda-edit-row>label{display:grid!important;grid-template-columns:minmax(38px,1fr) auto;gap:3px}.agenda-edit-row>label input{min-width:0;width:100%;height:30px;text-align:center}.agenda-edit-row>button{display:grid!important;grid-template-columns:1fr!important;place-items:center!important;text-align:center!important}.agenda-edit-row>button:last-child{width:28px!important;padding:0!important;color:var(--danger);font-size:13px!important}.lesson-widget.spotlight .lesson-widget-body{padding:14px}.lesson-widget.spotlight .visual-timer-dial{width:min(52cqw,66cqh,540px)}.lesson-widget.spotlight .traffic-housing{width:min(28cqw,28cqh,290px)}.lesson-widget.spotlight .real-die.d6{width:min(28cqw,28cqh,270px)}.lesson-widget.spotlight .real-die.poly,.lesson-widget.spotlight .real-coin{width:min(28cqw,28cqh,270px)}.lesson-widget.spotlight .board-time{font-size:clamp(80px,15cqw,190px)}.lesson-widget.spotlight .timer-unit b{font-size:clamp(85px,15cqw,195px)}.lesson-widget.spotlight .timer-colon{font-size:clamp(72px,12cqw,160px)}.lesson-widget.spotlight .board-score-row b{font-size:clamp(20px,4.2cqw,48px)}.lesson-widget.spotlight .board-score-row strong{font-size:clamp(46px,9cqw,118px)}.lesson-widget.spotlight .work-mode b{font-size:clamp(100px,20cqw,220px)}.lesson-widget.spotlight .work-mode span{font-size:clamp(30px,6cqw,74px)}.lesson-widget.spotlight .agenda-edit-row>input,.lesson-widget.spotlight .agenda-edit-row>label{font-size:clamp(10px,1.2cqw,18px)}.lesson-widget.spotlight .agenda-edit-row{min-height:48px}.widget-content-scale-handle{opacity:.82}.lesson-board[style*="background-image"],.projection-lesson-board[style*="background-image"]{background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important}
+}
+@layer responsive{
+@media(max-width:900px){.draw-result .draw-multi-names.many{grid-template-columns:1fr}.seating-stats{grid-template-columns:1fr 1fr}.seating-output-actions{grid-template-columns:1fr}.manual-role-list>label{grid-template-columns:1fr}.dashboard-class-picker{width:100%}.dashboard-class-picker select{width:100%}}
+}
 </style>
 
     <!-- GHRAB Platform 1.1.2 · generated -->
     <link rel="stylesheet" href="./ghrab/ghrab-platform.css" data-ghrab-platform-style>
-    <script id="ghrab-platform-config" type="application/json">{"appId":"sortio","appName":"SORTIO · Výukový panel","appVersion":"1.1.4","requiredPlatformRange":">=1.1.2 \u003c2.0.0","platformContract":"ghrab-platform-v1","brandVersion":"1.0.0","autoFooter":true,"theme":{"supported":["light","dark","system"],"default":"dark","systemFallback":"dark"},"storageMigration":{"id":"p2-storage-namespace-v1","backup":"full","mappings":[{"legacyPrefix":"sortio.","canonicalPrefix":"ghrab.sortio."}]},"bridgeMaxBytes":500000,"artifactContract":"ghrab-artifact-envelope-v1","quality":{"schema":"ghrab-quality-consumer-v1","accessibilityContract":"ghrab-a11y-v1","performanceContract":"ghrab-performance-v1","moduleContract":"ghrab-lazy-modules-v1","requireBudget":true,"performanceBudget":{"distBytes":900000,"entryHtmlBytes":270000,"entryCriticalBytes":550000,"largestInlineScriptBytes":170000,"precacheBytes":800000,"largestFileBytes":270000,"duplicateLargeBytes":140000},"modules":{"required":[]},"referenceProfile":{"cpuSlowdown":4,"viewport":"1366x768","memoryClassGb":4,"viewportWidths":[1280,390,320]},"stage":"P5","a11yContract":"ghrab-a11y-v1","requireRuntimeBudget":true,"runtimeBudget":{"maxDomNodes":1000,"maxRenderReadyMs":2500,"maxJsHeapUsedBytes":8000000,"maxLayoutDurationMs":1800,"maxTaskDurationMs":2500},"finalRelease":false,"cleanInstallRequired":true,"a11yGate":"ghrab-p5-runtime-a11y-v2","releaseGate":"ghrab-p5-release-v2","runtimeAudit":{"scriptsExecuted":true,"transport":"local-http","dialogStates":true,"viewports":[1280,390,320]}}}</script>
+    <script id="ghrab-platform-config" type="application/json">{"appId":"sortio","appName":"SORTIO · Výukový panel","appVersion":"1.1.6","requiredPlatformRange":">=1.1.2 \u003c2.0.0","platformContract":"ghrab-platform-v1","brandVersion":"1.0.0","autoFooter":true,"theme":{"supported":["light","dark","system"],"default":"dark","systemFallback":"dark"},"storageMigration":{"id":"p2-storage-namespace-v1","backup":"full","mappings":[{"legacyPrefix":"sortio.","canonicalPrefix":"ghrab.sortio."}]},"bridgeMaxBytes":500000,"artifactContract":"ghrab-artifact-envelope-v1","quality":{"schema":"ghrab-quality-consumer-v1","accessibilityContract":"ghrab-a11y-v1","performanceContract":"ghrab-performance-v1","moduleContract":"ghrab-lazy-modules-v1","requireBudget":true,"performanceBudget":{"distBytes":900000,"entryHtmlBytes":270000,"entryCriticalBytes":550000,"largestInlineScriptBytes":170000,"precacheBytes":800000,"largestFileBytes":270000,"duplicateLargeBytes":140000},"modules":{"required":[]},"referenceProfile":{"cpuSlowdown":4,"viewport":"1366x768","memoryClassGb":4,"viewportWidths":[1280,390,320]},"stage":"P5","a11yContract":"ghrab-a11y-v1","requireRuntimeBudget":true,"runtimeBudget":{"maxDomNodes":1000,"maxRenderReadyMs":2500,"maxJsHeapUsedBytes":8000000,"maxLayoutDurationMs":1800,"maxTaskDurationMs":2500},"finalRelease":false,"cleanInstallRequired":true,"a11yGate":"ghrab-p5-runtime-a11y-v2","releaseGate":"ghrab-p5-release-v2","runtimeAudit":{"scriptsExecuted":true,"transport":"local-http","dialogStates":true,"viewports":[1280,390,320]}}}</script>
     <script defer src="./ghrab/ghrab-platform.js" data-ghrab-platform-loader></script>
   </head>
 <body>
@@ -180,7 +194,7 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
       <img class="brand-mark" src="./assets/sortio-mark.svg" alt="">
       <span><strong>SORTIO</strong><small>výukový panel</small></span>
     </a>
-    <div class="release-pill"><span></span> SORTIO 1.1.4 · výukový panel</div>
+    <div class="release-pill"><span></span> SORTIO 1.1.6 · výukový panel</div>
     <div class="top-actions">
       <button class="icon-button" id="motionToggle" type="button" title="Zapnout nebo vypnout pohybové efekty a animace"><span>◎</span><b>Pohyb</b></button>
       <button class="icon-button" id="themeToggle" type="button" title="Přepnout tmavý, světlý nebo systémový motiv"><span>◐</span><b>Motiv</b></button>
@@ -226,7 +240,7 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
           <div class="floating-card card-a"><i>01</i><b>Třídy</b><span data-stat="classCount">0</span></div>
           <div class="floating-card card-b"><i>02</i><b>Studenti</b><span data-stat="studentCount">0</span></div>
           <div class="floating-card card-c"><i>03</i><b>Dnešní losování</b><span data-stat="drawCount">0</span></div>
-          <div class="sortio-core"><img src="./assets/sortio-mark.svg" alt=""><strong>SORTIO</strong><small>jádro 1.1.4</small></div>
+          <div class="sortio-core"><img src="./assets/sortio-mark.svg" alt=""><strong>SORTIO</strong><small>jádro 1.1.6</small></div>
           <div class="flow-line line-a"></div><div class="flow-line line-b"></div><div class="flow-line line-c"></div>
           <div class="stage-caption"><span>LOCAL-FIRST</span><b>Data zůstávají v tomto prohlížeči</b></div>
         </article>
@@ -261,29 +275,29 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
     </section>
 
     <section class="view" data-view="draw" id="draw">
-      <div class="page-title"><div><span>NÁHODNÝ VÝBĚR</span><h1>Spravedlivé losování</h1><p>Jeden student, více studentů nebo celé pořadí. Režim bez opakování hlídá, aby se třída nejprve vystřídala.</p></div><div class="page-badge accent">SORTIO 1.1.4</div></div>
+      <div class="page-title"><div><span>NÁHODNÝ VÝBĚR</span><h1>Spravedlivé losování</h1><p>Jeden student, více studentů nebo celé pořadí. Režim bez opakování hlídá, aby se třída nejprve vystřídala.</p></div><div class="page-badge accent">SORTIO 1.1.6</div></div>
       <div id="drawWorkspace"></div>
     </section>
 
     <section class="view" data-view="groups" id="groups">
-      <div class="page-title"><div><span>CHYTRÁ TVORBA SKUPIN</span><h1>Skupiny podle vašich pravidel</h1><p>Náhodně, vyváženě, podle podobné úrovně nebo s omezením opakovaných kombinací. Pravidla „spolu“ a „od sebe“ jsou závazná.</p></div><div class="page-badge accent">SORTIO 1.1.4</div></div>
+      <div class="page-title"><div><span>CHYTRÁ TVORBA SKUPIN</span><h1>Skupiny podle vašich pravidel</h1><p>Náhodně, vyváženě, podle podobné úrovně nebo s omezením opakovaných kombinací. Pravidla „spolu“ a „od sebe“ jsou závazná.</p></div><div class="page-badge accent">SORTIO 1.1.6</div></div>
       <div id="groupsWorkspace"></div>
     </section>
 
 
     <section class="view" data-view="roles" id="roles">
-      <div class="page-title"><div><span>ROLE, TÉMATA A ÚKOLY</span><h1>Každý ví, co má dělat</h1><p>Přidělte členům skupin role se spravedlivou rotací a rozdělte témata, otázky nebo stanoviště.</p></div><div class="page-badge accent">SORTIO 1.1.4</div></div>
+      <div class="page-title"><div><span>ROLE, TÉMATA A ÚKOLY</span><h1>Každý ví, co má dělat</h1><p>Přidělte členům skupin role se spravedlivou rotací a rozdělte témata, otázky nebo stanoviště.</p></div><div class="page-badge accent">SORTIO 1.1.6</div></div>
       <div id="rolesWorkspace"></div>
     </section>
 
     <section class="view" data-view="seating" id="seating">
-      <div class="page-title"><div><span>ZASEDACÍ POŘÁDEK</span><h1>Učebna pod kontrolou</h1><p>Řady, dvojice, ostrůvky nebo uspořádání do U. SORTIO respektuje přední místa, uzamčené pozice a pravidla „od sebe“.</p></div><div class="page-badge accent">SORTIO 1.1.4</div></div>
+      <div class="page-title"><div><span>ZASEDACÍ POŘÁDEK</span><h1>Učebna pod kontrolou</h1><p>Řady, dvojice, ostrůvky nebo uspořádání do U. SORTIO respektuje přední místa, uzamčené pozice a pravidla „od sebe“.</p></div><div class="page-badge accent">SORTIO 1.1.6</div></div>
       <div id="seatingWorkspace"></div>
     </section>
 
 
     <section class="view" data-view="tools" id="tools">
-      <div class="page-title"><div><span>VÝUKOVÝ PANEL</span><h1>Hodina pod kontrolou</h1><p>Každá aktivní třída má vlastní projekční plochu s časovači, hodinami, semaforem, tabulí, kostkami, skóre, obrázky, agendou a hlasováním.</p></div><div class="page-badge accent">SORTIO 1.1.4</div></div>
+      <div class="page-title"><div><span>VÝUKOVÝ PANEL</span><h1>Hodina pod kontrolou</h1><p>Každá aktivní třída má vlastní projekční plochu s časovači, hodinami, semaforem, tabulí, kostkami, skóre, obrázky, agendou a hlasováním.</p></div><div class="page-badge accent">SORTIO 1.1.6</div></div>
       <div id="toolsWorkspace"></div>
     </section>
 
@@ -315,14 +329,14 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
     </section>
 
     <section class="view" data-view="about" id="about">
-      <div class="page-title"><div><span>IDENTITA A VLASTNICTVÍ</span><h1>O aplikaci</h1><p>Školní aplikace pro rychlou organizaci živé výuky, vyvíjená modulárně jako součást AI Studia GHRAB.</p></div><div class="page-badge accent">v1.1.4</div></div>
+      <div class="page-title"><div><span>IDENTITA A VLASTNICTVÍ</span><h1>O aplikaci</h1><p>Školní aplikace pro rychlou organizaci živé výuky, vyvíjená modulárně jako součást AI Studia GHRAB.</p></div><div class="page-badge accent">v1.1.6</div></div>
       <div class="about-layout">
         <article class="about-brand glass-panel"><img src="./assets/sortio-mark.svg" alt="Značka SORTIO"><span>SORTIO</span><h2>Výukový panel</h2><p>Organizace třídy a živé výuky: import, losování, skupiny, role, zasedací pořádek, třídní pracovní plocha, projekční widgety, obrázky a hlasování.</p></article>
         <div class="about-details">
           <article><span>AUTOR A VÝVOJOVÝ GARANT</span><h3>Daniel Baláž</h3><p>Koncepce, návrh funkcí, metodické vedení a vývoj aplikace.</p></article>
           <article><span>ŠKOLNÍ PROJEKT</span><h3>Gymnázium, Ostrava-Hrabůvka</h3><p>Aplikace je připravována pro interní školní využití v rámci AI Studia GHRAB.</p></article>
           <article><span>OCHRANA DAT</span><h3>Local-first architektura</h3><p>Jména a historie zůstávají v konkrétním prohlížeči. Importované e-mailové adresy se po vytvoření náhledu neukládají. Při hledání obrázků odchází do Wikimedia Commons pouze hledaný výraz, nikdy data třídy.</p></article>
-          <article><span>TECHNICKÝ STAV</span><h3>1.1.4 · Výukový panel</h3><p>Pracovní plocha navázaná na aktivní třídu, škálovatelný obsah widgetů, rozšířené projekční nástroje, knihovna Wikimedia Commons a připravené anonymní QR hlasování pro školní server.</p></article>
+          <article><span>TECHNICKÝ STAV</span><h3>1.1.6 · Výukový panel</h3><p>Pracovní plocha navázaná na aktivní třídu, škálovatelný obsah widgetů, rozšířené projekční nástroje, knihovna Wikimedia Commons a připravené anonymní QR hlasování pro školní server.</p></article>
         </div>
       </div>
       <article class="privacy-card"><span>PRAVIDLO PRO TESTOVÁNÍ</span><h3>Do veřejného repozitáře ani screenshotů nevkládat skutečné seznamy studentů.</h3><p>Pro vývojové testy jsou v balíčku použity pouze smyšlené adresy a jména. Při sdílení diagnostiky se osobní údaje automaticky nevypisují.</p></article>
@@ -358,7 +372,7 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
 
 <dialog id="projectionDialog" class="projection-dialog">
   <div class="projection-shell">
-    <header><div><span>BEZPEČNÁ PROJEKCE</span><h2 id="projectionTitle">SORTIO</h2></div><div><select id="projectionMode" aria-label="Obsah projekce"><option value="auto">Aktuální obsah</option><option value="groups">Skupiny</option><option value="seating">Zasedací pořádek</option><option value="draw">Poslední losování</option><option value="lesson">Výukový panel</option><option value="tools">Původní třídní nástroje</option></select><button type="button" data-action="projection-fullscreen">Celá obrazovka</button><button type="button" data-action="close-projection" aria-label="Zavřít projekci">×</button></div></header>
+    <header><div><span>BEZPEČNÁ PROJEKCE</span><h2 id="projectionTitle">SORTIO</h2></div><div><select id="projectionMode" aria-label="Obsah projekce"><option value="auto">Aktuální obsah</option><option value="groups">Skupiny</option><option value="seating">Zasedací pořádek</option><option value="draw">Poslední losování</option><option value="lesson">Výukový panel</option></select><button type="button" data-action="projection-fullscreen">Celá obrazovka</button><button type="button" data-action="close-projection" aria-label="Zavřít projekci">×</button></div></header>
     <main id="projectionContent" class="projection-content"></main>
     <footer><span>Na projekci nejsou zobrazeny interní úrovně, pravidla ani poznámky učitele.</span><b>SORTIO · Gymnázium, Ostrava-Hrabůvka</b></footer>
   </div>

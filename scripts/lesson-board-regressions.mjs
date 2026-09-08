@@ -25,8 +25,8 @@ expect('widget layout engine exists',board.includes('lessonBoardPointerDown')&&b
 expect('inner widget scale is independent',board.includes('widget-scale-up')&&board.includes('widget-scale-down')&&board.includes('lessonBoardContentWheel')&&css.includes('--content-scale'));
 expect('inner scale has mouse drag handle',board.includes('data-board-scale-resize')&&board.includes("kind:scaleResize?'scale'")&&css.includes('.widget-content-scale-handle'));
 expect('timer uses minute/second steppers',board.includes('data-board-timer-unit="minutes"')&&board.includes('data-board-timer-unit="seconds"')&&!board.includes('−1 min')&&!board.includes('+10 s'));
-expect('timer has large start control',board.includes('timer-start-big')&&css.includes('.timer-start-big'));
-expect('instrument sounds available',forAll(['piano','guitar','xylophone','trumpet','drum'],v=>board.includes(`'${v}'`)));
+expect('timer has compact start control',board.includes('timer-start-compact')&&!board.includes('class="timer-start-big'));
+expect('timer sound cues available',forAll(['bell','piano','guitar','xylophone','trumpet','drum','none'],v=>board.includes(`'${v}'`))&&board.includes('Jemné trojité cinknutí'));
 expect('visual timer uses draggable 60 minute dial',board.includes('lessonBoardVisualPointerDown')&&board.includes('lessonBoardVisualDialMinutes')&&board.includes('60 min')&&css.includes('.visual-timer-dial'));
 expect('clock has no alarm/sound UI',!board.includes('alarmTime')&&!board.includes('alarmSound'));
 expect('traffic light has no labels',board.includes('traffic-housing')&&!board.includes('data-board-traffic-label')&&!board.includes('Ticho')&&!board.includes('Šeptem'));

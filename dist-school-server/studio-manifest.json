@@ -5,7 +5,7 @@
     "cs": "SORTIO – Výukový panel",
     "en": "SORTIO – Teaching Panel"
   },
-  "version": "1.1.4",
+  "version": "1.1.6",
   "status": {
     "cs": "Připraveno k řízenému pilotu",
     "en": "Ready for controlled pilot"
@@ -127,7 +127,7 @@
     "platformContract": "ghrab-platform-v1",
     "platformRange": ">=1.1.2 <2.0.0"
   },
-  "publishedAt": "2026-09-06T12:07:16.558Z",
+  "publishedAt": "2026-09-07T19:29:55.794Z",
   "aiCore": {
     "schema": "ghrab-ai-app-integration-v1",
     "status": "not-applicable",
@@ -151,7 +151,7 @@
     "accessibilityContract": "ghrab-a11y-v1",
     "performanceContract": "ghrab-performance-v1",
     "moduleContract": "ghrab-lazy-modules-v1",
-    "cacheName": "ghrab-sortio-v1.1.4"
+    "cacheName": "ghrab-sortio-v1.1.6"
   },
   "deploymentProfile": "school-server",
   "serverReadyPhase": "P3"

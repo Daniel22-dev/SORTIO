@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.6 — 2026-09-07
+
+- Volba aktivní třídy přímo na Přehledu a oprava průběžného hledání studentů.
+- Větší vícenásobné losování, srozumitelnější plán rozdělení skupin a přímé „Znovu promíchat“.
+- Ruční přiřazení konkrétního studenta ke konkrétní roli a ruční volba tématu u skupiny.
+- Zasedací pořádek: vysvětlení směru řad, živý výpočet kapacity, větší vstupy, drag & drop a přímá projekce.
+- Zasedací pořádek: tisk/PDF připravený na A4 naležato s povinným logem školy.
+- Projekce: odstraněn pozůstatek „Původní třídní nástroje“ a zvětšena témata, role a skupiny.
+- Výukový panel: fullscreen přetrvává při změnách, viditelné barvy pozadí, vyčištění panelu, opravy velikostí widgetů a odstranění vnitřních scrollbarů.
+- Timer/Visual timer: kompaktní Spustit/Pauza, upravené zvukové popisky; Agenda se edituje přímo v kartě.
+
 ## 1.1.5 — 2026-09-06
 
 - Opraven suite-session negative-control harness: verze 1.1.4 vypínala jen `session.onEnd()`, ale bezpečnostní storage/pageshow/focus guardy stále legitimně provedly cleanup a způsobily falešný CI FAIL.

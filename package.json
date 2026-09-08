@@ -1,13 +1,13 @@
 {
   "name": "sortio-organizator-tridy",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "private": true,
   "description": "SORTIO – produkční local-first výukový panel s odolným ukládáním, diagnostikou, projekcí a tiskem",
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
     "verify:structure": "node scripts/verify-structure.mjs",
-    "test": "npm run build && npm run verify:structure && npm run test:domain && npm run test:lesson-board && npm run test:package3 && npm run test:package4 && npm run test:package5 && npm run test:garp-security && npm run test:garp-hostile-render && npm run test:garp-canary && npm run test:garp-suite-session",
+    "test": "npm run build && npm run verify:structure && npm run test:domain && npm run test:lesson-board && npm run test:ux && npm run test:package3 && npm run test:package4 && npm run test:package5 && npm run test:garp-security && npm run test:garp-hostile-render && npm run test:garp-canary && npm run test:garp-suite-session",
     "test:domain": "node scripts/domain-tests.mjs",
     "test:headless": "node scripts/headless-check.mjs",
     "qa:technical": "node scripts/qa-technical.mjs",
@@ -50,7 +50,8 @@
     "test:garp-hostile-render": "node scripts/garp-hostile-render.mjs",
     "test:garp-canary": "node scripts/garp-canary-sweep.mjs",
     "test:garp-suite-session": "node scripts/garp-suite-session-regressions.mjs",
-    "test:lesson-board": "node scripts/lesson-board-regressions.mjs"
+    "test:lesson-board": "node scripts/lesson-board-regressions.mjs",
+    "test:ux": "node scripts/ux-1.1.6-regressions.mjs"
   },
   "engines": {
     "node": ">=18"

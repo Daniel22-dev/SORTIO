@@ -1,1 +1,14 @@
-function renderDashboard(){const classes=getClasses();const selected=getSelectedClass();const stats=activeRosterStats(selected);const mapping={classCount:classes.length,studentCount:totalStudentCount(),drawCount:drawsToday(),activeClass:selected?.name||'—',activePresent:stats.present,activeTotal:stats.all};for(const[id,value]of Object.entries(mapping)){$$(`[data-stat="${id}"]`).forEach(node=>node.textContent=value)}const panel=$('#activeClassPanel');if(panel){panel.innerHTML=selected?`<div><span>AKTIVNÍ TŘÍDA</span><h3>${escapeHtml(selected.name)}</h3><p>${escapeHtml(selected.schoolYear||'Školní rok není uveden')} · ${stats.present} přítomných z ${stats.all}</p></div><div class="active-class-actions"><button class="small-button" data-route="classes">Docházka</button><button class="primary-button compact" data-route="draw">Losovat</button></div>`:`<div><span>ZAČÍNÁME</span><h3>Vytvořte první třídu</h3><p>Zkopírujte seznam školních e-mailů z IS. SORTIO z něj připraví jména ke kontrole.</p></div><button class="primary-button compact" data-action="open-import">Importovat z IS</button>`}}
+function renderDashboard(){
+  const classes=getClasses();
+  const selected=getSelectedClass();
+  const stats=activeRosterStats(selected);
+  const mapping={classCount:classes.length,studentCount:totalStudentCount(),drawCount:drawsToday(),activeClass:selected?.name||'—',activePresent:stats.present,activeTotal:stats.all};
+  for(const[id,value]of Object.entries(mapping))$$(`[data-stat="${id}"]`).forEach(node=>node.textContent=value);
+  const panel=$('#activeClassPanel');
+  if(!panel)return;
+  if(!selected){
+    panel.innerHTML=`<div><span>ZAČÍNÁME</span><h3>Vytvořte první třídu</h3><p>Zkopírujte seznam školních e-mailů z IS. SORTIO z něj připraví jména ke kontrole.</p></div><button class="primary-button compact" data-action="open-import">Importovat z IS</button>`;
+    return;
+  }
+  panel.innerHTML=`<div><span>AKTIVNÍ TŘÍDA</span><h3>${escapeHtml(selected.name)}</h3><p>${escapeHtml(selected.schoolYear||'Školní rok není uveden')} · ${stats.present} přítomných z ${stats.all}</p></div><div class="active-class-actions"><label class="dashboard-class-picker"><span>Změnit třídu</span><select id="dashboardClassSelect" aria-label="Zvolit aktivní třídu">${classes.map(item=>`<option value="${item.id}" ${item.id===selected.id?'selected':''}>${escapeHtml(item.name)}</option>`).join('')}</select></label><button class="small-button" data-route="classes">Docházka</button><button class="primary-button compact" data-route="draw">Losovat</button></div>`;
+}

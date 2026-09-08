@@ -1,6 +1,6 @@
 {
   "schema": "sortio-garp-hostile-render-v1",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "cspPreserved": true,
   "storageHarness": "in-memory localStorage equivalent",
   "canaryExecuted": false,
@@ -9,7 +9,7 @@
   "onfocusCount": 0,
   "hostileMarkupCount": 0,
   "hostileTextElementCount": 0,
-  "renderedStudentRefs": 4,
+  "renderedStudentRefs": 5,
   "unsafePersistedIdentifiers": 0,
   "runtimeErrors": [],
   "status": "passed"
