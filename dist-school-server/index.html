@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-ghrab-access="checking" data-theme="dark" data-ghrab-app-id="sortio" data-ghrab-app-version="1.1.6" data-ghrab-platform-contract="ghrab-platform-v1" data-theme-preference="dark">
+<html lang="cs" data-ghrab-access="checking" data-theme="dark" data-ghrab-app-id="sortio" data-ghrab-app-version="1.1.7" data-ghrab-platform-contract="ghrab-platform-v1" data-theme-preference="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -179,11 +179,39 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
 @layer responsive{
 @media(max-width:900px){.draw-result .draw-multi-names.many{grid-template-columns:1fr}.seating-stats{grid-template-columns:1fr 1fr}.seating-output-actions{grid-template-columns:1fr}.manual-role-list>label{grid-template-columns:1fr}.dashboard-class-picker{width:100%}.dashboard-class-picker select{width:100%}}
 }
+
+/* SORTIO 1.1.7 – seating shape editor and lesson-board fixes */
+@layer components{
+.scene-actions .primary-button{border:0;background:linear-gradient(135deg,var(--cyan),#70a7ff);color:#04111f;box-shadow:0 10px 26px rgba(94,231,255,.18)}
+.scene-actions .primary-button:hover{background:linear-gradient(135deg,#7eedff,#86b7ff);box-shadow:0 14px 32px rgba(94,231,255,.26)}
+.scene-actions button.danger-armed{border-color:rgba(255,111,134,.55);background:rgba(255,111,134,.15);color:#ffdce3}
+.background-mini .background-swatch{width:29px;height:29px;flex:0 0 29px;border:2px solid rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.2)}
+.background-mini .background-swatch.board-bg-gradient-midnight{background-image:radial-gradient(circle at 75% 15%,rgba(94,231,255,.38),transparent 34%),linear-gradient(145deg,#07111f,#101b35 55%,#0a1325)}
+.background-mini .background-swatch.board-bg-gradient-aurora{background-image:radial-gradient(circle at 15% 20%,rgba(99,230,170,.5),transparent 33%),radial-gradient(circle at 82% 24%,rgba(139,123,255,.5),transparent 35%),linear-gradient(135deg,#071c24,#10223a)}
+.background-mini .background-swatch.board-bg-gradient-ocean{background-image:radial-gradient(circle at 75% 10%,rgba(94,231,255,.48),transparent 38%),linear-gradient(150deg,#061522,#07314d 55%,#081e34)}
+.background-mini .background-swatch.board-bg-gradient-sunset{background-image:radial-gradient(circle at 70% 15%,rgba(255,184,92,.56),transparent 36%),linear-gradient(145deg,#261333,#71394e 55%,#1a1938)}
+.background-mini .background-swatch.board-bg-gradient-violet{background-image:radial-gradient(circle at 25% 20%,rgba(139,123,255,.62),transparent 38%),linear-gradient(135deg,#100e29,#2b2054,#0c1631)}
+.background-mini .background-swatch.board-bg-gradient-clean{background-image:linear-gradient(135deg,#dce8f2,#fff);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5),0 2px 8px rgba(0,0,0,.2)}
+.lesson-board-background-image{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;user-select:none}
+.real-die.d6{padding:7%;gap:3%}
+.real-die.d6 i.pip:before{width:82%;min-width:9px;background:#05070a;box-shadow:0 0 0 1px rgba(0,0,0,.28),inset 1px 1px 2px rgba(255,255,255,.16)}
+.seating-shape-editor{margin-top:12px;padding:10px;border:1px solid var(--line-strong);border-radius:12px;background:rgba(4,13,25,.36)}
+.seating-shape-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}.seating-shape-head span{color:var(--muted);font-size:7px;font-weight:900;letter-spacing:.12em}.seating-shape-head b{color:var(--cyan);font-size:9px}
+.seating-shape-front{display:grid;place-items:center;height:18px;margin:0 10% 6px;border:1px solid rgba(94,231,255,.25);border-radius:4px;background:rgba(94,231,255,.06);color:var(--cyan);font-size:6px;font-weight:900;letter-spacing:.14em}
+.seating-shape-grid{display:grid;grid-template-columns:repeat(var(--shape-columns),minmax(0,1fr));gap:2px;touch-action:none;user-select:none}
+.seating-shape-cell{position:relative;aspect-ratio:1;min-width:0;padding:0;border:1px solid rgba(154,170,192,.2);border-radius:3px;background:rgba(255,255,255,.025);cursor:crosshair}
+.seating-shape-cell:hover{border-color:rgba(94,231,255,.55);background:rgba(94,231,255,.08)}
+.seating-shape-cell.active{border-color:rgba(94,231,255,.75);background:linear-gradient(145deg,rgba(94,231,255,.78),rgba(112,167,255,.7));box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.seating-shape-editor>small{display:block;margin-top:7px;color:var(--muted);font-size:7px;line-height:1.45}
+.seating-shape-actions{display:grid;grid-template-columns:.75fr 1.25fr;gap:7px;margin-top:8px}.seating-shape-actions .wide-button{margin-top:0}
+.seating-output-actions{grid-template-columns:.8fr 1.35fr}
+.seat-map.template-custom{grid-auto-rows:auto}.seat-map.template-custom .seat{grid-row:var(--seat-row);grid-column:var(--seat-column)}
+}
 </style>
 
     <!-- GHRAB Platform 1.1.2 · generated -->
     <link rel="stylesheet" href="./ghrab/ghrab-platform.css" data-ghrab-platform-style>
-    <script id="ghrab-platform-config" type="application/json">{"appId":"sortio","appName":"SORTIO · Výukový panel","appVersion":"1.1.6","requiredPlatformRange":">=1.1.2 \u003c2.0.0","platformContract":"ghrab-platform-v1","brandVersion":"1.0.0","autoFooter":true,"theme":{"supported":["light","dark","system"],"default":"dark","systemFallback":"dark"},"storageMigration":{"id":"p2-storage-namespace-v1","backup":"full","mappings":[{"legacyPrefix":"sortio.","canonicalPrefix":"ghrab.sortio."}]},"bridgeMaxBytes":500000,"artifactContract":"ghrab-artifact-envelope-v1","quality":{"schema":"ghrab-quality-consumer-v1","accessibilityContract":"ghrab-a11y-v1","performanceContract":"ghrab-performance-v1","moduleContract":"ghrab-lazy-modules-v1","requireBudget":true,"performanceBudget":{"distBytes":900000,"entryHtmlBytes":270000,"entryCriticalBytes":550000,"largestInlineScriptBytes":170000,"precacheBytes":800000,"largestFileBytes":270000,"duplicateLargeBytes":140000},"modules":{"required":[]},"referenceProfile":{"cpuSlowdown":4,"viewport":"1366x768","memoryClassGb":4,"viewportWidths":[1280,390,320]},"stage":"P5","a11yContract":"ghrab-a11y-v1","requireRuntimeBudget":true,"runtimeBudget":{"maxDomNodes":1000,"maxRenderReadyMs":2500,"maxJsHeapUsedBytes":8000000,"maxLayoutDurationMs":1800,"maxTaskDurationMs":2500},"finalRelease":false,"cleanInstallRequired":true,"a11yGate":"ghrab-p5-runtime-a11y-v2","releaseGate":"ghrab-p5-release-v2","runtimeAudit":{"scriptsExecuted":true,"transport":"local-http","dialogStates":true,"viewports":[1280,390,320]}}}</script>
+    <script id="ghrab-platform-config" type="application/json">{"appId":"sortio","appName":"SORTIO · Výukový panel","appVersion":"1.1.7","requiredPlatformRange":">=1.1.2 \u003c2.0.0","platformContract":"ghrab-platform-v1","brandVersion":"1.0.0","autoFooter":true,"theme":{"supported":["light","dark","system"],"default":"dark","systemFallback":"dark"},"storageMigration":{"id":"p2-storage-namespace-v1","backup":"full","mappings":[{"legacyPrefix":"sortio.","canonicalPrefix":"ghrab.sortio."}]},"bridgeMaxBytes":500000,"artifactContract":"ghrab-artifact-envelope-v1","quality":{"schema":"ghrab-quality-consumer-v1","accessibilityContract":"ghrab-a11y-v1","performanceContract":"ghrab-performance-v1","moduleContract":"ghrab-lazy-modules-v1","requireBudget":true,"performanceBudget":{"distBytes":900000,"entryHtmlBytes":270000,"entryCriticalBytes":550000,"largestInlineScriptBytes":170000,"precacheBytes":800000,"largestFileBytes":270000,"duplicateLargeBytes":140000},"modules":{"required":[]},"referenceProfile":{"cpuSlowdown":4,"viewport":"1366x768","memoryClassGb":4,"viewportWidths":[1280,390,320]},"stage":"P5","a11yContract":"ghrab-a11y-v1","requireRuntimeBudget":true,"runtimeBudget":{"maxDomNodes":1000,"maxRenderReadyMs":2500,"maxJsHeapUsedBytes":8000000,"maxLayoutDurationMs":1800,"maxTaskDurationMs":2500},"finalRelease":false,"cleanInstallRequired":true,"a11yGate":"ghrab-p5-runtime-a11y-v2","releaseGate":"ghrab-p5-release-v2","runtimeAudit":{"scriptsExecuted":true,"transport":"local-http","dialogStates":true,"viewports":[1280,390,320]}}}</script>
     <script defer src="./ghrab/ghrab-platform.js" data-ghrab-platform-loader></script>
   </head>
 <body>
@@ -194,7 +222,7 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
       <img class="brand-mark" src="./assets/sortio-mark.svg" alt="">
       <span><strong>SORTIO</strong><small>výukový panel</small></span>
     </a>
-    <div class="release-pill"><span></span> SORTIO 1.1.6 · výukový panel</div>
+    <div class="release-pill"><span></span> SORTIO 1.1.7 · výukový panel</div>
     <div class="top-actions">
       <button class="icon-button" id="motionToggle" type="button" title="Zapnout nebo vypnout pohybové efekty a animace"><span>◎</span><b>Pohyb</b></button>
       <button class="icon-button" id="themeToggle" type="button" title="Přepnout tmavý, světlý nebo systémový motiv"><span>◐</span><b>Motiv</b></button>
@@ -211,7 +239,7 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
       <button class="nav-item" type="button" data-route="draw"><span>◎</span><b>Losování</b></button>
       <button class="nav-item" type="button" data-route="groups"><span>◌</span><b>Skupiny</b></button>
       <button class="nav-item" type="button" data-route="roles"><span>◇</span><b>Role</b></button>
-      <button class="nav-item" type="button" data-route="seating"><span>▦</span><b>Místa</b></button>
+      <button class="nav-item" type="button" data-route="seating"><span>▦</span><b>Zasedací plán</b></button>
       <button class="nav-item" type="button" data-route="tools"><span>◫</span><b>Panel</b></button>
       <button class="nav-item" type="button" data-route="settings"><span>⚙</span><b>Nastavení</b></button>
       <button class="nav-item" type="button" data-route="about"><span>ⓘ</span><b>O aplikaci</b></button>
@@ -240,7 +268,7 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
           <div class="floating-card card-a"><i>01</i><b>Třídy</b><span data-stat="classCount">0</span></div>
           <div class="floating-card card-b"><i>02</i><b>Studenti</b><span data-stat="studentCount">0</span></div>
           <div class="floating-card card-c"><i>03</i><b>Dnešní losování</b><span data-stat="drawCount">0</span></div>
-          <div class="sortio-core"><img src="./assets/sortio-mark.svg" alt=""><strong>SORTIO</strong><small>jádro 1.1.6</small></div>
+          <div class="sortio-core"><img src="./assets/sortio-mark.svg" alt=""><strong>SORTIO</strong><small>jádro 1.1.7</small></div>
           <div class="flow-line line-a"></div><div class="flow-line line-b"></div><div class="flow-line line-c"></div>
           <div class="stage-caption"><span>LOCAL-FIRST</span><b>Data zůstávají v tomto prohlížeči</b></div>
         </article>
@@ -275,29 +303,29 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
     </section>
 
     <section class="view" data-view="draw" id="draw">
-      <div class="page-title"><div><span>NÁHODNÝ VÝBĚR</span><h1>Spravedlivé losování</h1><p>Jeden student, více studentů nebo celé pořadí. Režim bez opakování hlídá, aby se třída nejprve vystřídala.</p></div><div class="page-badge accent">SORTIO 1.1.6</div></div>
+      <div class="page-title"><div><span>NÁHODNÝ VÝBĚR</span><h1>Spravedlivé losování</h1><p>Jeden student, více studentů nebo celé pořadí. Režim bez opakování hlídá, aby se třída nejprve vystřídala.</p></div><div class="page-badge accent">SORTIO 1.1.7</div></div>
       <div id="drawWorkspace"></div>
     </section>
 
     <section class="view" data-view="groups" id="groups">
-      <div class="page-title"><div><span>CHYTRÁ TVORBA SKUPIN</span><h1>Skupiny podle vašich pravidel</h1><p>Náhodně, vyváženě, podle podobné úrovně nebo s omezením opakovaných kombinací. Pravidla „spolu“ a „od sebe“ jsou závazná.</p></div><div class="page-badge accent">SORTIO 1.1.6</div></div>
+      <div class="page-title"><div><span>CHYTRÁ TVORBA SKUPIN</span><h1>Skupiny podle vašich pravidel</h1><p>Náhodně, vyváženě, podle podobné úrovně nebo s omezením opakovaných kombinací. Pravidla „spolu“ a „od sebe“ jsou závazná.</p></div><div class="page-badge accent">SORTIO 1.1.7</div></div>
       <div id="groupsWorkspace"></div>
     </section>
 
 
     <section class="view" data-view="roles" id="roles">
-      <div class="page-title"><div><span>ROLE, TÉMATA A ÚKOLY</span><h1>Každý ví, co má dělat</h1><p>Přidělte členům skupin role se spravedlivou rotací a rozdělte témata, otázky nebo stanoviště.</p></div><div class="page-badge accent">SORTIO 1.1.6</div></div>
+      <div class="page-title"><div><span>ROLE, TÉMATA A ÚKOLY</span><h1>Každý ví, co má dělat</h1><p>Přidělte členům skupin role se spravedlivou rotací a rozdělte témata, otázky nebo stanoviště.</p></div><div class="page-badge accent">SORTIO 1.1.7</div></div>
       <div id="rolesWorkspace"></div>
     </section>
 
     <section class="view" data-view="seating" id="seating">
-      <div class="page-title"><div><span>ZASEDACÍ POŘÁDEK</span><h1>Učebna pod kontrolou</h1><p>Řady, dvojice, ostrůvky nebo uspořádání do U. SORTIO respektuje přední místa, uzamčené pozice a pravidla „od sebe“.</p></div><div class="page-badge accent">SORTIO 1.1.6</div></div>
+      <div class="page-title"><div><span>ZASEDACÍ POŘÁDEK</span><h1>Učebna pod kontrolou</h1><p>Nakreslete skutečný tvar učebny v mřížce – každá řada může být jinak dlouhá a mezi místy mohou zůstat uličky. SORTIO respektuje přední místa, uzamčené pozice a pravidla „od sebe“.</p></div><div class="page-badge accent">SORTIO 1.1.7</div></div>
       <div id="seatingWorkspace"></div>
     </section>
 
 
     <section class="view" data-view="tools" id="tools">
-      <div class="page-title"><div><span>VÝUKOVÝ PANEL</span><h1>Hodina pod kontrolou</h1><p>Každá aktivní třída má vlastní projekční plochu s časovači, hodinami, semaforem, tabulí, kostkami, skóre, obrázky, agendou a hlasováním.</p></div><div class="page-badge accent">SORTIO 1.1.6</div></div>
+      <div class="page-title"><div><span>VÝUKOVÝ PANEL</span><h1>Hodina pod kontrolou</h1><p>Každá aktivní třída má vlastní projekční plochu s časovači, hodinami, semaforem, tabulí, kostkami, skóre, obrázky, agendou a hlasováním.</p></div><div class="page-badge accent">SORTIO 1.1.7</div></div>
       <div id="toolsWorkspace"></div>
     </section>
 
@@ -329,14 +357,14 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
     </section>
 
     <section class="view" data-view="about" id="about">
-      <div class="page-title"><div><span>IDENTITA A VLASTNICTVÍ</span><h1>O aplikaci</h1><p>Školní aplikace pro rychlou organizaci živé výuky, vyvíjená modulárně jako součást AI Studia GHRAB.</p></div><div class="page-badge accent">v1.1.6</div></div>
+      <div class="page-title"><div><span>IDENTITA A VLASTNICTVÍ</span><h1>O aplikaci</h1><p>Školní aplikace pro rychlou organizaci živé výuky, vyvíjená modulárně jako součást AI Studia GHRAB.</p></div><div class="page-badge accent">v1.1.7</div></div>
       <div class="about-layout">
         <article class="about-brand glass-panel"><img src="./assets/sortio-mark.svg" alt="Značka SORTIO"><span>SORTIO</span><h2>Výukový panel</h2><p>Organizace třídy a živé výuky: import, losování, skupiny, role, zasedací pořádek, třídní pracovní plocha, projekční widgety, obrázky a hlasování.</p></article>
         <div class="about-details">
           <article><span>AUTOR A VÝVOJOVÝ GARANT</span><h3>Daniel Baláž</h3><p>Koncepce, návrh funkcí, metodické vedení a vývoj aplikace.</p></article>
           <article><span>ŠKOLNÍ PROJEKT</span><h3>Gymnázium, Ostrava-Hrabůvka</h3><p>Aplikace je připravována pro interní školní využití v rámci AI Studia GHRAB.</p></article>
           <article><span>OCHRANA DAT</span><h3>Local-first architektura</h3><p>Jména a historie zůstávají v konkrétním prohlížeči. Importované e-mailové adresy se po vytvoření náhledu neukládají. Při hledání obrázků odchází do Wikimedia Commons pouze hledaný výraz, nikdy data třídy.</p></article>
-          <article><span>TECHNICKÝ STAV</span><h3>1.1.6 · Výukový panel</h3><p>Pracovní plocha navázaná na aktivní třídu, škálovatelný obsah widgetů, rozšířené projekční nástroje, knihovna Wikimedia Commons a připravené anonymní QR hlasování pro školní server.</p></article>
+          <article><span>TECHNICKÝ STAV</span><h3>1.1.7 · Výukový panel</h3><p>Pracovní plocha navázaná na aktivní třídu, škálovatelný obsah widgetů, rozšířené projekční nástroje, knihovna Wikimedia Commons a připravené anonymní QR hlasování pro školní server.</p></article>
         </div>
       </div>
       <article class="privacy-card"><span>PRAVIDLO PRO TESTOVÁNÍ</span><h3>Do veřejného repozitáře ani screenshotů nevkládat skutečné seznamy studentů.</h3><p>Pro vývojové testy jsou v balíčku použity pouze smyšlené adresy a jména. Při sdílení diagnostiky se osobní údaje automaticky nevypisují.</p></article>

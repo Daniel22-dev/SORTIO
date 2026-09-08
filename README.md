@@ -65,4 +65,4 @@ GitHub Actions automaticky instalují Chromium, spouštějí GHRAB QA bránu a n
 
 Obsah ZIPu nahrajte do kořene samostatného repozitáře `SORTIO`. GitHub Pages musí používat **GitHub Actions**, nikoli nasazení z větve.
 
-**AI Studio není součástí tohoto balíčku.** SORTIO 1.1.6 používá společný kontrakt GHRAB Platform 1.1.2 a aktuální registr AI Studia GHRAB.
+**AI Studio není součástí tohoto balíčku.** SORTIO 1.1.7 používá společný kontrakt GHRAB Platform 1.1.2 a aktuální registr AI Studia GHRAB.

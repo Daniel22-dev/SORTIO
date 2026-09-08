@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.7 — 2026-09-08
+
+- Losování a projekce bez technických textů o cyklu.
+- „Místa“ přejmenována na „Zasedací plán“ a předvolby jsou pojmenované podle skutečného uspořádání učebny.
+- Přidán Word-like mřížkový editor skutečného tvaru učebny s nepravidelnými řadami a automatickým počtem míst.
+- Zasedací plán nabízí projekci a přímý PDF export A4 naležato; samostatné tlačítko Tisk bylo odstraněno.
+- Opraven vzhled tlačítka Promítnout, miniatury pozadí a vykreslení Wikimedia pozadí.
+- Vyčištění Výukového panelu ve fullscreen režimu už neukončuje fullscreen.
+- Větší a lépe rozmístěné puntíky D6.
+- Čerstvé lokální úložiště bez bezpečné kopie už není chybně označeno jako „Vyžaduje pozornost“.
+
 ## 1.1.6 — 2026-09-07
 
 - Volba aktivní třídy přímo na Přehledu a oprava průběžného hledání studentů.

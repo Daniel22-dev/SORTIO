@@ -1,13 +1,14 @@
 const GHRAB_SW_CONTRACT='ghrab-service-worker-v1';
 /* GHRAB service-worker contract v1 · update activation is user-controlled. */
 const APP_VERSION = '__APP_VERSION__';
-const CACHE_NAME = "ghrab-sortio-v1.1.6";
+const CACHE_NAME = "ghrab-sortio-v1.1.7";
 const CACHE_PREFIXES = ["ghrab-sortio-v", "sortio-v"];
 const CORE = [
   "./",
   "./index.html",
   "./app.js",
   "./lazy/print-exports.js",
+  "./lazy/seating-ui.js",
   "./manifest.webmanifest",
   "./access/access-gate.css",
   "./access/deployment-config.js",

@@ -161,3 +161,31 @@ html[data-motion=on] .dice-stage.rolling .real-die{animation:sortio-dice-tumble 
 @layer responsive{
 @media(max-width:900px){.draw-result .draw-multi-names.many{grid-template-columns:1fr}.seating-stats{grid-template-columns:1fr 1fr}.seating-output-actions{grid-template-columns:1fr}.manual-role-list>label{grid-template-columns:1fr}.dashboard-class-picker{width:100%}.dashboard-class-picker select{width:100%}}
 }
+
+/* SORTIO 1.1.7 – seating shape editor and lesson-board fixes */
+@layer components{
+.scene-actions .primary-button{border:0;background:linear-gradient(135deg,var(--cyan),#70a7ff);color:#04111f;box-shadow:0 10px 26px rgba(94,231,255,.18)}
+.scene-actions .primary-button:hover{background:linear-gradient(135deg,#7eedff,#86b7ff);box-shadow:0 14px 32px rgba(94,231,255,.26)}
+.scene-actions button.danger-armed{border-color:rgba(255,111,134,.55);background:rgba(255,111,134,.15);color:#ffdce3}
+.background-mini .background-swatch{width:29px;height:29px;flex:0 0 29px;border:2px solid rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.2)}
+.background-mini .background-swatch.board-bg-gradient-midnight{background-image:radial-gradient(circle at 75% 15%,rgba(94,231,255,.38),transparent 34%),linear-gradient(145deg,#07111f,#101b35 55%,#0a1325)}
+.background-mini .background-swatch.board-bg-gradient-aurora{background-image:radial-gradient(circle at 15% 20%,rgba(99,230,170,.5),transparent 33%),radial-gradient(circle at 82% 24%,rgba(139,123,255,.5),transparent 35%),linear-gradient(135deg,#071c24,#10223a)}
+.background-mini .background-swatch.board-bg-gradient-ocean{background-image:radial-gradient(circle at 75% 10%,rgba(94,231,255,.48),transparent 38%),linear-gradient(150deg,#061522,#07314d 55%,#081e34)}
+.background-mini .background-swatch.board-bg-gradient-sunset{background-image:radial-gradient(circle at 70% 15%,rgba(255,184,92,.56),transparent 36%),linear-gradient(145deg,#261333,#71394e 55%,#1a1938)}
+.background-mini .background-swatch.board-bg-gradient-violet{background-image:radial-gradient(circle at 25% 20%,rgba(139,123,255,.62),transparent 38%),linear-gradient(135deg,#100e29,#2b2054,#0c1631)}
+.background-mini .background-swatch.board-bg-gradient-clean{background-image:linear-gradient(135deg,#dce8f2,#fff);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5),0 2px 8px rgba(0,0,0,.2)}
+.lesson-board-background-image{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;user-select:none}
+.real-die.d6{padding:7%;gap:3%}
+.real-die.d6 i.pip:before{width:82%;min-width:9px;background:#05070a;box-shadow:0 0 0 1px rgba(0,0,0,.28),inset 1px 1px 2px rgba(255,255,255,.16)}
+.seating-shape-editor{margin-top:12px;padding:10px;border:1px solid var(--line-strong);border-radius:12px;background:rgba(4,13,25,.36)}
+.seating-shape-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}.seating-shape-head span{color:var(--muted);font-size:7px;font-weight:900;letter-spacing:.12em}.seating-shape-head b{color:var(--cyan);font-size:9px}
+.seating-shape-front{display:grid;place-items:center;height:18px;margin:0 10% 6px;border:1px solid rgba(94,231,255,.25);border-radius:4px;background:rgba(94,231,255,.06);color:var(--cyan);font-size:6px;font-weight:900;letter-spacing:.14em}
+.seating-shape-grid{display:grid;grid-template-columns:repeat(var(--shape-columns),minmax(0,1fr));gap:2px;touch-action:none;user-select:none}
+.seating-shape-cell{position:relative;aspect-ratio:1;min-width:0;padding:0;border:1px solid rgba(154,170,192,.2);border-radius:3px;background:rgba(255,255,255,.025);cursor:crosshair}
+.seating-shape-cell:hover{border-color:rgba(94,231,255,.55);background:rgba(94,231,255,.08)}
+.seating-shape-cell.active{border-color:rgba(94,231,255,.75);background:linear-gradient(145deg,rgba(94,231,255,.78),rgba(112,167,255,.7));box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.seating-shape-editor>small{display:block;margin-top:7px;color:var(--muted);font-size:7px;line-height:1.45}
+.seating-shape-actions{display:grid;grid-template-columns:.75fr 1.25fr;gap:7px;margin-top:8px}.seating-shape-actions .wide-button{margin-top:0}
+.seating-output-actions{grid-template-columns:.8fr 1.35fr}
+.seat-map.template-custom{grid-auto-rows:auto}.seat-map.template-custom .seat{grid-row:var(--seat-row);grid-column:var(--seat-column)}
+}
