@@ -7,6 +7,7 @@ const CORE = [
   "./",
   "./index.html",
   "./app.js",
+  "./lazy/print-exports.js",
   "./manifest.webmanifest",
   "./access/access-gate.css",
   "./access/deployment-config.js",

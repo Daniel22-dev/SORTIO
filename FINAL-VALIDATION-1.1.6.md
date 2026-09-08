@@ -29,3 +29,9 @@ Tlačítko `Stáhnout PDF · A4 naležato` generuje PDF přímo v prohlížeči 
 ## Stav
 
 Kandidát SORTIO 1.1.6 je připraven k nahrání do GitHubu a následnému ověření standardním GitHub Actions / Pages smoke testem.
+
+## Dodatečná validace po CI hotfixu 2026-09-08
+- P5 performance quality: 43/43 PASS.
+- UX regrese: 21/21 PASS, včetně přímého PDF, A4 landscape, povinného loga a offline lazy modulu.
+- `npm test`: PASS.
+- `dist-school-server/`: znovu sestaven z opraveného zdroje.

@@ -19,3 +19,6 @@ Datum: 7. 9. 2026
 ## Poznámka k PDF
 
 Tlačítko „Stáhnout PDF · A4 naležato“ vytvoří PDF přímo v prohlížeči a stáhne jej jako soubor. Samostatné tlačítko „Tisk · A4 naležato“ otevře odpovídající tiskový list. Oba výstupy používají stejné aktuální rozmístění žáků a logo školy.
+
+## CI hotfix 2026-09-08
+Po prvním nahrání 1.1.6 na GitHub překročil build čtyři P5 výkonové rozpočty. Bez navyšování limitů byl PDF/tiskový kód přesunut do offline-cachovaného lazy modulu a PWA ikony byly optimalizovány. Funkce zůstávají zachovány; P5 quality gate po opravě prochází 43/43.

@@ -11,10 +11,11 @@ const rolesUi=read('src/js/78-roles-ui.js');
 const seatingEngine=read('src/js/81-seating-engine.js');
 const seatingUi=read('src/js/82-seating-ui.js');
 const projection=read('src/js/85-projection.js');
-const printing=read('src/js/86-print-exports.js');
+const printing=read('src/js/86-print-exports.js')+'\n'+read('src/lazy/print-exports.js');
 const board=read('src/js/87-lesson-board.js');
 const body=read('src/body.html');
 const css=read('src/styles.css');
+const sw=read('src/sw.js');
 const checks=[];
 function expect(name,ok){checks.push({name,ok:Boolean(ok)});console.log(`${ok?'PASS':'FAIL'} ${name}`)}
 expect('class chooser on overview',dashboard.includes('dashboardClassSelect')&&classes.includes("event.target.id==='dashboardClassSelect'"));
@@ -27,6 +28,7 @@ expect('legacy projection tools removed',!projection.includes('function projecti
 expect('seating capacity formula exists',seatingEngine.includes('function seatingCapacityText')&&seatingEngine.includes('dvojic × 2 místa'));
 expect('seating drag and drop exists',seatingUi.includes("document.addEventListener('dragstart'")&&seatingUi.includes("document.addEventListener('drop'"));
 expect('seating direct projection, PDF and print exist',seatingUi.includes('project-seating')&&seatingUi.includes('download-seating-pdf')&&seatingUi.includes('print-seating'));
+expect('lazy PDF module is offline-cached',sw.includes('./lazy/print-exports.js')&&read('src/js/86-print-exports.js').includes('./lazy/print-exports.js'));
 expect('seating PDF downloads directly',printing.includes('function downloadSeatingPdf')&&printing.includes("type:'application/pdf'")&&printing.includes('imagePdfBlob'));
 expect('seating print is A4 landscape',printing.includes("orientation:'landscape'")&&printing.includes('A4 landscape'));
 expect('school logo is mandatory in print and PDF',printing.includes("assets/brand/school-logo.png")&&printing.includes('school-brand')&&printing.includes('loadRequiredSchoolLogo'));
