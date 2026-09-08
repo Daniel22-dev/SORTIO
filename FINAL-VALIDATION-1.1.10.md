@@ -39,3 +39,15 @@ Suite-session testy proto používají skutečný build a Chromium přes CDP se 
 ## Soukromí
 
 Párovací údaj Kluk/Holka je volitelný a lokální. Neodvozuje se automaticky ze jména, není součástí bezpečné projekce ani diagnostického protokolu. Při sdílení screenshotů, testovacích souborů nebo hlášení chyb nadále používat anonymizované/smyšlené studentské údaje.
+
+## GitHub CI hotfix — lazy production-tools / internal tests
+
+První publish pokus 1.1.10 skončil ve `Run internal regression suite` na `email-not-stored`, `diagnostics-privacy` a `demo`. Příčinou byl zastaralý testovací agregátor: po přesunu produkčních nástrojů do `lazy/production-tools.js` nadále prohledával jen `index.html` a `app.js`.
+
+Oprava rozšířila interní testovací povrch o `lazy/production-tools.js`; runtime kód ani privacy chování aplikace se nemění a lazy-loading zůstává zachován.
+
+Po opravě:
+- `npm test` — PASS;
+- `test:internal` — 36/36 PASS;
+- `qa:quality` — 43/43 PASS;
+- `build:school-server` — PASS.

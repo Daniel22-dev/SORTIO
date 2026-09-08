@@ -1,5 +1,9 @@
 # SORTIO changelog
 
+### CI hotfix 2026-09-08 — lazy production-tools / internal tests
+- Interní GitHub regrese nyní kontroluje také `lazy/production-tools.js`; po rozdělení produkčních nástrojů do lazy modulu už nevznikají falešné FAIL u `email-not-stored`, `diagnostics-privacy` a `demo`.
+- Runtime chování aplikace se nemění a performance rozdělení bundle zůstává zachováno.
+
 ## 1.1.10 — 2026-09-08
 - Zasedací editor 3 × 7 dvojlavic, pravidlo „sedí sám“, volitelná preference kluk + holka a zvýraznění volných míst.
 - Rozšířená knihovna pozadí s automatickým načtením více výsledků.

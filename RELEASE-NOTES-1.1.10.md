@@ -29,3 +29,6 @@ Datum: 8. 9. 2026
 ## Ochrana dat
 
 Údaj Kluk/Holka je pouze ručně nastavená lokální párovací kategorie pro zasedací plán. SORTIO ji neodhaduje ze jména a nikam ji neodesílá.
+
+## CI hotfix po prvním publish pokusu
+GitHub interní regresní sada byla upravena tak, aby po přesunu produkčních nástrojů do lazy modulu kontrolovala vedle `index.html` a `app.js` také `lazy/production-tools.js`. Tím se odstraňují falešné FAIL kontrol `email-not-stored`, `diagnostics-privacy` a `demo`; runtime aplikace ani privacy chování se nemění.
