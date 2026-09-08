@@ -33,7 +33,7 @@ expect('seating PDF downloads directly',printing.includes('function downloadSeat
 expect('seating print is A4 landscape',printing.includes("orientation:'landscape'")&&printing.includes('A4 landscape'));
 expect('school logo is mandatory in print and PDF',printing.includes("assets/brand/school-logo.png")&&printing.includes('school-brand')&&printing.includes('loadRequiredSchoolLogo'));
 expect('background swatches are visible',board.includes('background-swatch board-bg-'));
-expect('fullscreen-safe in-place refresh exists',board.includes('lessonBoardFullscreenStudio')&&board.includes('lessonBoardRefreshInPlace'));
+expect('fullscreen survives rerender via stable workspace root',board.includes('lessonBoardFullscreenRoot')&&board.includes("$('#toolsWorkspace')")&&!board.includes('lessonBoardRefreshInPlace'));
 expect('panel clear action exists',board.includes("action==='board-clear'"));
 expect('timer uses compact start button',board.includes('timer-start-compact')&&!board.includes('class="timer-start-big'));
 expect('agenda edits inline without prompt',board.includes('data-board-agenda-title')&&!board.includes("prompt('Agenda"));

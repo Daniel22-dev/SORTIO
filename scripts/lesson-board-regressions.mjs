@@ -20,7 +20,7 @@ const api=read('docs/SORTIO-LIVE-POLL-API.md');
 for(const type of ['timer','visual-timer','stopwatch','clock','traffic','draw','dice','score','text','work','image','agenda','poll','qr'])expect(`widget catalog: ${type}`,board.includes(`type:'${type}'`));
 expect('event countdown removed from addable catalog',!board.split('const LESSON_WIDGET_CATALOG')[1].split(']);')[0].includes("type:'event'"));
 expect('workspace follows selected class',board.includes('lessonBoardScopeKey')&&board.includes("getSelectedClass()?.id||'__general__'")&&board.includes('Plocha se automaticky přepíná s aktivní třídou'));
-expect('board fullscreen exists',board.includes("action==='board-fullscreen'")&&board.includes('requestFullscreen()')&&css.includes('.lesson-board-studio:fullscreen'));
+expect('board fullscreen exists',board.includes("action==='board-fullscreen'")&&board.includes('root.requestFullscreen()')&&css.includes('#toolsWorkspace:fullscreen'));
 expect('widget layout engine exists',board.includes('lessonBoardPointerDown')&&board.includes('data-board-resize')&&board.includes('widget-spotlight'));
 expect('inner widget scale is independent',board.includes('widget-scale-up')&&board.includes('widget-scale-down')&&board.includes('lessonBoardContentWheel')&&css.includes('--content-scale'));
 expect('inner scale has mouse drag handle',board.includes('data-board-scale-resize')&&board.includes("kind:scaleResize?'scale'")&&css.includes('.widget-content-scale-handle'));

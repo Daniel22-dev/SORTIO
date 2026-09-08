@@ -35,3 +35,11 @@ Kandidát SORTIO 1.1.6 je připraven k nahrání do GitHubu a následnému ově�
 - UX regrese: 21/21 PASS, včetně přímého PDF, A4 landscape, povinného loga a offline lazy modulu.
 - `npm test`: PASS.
 - `dist-school-server/`: znovu sestaven z opraveného zdroje.
+
+## CI hotfix 2026-09-08 — XSS sink gate
+- `npm run qa:xss`: PASS, `innerHTML` 28 <= baseline 29.
+- `npm run test:lesson-board`: 42/42 PASS.
+- `npm run test:ux`: 21/21 PASS.
+- `npm test`: PASS včetně platformy 108/108 a GARP regresí.
+- `npm run build && npm run qa:quality`: 43/43 PASS; velikostní budgety zůstávají v limitu.
+- Lokální kompletní `qa:p5:ci` prošel až přes browser audit; následný runtime page test je v tomto spravovaném Chromium prostředí blokován/timeoutuje. V přiložených GitHub Actions logách stejný runtime krok před XSS auditem prošel; jediný GitHub fail byl XSS sink inventář, který je touto opravou odstraněn.

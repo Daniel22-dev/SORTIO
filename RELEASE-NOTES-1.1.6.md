@@ -22,3 +22,8 @@ Tlačítko „Stáhnout PDF · A4 naležato“ vytvoří PDF přímo v prohlíž
 
 ## CI hotfix 2026-09-08
 Po prvním nahrání 1.1.6 na GitHub překročil build čtyři P5 výkonové rozpočty. Bez navyšování limitů byl PDF/tiskový kód přesunut do offline-cachovaného lazy modulu a PWA ikony byly optimalizovány. Funkce zůstávají zachovány; P5 quality gate po opravě prochází 43/43.
+
+## CI hotfix — P5 XSS sink regression (2026-09-08)
+- P5 XSS inventář vrácen pod baseline bez změny bezpečnostního limitu: 28/29 `innerHTML`.
+- Fullscreen Výukového panelu používá stabilní kontejner `#toolsWorkspace`, takže změna widgetu/pozadí neruší celou plochu a nevznikají nové HTML sinky.
+- Přepínač třídy na Přehledu a tisková chybová obrazovka používají bezpečné DOM API.
