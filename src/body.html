@@ -102,7 +102,7 @@
     </section>
 
     <section class="view" data-view="seating" id="seating">
-      <div class="page-title"><div><span>ZASEDACÍ POŘÁDEK</span><h1>Učebna pod kontrolou</h1><p>Nakreslete skutečný tvar učebny v mřížce – každá řada může být jinak dlouhá a mezi místy mohou zůstat uličky. SORTIO respektuje přední místa, samostatné sezení, uzamčené pozice a pravidla „od sebe“; volitelně umí preferovat dvojici kluk + holka.</p></div><div class="page-badge accent">SORTIO __APP_VERSION__</div></div>
+      <div class="page-title"><div><span>ZASEDACÍ POŘÁDEK</span><h1>Učebna pod kontrolou</h1><p>Nakreslete skutečný tvar učebny v mřížce – každá řada může být jinak dlouhá a mezi místy mohou zůstat uličky. Po nakreslení učebny nastavíte jen potřebná pravidla, kliknete na Rozsadit třídu a SORTIO obsadí místa od tabule dozadu. Výsledek lze ručně upravit přetažením studentů myší.</p></div><div class="page-badge accent">SORTIO __APP_VERSION__</div></div>
       <div id="seatingWorkspace"></div>
     </section>
 
@@ -153,15 +153,19 @@
       </div>
 
       <section class="about-changelog" aria-labelledby="aboutChangelogTitle">
-        <div class="section-heading compact-heading"><div><span>HISTORIE VERZÍ</span><h2 id="aboutChangelogTitle">Changelog</h2></div><p>Co se v SORTIO měnilo v posledních verzích.</p></div>
+        <div class="section-heading compact-heading"><div><span>HISTORIE VERZÍ</span><h2 id="aboutChangelogTitle">Changelog</h2></div><p>Zobrazuje se vždy jen posledních 10 aktualizací.</p></div>
         <div class="changelog-list">
-          <article class="changelog-entry current"><header><b>1.1.10</b><span>8. 9. 2026</span></header><h3>Rozsazení, diagnostika a knihovna pozadí</h3><p>Menší mřížka učebny 3 × 7, samostatné sezení, párování kluk + holka, zvýrazněná volná místa, průběh produkční kontroly, stavové barvy a rozšířená knihovna pozadí.</p></article>
+          <article class="changelog-entry current"><header><b>1.1.12</b><span>8. 9. 2026</span></header><h3>Jednodušší pravidla rozsazení</h3><p>Odstraněna funkce „Kluk + holka“. Automatické rozsazení používá jen zadaná pravidla „má sedět sám“ a „má sedět vepředu“; případné dvojice lze rychle doladit přetažením studentů myší.</p></article>
+          <article class="changelog-entry"><header><b>1.1.12</b><span>8. 9. 2026</span></header><h3>Jednodušší workflow zasedacího pořádku</h3><p>Pravidla „má sedět sám“ a „má sedět vepředu“ jsou rozbalovací seznamy, automatické rozsazení postupuje od tabule dozadu a velký plán je určený pro drag &amp; drop prohazování studentů.</p></article>
+          <article class="changelog-entry"><header><b>1.1.10</b><span>8. 9. 2026</span></header><h3>Rozsazení, diagnostika a knihovna pozadí</h3><p>Menší mřížka učebny 3 × 7, samostatné sezení, zvýrazněná volná místa, průběh produkční kontroly, stavové barvy a rozšířená knihovna pozadí.</p></article>
           <article class="changelog-entry"><header><b>1.1.9</b><span>8. 9. 2026</span></header><h3>Dvojlavice a obrazová pozadí</h3><p>Jedno políčko editoru představuje dvojlavici, půdorys se centruje a obrazové pozadí se zobrazuje celé bez ořezu.</p></article>
           <article class="changelog-entry"><header><b>1.1.8</b><span>8. 9. 2026</span></header><h3>Prázdná výchozí mřížka</h3><p>Zasedací plán se už sám nepředkresluje; učitel začíná prázdným tvarem nebo zvolenou předlohou.</p></article>
           <article class="changelog-entry"><header><b>1.1.7</b><span>8. 9. 2026</span></header><h3>Editor tvaru učebny a opravy panelu</h3><p>Nový mřížkový editor, PDF A4 naležato, odstranění technických textů z losování a opravy projekce Výukového panelu.</p></article>
-          <article class="changelog-entry"><header><b>1.1.6</b><span>7. 9. 2026</span></header><h3>Workflow učitele</h3><p>Rychlejší přepínání tříd, lepší skupiny a role, drag & drop zasedacího pořádku a rozšíření živého Výukového panelu.</p></article>
+          <article class="changelog-entry"><header><b>1.1.6</b><span>7. 9. 2026</span></header><h3>Workflow učitele</h3><p>Rychlejší přepínání tříd, lepší skupiny a role, drag &amp; drop zasedacího pořádku a rozšíření živého Výukového panelu.</p></article>
+          <article class="changelog-entry"><header><b>1.1.5</b><span>6. 9. 2026</span></header><h3>Suite-session testovací oprava</h3><p>Opraven negative-control harness tak, aby bezpečnostní kontrola skutečně testovala oslabenou kopii bez zásahu do produkčního cleanupu.</p></article>
+          <article class="changelog-entry"><header><b>1.1.4</b><span>6. 9. 2026</span></header><h3>Bezpečnostní negative control</h3><p>Doplněna povinná kontrola Platform 1.1.2 pro společnou GHRAB release wave.</p></article>
+          <article class="changelog-entry"><header><b>1.1.3</b><span>5. 9. 2026</span></header><h3>Manuál v horní liště</h3><p>Přidán přímý vstup do interaktivního manuálu bez ztráty rozpracovaného stavu aplikace.</p></article>
         </div>
-        <details class="changelog-older"><summary>Starší verze 1.1.0–1.1.5</summary><div><p><b>1.1.5</b> – oprava suite-session negative controlu.</p><p><b>1.1.4</b> – bezpečnostní negative control pro společnou GHRAB release wave.</p><p><b>1.1.3</b> – přímý vstup do Manuálu v horní liště.</p><p><b>1.1.2</b> – odstranění duplicitní navigace zpět do Studia.</p><p><b>1.1.1</b> – velká UX revize Výukového panelu.</p><p><b>1.1.0</b> – první verze Výukového panelu.</p></div></details>
       </section>
       <article class="privacy-card"><span>PRAVIDLO PRO TESTOVÁNÍ</span><h3>Do veřejného repozitáře ani screenshotů nevkládat skutečné seznamy studentů.</h3><p>Pro vývojové testy jsou v balíčku použity pouze smyšlené adresy a jména. Při sdílení diagnostiky se osobní údaje automaticky nevypisují.</p></article>
       <footer class="legal-footer" data-ghrab-footer><img src="./assets/brand/school-logo.png" alt=""><p><b>Autor a vývojový garant: Daniel Baláž</b><br>Školní projekt Gymnázia, Ostrava-Hrabůvka · Součást AI Studia GHRAB</p><span>© 2026</span></footer>

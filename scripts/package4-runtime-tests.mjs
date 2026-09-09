@@ -5,7 +5,7 @@ function timerRemaining(endsAt,now){return Math.max(0,Math.ceil((endsAt-now)/100
 assert.deepEqual(fairPick([{id:'a',count:2},{id:'b',count:0},{id:'c',count:0}]).map(x=>x.id),['b','c']);
 assert.deepEqual(coverage([1,0,2,1]),{touched:3,total:4,percent:75});
 assert.equal(timerRemaining(61000,1000),60);assert.equal(timerRemaining(1000,2000),0);
-const privateProjectionKeys=['groupLevel','frontPreference','soloPreference','pairingSex','mixedGenderPairing','groupRules','pins'];
+const privateProjectionKeys=['groupLevel','frontPreference','soloPreference','groupRules','pins'];
 const projectionSource=await import('node:fs/promises').then(fs=>fs.readFile(new URL('../src/js/85-projection.js',import.meta.url),'utf8'));
 for(const key of privateProjectionKeys)assert.equal(projectionSource.includes(key),false,`Projekce nesmí používat ${key}`);
 console.log('[package4] Spravedlivý výběr, pokrytí, časovač a oddělení projekčního režimu prošly.');

@@ -107,18 +107,30 @@ assert.equal(context.seatingCapacityText('custom',3,3,deskShapeClass.seatingPlan
 
 
 
-// 1.1.10: „Sám“ je tvrdá podmínka a ručně zadané kluk/holka je jen měkká preference.
+// „Sám“ je tvrdá podmínka a druhé místo u stejné dvojlavice musí zůstat volné.
 let soloClass=freshClass(3);
 soloClass.students[0].soloPreference=true;
-soloClass.students[1].pairingSex='boy';
-soloClass.students[2].pairingSex='girl';
 context.configureSeatingShape([{row:0,column:0},{row:0,column:1}],{preserve:false});
-context.setSeatingMixedPairing(true);
 context.assignSeating();
 const soloSeat=soloClass.seatingPlan.seats.find(seat=>seat.studentId===soloClass.students[0].id);
 const soloDesk=soloClass.seatingPlan.seats.filter(seat=>context.seatingDeskKey(seat)===context.seatingDeskKey(soloSeat));
 assert.equal(soloDesk.filter(seat=>seat.studentId).length,1,'Student s požadavkem Sám nesmí mít spolužáka u dvojlavice.');
-assert.equal(soloClass.seatingPlan.mixedGenderPairing,true);
+
+
+// 1.1.12: běžné automatické rozsazení plní učebnu od tabule dozadu a ruční přesun umí přímý swap.
+let frontFillClass=freshClass(5);
+frontFillClass.students[4].frontPreference=true;
+context.configureSeatingShape([{row:0,column:0},{row:0,column:1},{row:1,column:0},{row:1,column:1},{row:2,column:0},{row:2,column:1}],{preserve:false});
+context.assignSeating();
+const occupiedFrontFill=frontFillClass.seatingPlan.seats.filter(seat=>seat.studentId);
+assert.equal(occupiedFrontFill.length,5);
+assert.ok(occupiedFrontFill.every(seat=>context.seatingFrontRank(seat,frontFillClass.seatingPlan)<=1),'Volná běžná místa mají zůstat v zadní části učebny.');
+const frontStudentSeat=occupiedFrontFill.find(seat=>seat.studentId===frontFillClass.students[4].id);
+assert.equal(context.seatingFrontRank(frontStudentSeat,frontFillClass.seatingPlan),0,'Student s pravidlem Vpředu má být v první řadě, pokud je kapacita.');
+const swapSeats=occupiedFrontFill.slice(0,2),swapA=swapSeats[0].studentId,swapB=swapSeats[1].studentId;
+assert.equal(context.setSeatStudent(swapSeats[1].id,swapA),true);
+assert.equal(frontFillClass.seatingPlan.seats.find(seat=>seat.id===swapSeats[1].id).studentId,swapA);
+assert.equal(frontFillClass.seatingPlan.seats.find(seat=>seat.id===swapSeats[0].id).studentId,swapB);
 
 // Jmenovci jsou legitimní, ale vyžadují výslovné potvrzení volající vrstvy.
 let namesakeClass=freshClass(1);

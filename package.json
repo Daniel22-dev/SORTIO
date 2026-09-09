@@ -1,6 +1,6 @@
 {
   "name": "sortio-organizator-tridy",
-  "version": "1.1.10",
+  "version": "1.1.12",
   "private": true,
   "description": "SORTIO – produkční local-first výukový panel s odolným ukládáním, diagnostikou, projekcí a tiskem",
   "type": "module",
@@ -51,7 +51,7 @@
     "test:garp-canary": "node scripts/garp-canary-sweep.mjs",
     "test:garp-suite-session": "node scripts/garp-suite-session-regressions.mjs",
     "test:lesson-board": "node scripts/lesson-board-regressions.mjs",
-    "test:ux": "node scripts/ux-1.1.10-regressions.mjs"
+    "test:ux": "node scripts/ux-1.1.12-regressions.mjs"
   },
   "engines": {
     "node": ">=18"

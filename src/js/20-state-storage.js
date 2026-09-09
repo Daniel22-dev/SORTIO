@@ -10,7 +10,7 @@ const HISTORY_LIMITS=Object.freeze({draw:100,group:60,role:300,engagement:1000})
 function rawStorage(){try{return window.localStorage}catch(_){return null}}
 function safeStorage(){const storage=rawStorage();if(!storage)return null;try{void storage.length;return storage}catch(_){return null}}
 function defaultRoleCatalog(){return['Mluvčí','Zapisovatel','Hlídač času','Kontrolor zadání']}
-function defaultSeatingPlan(){return{template:'rows',rows:4,columns:6,seats:[],mixedGenderPairing:false,updatedAt:null}}
+function defaultSeatingPlan(){return{template:'rows',rows:4,columns:6,seats:[],updatedAt:null}}
 function defaultToolState(){return{scores:[],decisionOptions:[],updatedAt:null}}
 function defaultLessonBoardState(){
   const sceneId='scene-default';
@@ -211,7 +211,7 @@ function sanitizeClass(item,{repairDuplicateIdentifiers=false}={}){
 function sanitizeStudent(item){
   if(!item||typeof item!=='object')return null;
   const firstName=titleCase(String(item.firstName||'').slice(0,80));const lastName=titleCase(String(item.lastName||'').slice(0,120));if(!firstName&&!lastName)return null;
-  return{id:sanitizeIdentifier(item.id,'student'),firstName,lastName,displayName:`${firstName} ${lastName}`.trim(),key:normalizeText(`${firstName} ${lastName}`),present:item.present!==false,archived:!!item.archived,groupLevel:['A','B','C'].includes(item.groupLevel)?item.groupLevel:'B',frontPreference:!!item.frontPreference,soloPreference:!!item.soloPreference,pairingSex:['boy','girl'].includes(item.pairingSex)?item.pairingSex:'',createdAt:item.createdAt||nowIso(),updatedAt:item.updatedAt||nowIso()};
+  return{id:sanitizeIdentifier(item.id,'student'),firstName,lastName,displayName:`${firstName} ${lastName}`.trim(),key:normalizeText(`${firstName} ${lastName}`),present:item.present!==false,archived:!!item.archived,groupLevel:['A','B','C'].includes(item.groupLevel)?item.groupLevel:'B',frontPreference:!!item.frontPreference,soloPreference:!!item.soloPreference,createdAt:item.createdAt||nowIso(),updatedAt:item.updatedAt||nowIso()};
 }
 function sanitizeGroup(group,ids,studentRefMap=null){
   if(!group||typeof group!=='object')return null;
@@ -228,7 +228,7 @@ function sanitizePins(value,ids,studentRefMap=null){
   return Object.fromEntries(Object.entries(value).map(([id,index])=>[sanitizeStudentRef(id,ids,studentRefMap),index]).filter(([id,index])=>!!id&&Number.isInteger(Number(index))&&Number(index)>=0).slice(0,500).map(([id,index])=>[id,Number(index)]));
 }
 function sanitizeSeatingPlan(value,ids,studentRefMap=null){
-  const plan={...defaultSeatingPlan(),...(value&&typeof value==='object'?value:{})};plan.template=['rows','pairs','islands','u','custom'].includes(plan.template)?plan.template:'rows';const minDimension=plan.template==='custom'?1:2;plan.rows=Math.max(minDimension,Math.min(10,Number(plan.rows)||4));plan.columns=Math.max(minDimension,Math.min(plan.template==='custom'?16:12,Number(plan.columns)||6));plan.mixedGenderPairing=!!plan.mixedGenderPairing;
+  const plan={...defaultSeatingPlan(),...(value&&typeof value==='object'?value:{})};plan.template=['rows','pairs','islands','u','custom'].includes(plan.template)?plan.template:'rows';const minDimension=plan.template==='custom'?1:2;plan.rows=Math.max(minDimension,Math.min(10,Number(plan.rows)||4));plan.columns=Math.max(minDimension,Math.min(plan.template==='custom'?16:12,Number(plan.columns)||6));
   // Starší vlastní plány z 1.1.9 mohou mít souřadnice mimo nový editor 3×7. Při načtení je nezmenšujeme ani nesléváme; limit 3×7 platí až pro nové kreslení.
   plan.seats=Array.isArray(plan.seats)?plan.seats.slice(0,240).map(seat=>({id:sanitizeIdentifier(seat.id,'seat'),row:Number(seat.row||0),column:Number(seat.column||0),island:Number.isFinite(Number(seat.island))?Number(seat.island):null,deskRow:Number.isFinite(Number(seat.deskRow))?Math.max(0,Math.min(9,Number(seat.deskRow))):null,deskColumn:Number.isFinite(Number(seat.deskColumn))?Math.max(0,Math.min(15,Number(seat.deskColumn))):null,deskSlot:Number.isFinite(Number(seat.deskSlot))?Math.max(0,Math.min(1,Number(seat.deskSlot))):null,label:String(seat.label||'').slice(0,30),studentId:sanitizeStudentRef(seat.studentId,ids,studentRefMap),blocked:!!seat.blocked,locked:!!seat.locked})):[];return plan;
 }

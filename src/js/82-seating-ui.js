@@ -1,13 +1,5 @@
-let sortioSeatingUiPromise=null;
-function loadSortioSeatingUi(){
-  if(globalThis.__SORTIO_SEATING_UI__){globalThis.__SORTIO_SEATING_UI__.bind?.();return Promise.resolve(globalThis.__SORTIO_SEATING_UI__)}
-  if(sortioSeatingUiPromise)return sortioSeatingUiPromise;
-  sortioSeatingUiPromise=new Promise((resolve,reject)=>{
-    const script=document.createElement('script');script.src=new URL('./lazy/seating-ui.js',location.href).href;script.async=true;script.dataset.sortioLazy='seating-ui';
-    script.onload=()=>{const api=globalThis.__SORTIO_SEATING_UI__;if(api?.render&&api?.bind){api.bind();resolve(api)}else reject(new Error('Editor zasedacího plánu se nepodařilo inicializovat.'))};
-    script.onerror=()=>reject(new Error('Editor zasedacího plánu se nepodařilo načíst.'));document.head.appendChild(script);
-  }).catch(error=>{sortioSeatingUiPromise=null;throw error});
-  return sortioSeatingUiPromise;
-}
-function renderSeatingView(){return loadSortioSeatingUi().then(api=>api.render()).catch(error=>{captureError(error,'seating-ui-lazy');toast('Editor zasedacího plánu se nepodařilo načíst.','error')})}
+let sortioSeatingUiPromise=null,sortioSeatingUiStylePromise=null;
+function loadSortioSeatingUiStyles(){if(sortioSeatingUiStylePromise)return sortioSeatingUiStylePromise;const e=document.querySelector('link[data-sortio-lazy-style="seating-ui"]');if(e?.sheet)return Promise.resolve(e);sortioSeatingUiStylePromise=new Promise((r,j)=>{const l=e||document.createElement('link');l.rel='stylesheet';l.href=new URL('./lazy/seating-ui.css',location.href).href;l.dataset.sortioLazyStyle='seating-ui';l.onload=()=>r(l);l.onerror=()=>j(new Error('Styly plánu nelze načíst.'));if(!e)document.head.appendChild(l)}).catch(e=>{sortioSeatingUiStylePromise=null;throw e});return sortioSeatingUiStylePromise}
+function loadSortioSeatingUi(){if(globalThis.__SORTIO_SEATING_UI__)return loadSortioSeatingUiStyles().then(()=>{globalThis.__SORTIO_SEATING_UI__.bind?.();return globalThis.__SORTIO_SEATING_UI__});if(sortioSeatingUiPromise)return sortioSeatingUiPromise;sortioSeatingUiPromise=Promise.all([loadSortioSeatingUiStyles(),new Promise((r,j)=>{const s=document.createElement('script');s.src=new URL('./lazy/seating-ui.js',location.href).href;s.async=true;s.dataset.sortioLazy='seating-ui';s.onload=()=>{const a=globalThis.__SORTIO_SEATING_UI__;if(a?.render&&a?.bind){a.bind();r(a)}else j(new Error('Editor nelze spustit.'))};s.onerror=()=>j(new Error('Editor nelze načíst.'));document.head.appendChild(s)})]).then(([,a])=>a).catch(e=>{sortioSeatingUiPromise=null;throw e});return sortioSeatingUiPromise}
+function renderSeatingView(){return loadSortioSeatingUi().then(a=>a.render()).catch(e=>{captureError(e,'seating-ui-lazy');toast('Editor zasedacího plánu se nepodařilo načíst.','error')})}
 function bindSeatingUi(){}

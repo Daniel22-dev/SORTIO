@@ -1,0 +1,192 @@
+{
+  "schema": "sortio-ghrab-suite-session-regressions-v1",
+  "appId": "sortio",
+  "appVersion": "1.1.12",
+  "platformVersion": "1.1.2",
+  "contract": "ghrab-suite-session-v1",
+  "syntheticOnly": true,
+  "runId": "f2419b1adc6e439d",
+  "canary": "GARP-STUDENT-CANARY-SORTIO-1.1.12-f2419b1adc6e439d",
+  "syntheticEmail": "garp.student.canary.f2419b1adc6e439d@example.invalid",
+  "execution": {
+    "browser": "system Chromium via CDP",
+    "application": "actual dist/index.html with access gate bypassed and platform/app scripts executed",
+    "storage": "Storage-compatible in-memory local/sessionStorage so the exact Platform 1.1.2 migration/alias code can run",
+    "reason": "Managed Chromium returns ERR_BLOCKED_BY_ADMINISTRATOR for HTTP, HTTPS and file navigation.",
+    "notTested": [
+      "native same-origin localStorage persistence/StorageEvent transport between navigated tabs",
+      "native Back/Forward navigation/BFCache transport",
+      "post-boot physical legacy-remnant deletion through native Storage methods"
+    ]
+  },
+  "cases": [
+    {
+      "name": "open-child-suite-end",
+      "status": "PASS",
+      "generation": "garp-open-child-1788899031385-e0226a7b",
+      "clean": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      },
+      "lifecycle": {
+        "suiteSignal": true,
+        "observed": true,
+        "completed": true,
+        "acknowledged": true,
+        "state": {
+          "schema": "sortio-suite-session-state-v1",
+          "observedGeneration": "garp-open-child-1788899031385-e0226a7b",
+          "observedAt": "2026-09-08T20:23:51.394Z",
+          "cleanupCompletedGeneration": "garp-open-child-1788899031385-e0226a7b",
+          "cleanupCompletedAt": "2026-09-08T20:23:51.395Z"
+        }
+      },
+      "settingsPreserved": true,
+      "migrationMarkerPreserved": true,
+      "signalTransport": "synthetic StorageEvent in Chromium; native same-origin navigation blocked by administrator policy"
+    },
+    {
+      "name": "delayed-open-replay",
+      "status": "PASS",
+      "generation": "garp-delayed-open-1788899031414-a7766d3c",
+      "clean": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      },
+      "lifecycle": {
+        "suiteSignal": true,
+        "observed": true,
+        "completed": true,
+        "acknowledged": true,
+        "state": {
+          "schema": "sortio-suite-session-state-v1",
+          "observedGeneration": "garp-delayed-open-1788899031414-a7766d3c",
+          "observedAt": "2026-09-08T20:23:51.522Z",
+          "cleanupCompletedGeneration": "garp-delayed-open-1788899031414-a7766d3c",
+          "cleanupCompletedAt": "2026-09-08T20:23:51.523Z"
+        }
+      },
+      "reloadDidNotRepeatCleanup": true,
+      "persistenceAcrossReload": "post-cleanup storage snapshot reinjected into a fresh Chromium document because origin navigation is policy-blocked"
+    },
+    {
+      "name": "multi-tab",
+      "status": "PASS",
+      "generation": "garp-multi-tab-1788899032147-7785c6c2",
+      "staleAttempt": {
+        "threw": false,
+        "blocked": true
+      },
+      "cleanA": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      },
+      "cleanB": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      },
+      "bothTabsClosed": true,
+      "nativeSharedLocalStorageTransport": "NOT TESTED - Chromium administrator policy blocks navigable same-origin pages; exact same generation and StorageEvent delivered to two real browser contexts"
+    },
+    {
+      "name": "browser-back-forward",
+      "status": "PASS",
+      "generation": "garp-history-1788899032406-cba25fd6",
+      "clean": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      },
+      "lifecycleEquivalentEvents": 2,
+      "nativeBackForwardNavigation": "NOT TESTED - Chromium administrator policy blocks HTTP/file navigation; pageshow/focus stale-page guard executed in real Chromium"
+    },
+    {
+      "name": "fail-closed",
+      "status": "PASS",
+      "generation": "garp-fail-closed-1788899032934-94e57846",
+      "failureProof": {
+        "acknowledged": false,
+        "observed": true,
+        "completed": false,
+        "primaryCanaryRemained": true
+      },
+      "retrySucceeded": true,
+      "clean": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      }
+    },
+    {
+      "name": "negative-control-disabled-cleanup",
+      "status": "PASS",
+      "expectedSecurityOutcome": "FAIL",
+      "observedSecurityOutcome": "FAIL",
+      "generation": "1788899033229-9qqdwwxb",
+      "clean": {
+        "ok": false,
+        "remainingContent": [
+          "ghrab.sortio.data.v5",
+          "ghrab.sortio.data.v5.last-good",
+          "ghrab.sortio.data.v5.pre-import",
+          "ghrab.sortio.data.v5.corrupt",
+          "ghrab.sortio.data.v4",
+          "ghrab.sortio.data.v3",
+          "ghrab.sortio.data.v2",
+          "ghrab.sortio.migration.p2-storage-namespace-v1.backup"
+        ],
+        "anyCanary": true
+      },
+      "lifecycle": {
+        "suiteSignal": true,
+        "observed": true,
+        "completed": false,
+        "acknowledged": true,
+        "state": {
+          "schema": "sortio-suite-session-state-v1",
+          "observedGeneration": "1788899033229-9qqdwwxb",
+          "observedAt": "2026-09-08T20:23:53.229Z"
+        }
+      },
+      "sourceSha256": "7f5bb4f3444de1182dc299da5c8d36496a89b1b885447ab249d2ba9bf4eee8d6",
+      "weakenedSha256": "841a270f8b3052a1db7a127fe4e2adde4bbb00561db2c78d730424553ef15c35",
+      "disposableCopy": true,
+      "weakenedPrimitive": "performSuiteSessionCleanup"
+    },
+    {
+      "name": "negative-control-clean-restored-pass",
+      "status": "PASS",
+      "expectedSecurityOutcome": "PASS",
+      "observedSecurityOutcome": "PASS",
+      "generation": "1788899033562-hr0g5g3m",
+      "clean": {
+        "ok": true,
+        "remainingContent": [],
+        "anyCanary": false
+      },
+      "lifecycle": {
+        "suiteSignal": true,
+        "observed": true,
+        "completed": true,
+        "acknowledged": true,
+        "state": {
+          "schema": "sortio-suite-session-state-v1",
+          "observedGeneration": "1788899033562-hr0g5g3m",
+          "observedAt": "2026-09-08T20:23:53.562Z",
+          "cleanupCompletedGeneration": "1788899033562-hr0g5g3m",
+          "cleanupCompletedAt": "2026-09-08T20:23:53.562Z"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "status": "passed"
+}
