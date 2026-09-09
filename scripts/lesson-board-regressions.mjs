@@ -50,6 +50,8 @@ expect('poll is anonymous by contract',live.includes('anonymous:true')&&api.toLo
 expect('public voter page posts votes',poll.includes('/votes')||poll.includes('votes'));
 expect('server API contract documents close endpoint',api.includes('/close?token={teacherToken}'));
 expect('no microphone permission in runtime code',!`${board}\n${media}\n${live}`.includes('getUserMedia'));
+expect('draw pen color persists immediately without rerender',board.includes('function lessonBoardSetDrawColor')&&board.includes("lessonBoardPersist('lesson_draw_color',{render:false})")&&board.includes("target.matches('[data-board-field=\"color\"]')"));
+expect('draw clear is immediate without native confirm',board.includes("if(action==='draw-clear'){d.strokes=[];lessonBoardPersist('lesson_draw_clear');return true}")&&!board.includes("confirm('Smazat obsah této tabule?')"));
 
 function forAll(values,fn){return values.every(fn)}
 const failed=checks.filter(c=>!c.ok);

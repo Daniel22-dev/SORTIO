@@ -2,6 +2,11 @@
 
 V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizací. Starší technická historie zůstává v samostatných `RELEASE-NOTES-*.md`.
 
+## 1.1.14 — 2026-09-09
+- Opravena volba barvy pera ve widgetu Tabule: změna barvy se ukládá okamžitě přes `input` i `change`, bez překreslení widgetu, takže následující tah používá skutečně vybranou barvu.
+- Tlačítko „Smazat“ ve widgetu Tabule nyní rovnou vyčistí všechny tahy bez potvrzovacího dialogu. Potvrzení pro „Vyčistit panel“ zůstává zachované.
+- Přidány regresní kontroly pro změnu barvy pera a okamžité mazání tabule.
+
 ## 1.1.13 — 2026-09-09
 - Opraveny rozbalovací seznamy pravidel „Má sedět sám“ a „Má sedět vepředu“: po změně checkboxu se zasedací pohled zbytečně nepřerenderuje a seznam zůstává otevřený pro vícenásobný výběr.
 - Přidána regresní kontrola, která hlídá persistenci preference bez překreslení zasedacího pohledu.
@@ -46,5 +51,3 @@ V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizac
 ## 1.1.5 — 2026-09-06
 - Opraven suite-session negative-control harness bez změny produkčního cleanupu.
 
-## 1.1.4 — 2026-09-06
-- Doplněn povinný suite-session negative control pro Platform 1.1.2.

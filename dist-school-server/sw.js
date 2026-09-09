@@ -1,7 +1,7 @@
 const GHRAB_SW_CONTRACT='ghrab-service-worker-v1';
 /* GHRAB service-worker contract v1 · update activation is user-controlled. */
-const APP_VERSION = '1.1.13';
-const CACHE_NAME = "ghrab-sortio-v1.1.13";
+const APP_VERSION = '1.1.14';
+const CACHE_NAME = "ghrab-sortio-v1.1.14";
 const CACHE_PREFIXES = ["ghrab-sortio-v", "sortio-v"];
 const CORE = [
   "./",
@@ -111,5 +111,5 @@ self.addEventListener('fetch', (event) => {
 
 /* GHRAB_PLATFORM_P3_START */
 const GHRAB_PLATFORM_P3_ASSETS=["./ghrab/ghrab-platform.js","./ghrab/ghrab-platform.css","./ghrab/ghrab-artifact-envelope-v1.schema.json","./ghrab/ghrab-app-registry-v2.schema.json","./ghrab/ghrab-platform-manifest-1.1.2.json","./assets/brand/school-logo.png","./ghrab-platform.consumer.json"];
-self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open("ghrab-sortio-v1.1.13");const results=await Promise.allSettled(GHRAB_PLATFORM_P3_ASSETS.map(asset=>cache.add(asset)));const failed=results.filter(item=>item.status==='rejected');if(failed.length)throw new Error('GHRAB Platform P3 precache selhal: '+failed.length);})()));
+self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open("ghrab-sortio-v1.1.14");const results=await Promise.allSettled(GHRAB_PLATFORM_P3_ASSETS.map(asset=>cache.add(asset)));const failed=results.filter(item=>item.status==='rejected');if(failed.length)throw new Error('GHRAB Platform P3 precache selhal: '+failed.length);})()));
 /* GHRAB_PLATFORM_P3_END */
