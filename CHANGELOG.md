@@ -2,6 +2,11 @@
 
 V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizací. Starší technická historie zůstává v samostatných `RELEASE-NOTES-*.md`.
 
+## 1.1.13 — 2026-09-09
+- Opraveny rozbalovací seznamy pravidel „Má sedět sám“ a „Má sedět vepředu“: po změně checkboxu se zasedací pohled zbytečně nepřerenderuje a seznam zůstává otevřený pro vícenásobný výběr.
+- Přidána regresní kontrola, která hlídá persistenci preference bez překreslení zasedacího pohledu.
+- Changelog v aplikaci zůstává omezen na posledních 10 verzí; opravena také duplicita označení 1.1.12/1.1.11 v předchozím zobrazení.
+
 ## 1.1.12 — 2026-09-08
 - Odstraněna celá funkce „Kluk + holka“ včetně UI, párovací logiky a ukládaných párovacích údajů.
 - Zasedací pořádek zůstává založený na pravidlech „Má sedět sám“ a „Má sedět vepředu“; případné dvojice učitel doladí ručním drag & drop prohozením.
@@ -43,7 +48,3 @@ V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizac
 
 ## 1.1.4 — 2026-09-06
 - Doplněn povinný suite-session negative control pro Platform 1.1.2.
-
-## 1.1.3 — 2026-09-05
-- Přidáno viditelné tlačítko Manuál do horní lišty aplikace.
-

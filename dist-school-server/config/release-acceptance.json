@@ -2,7 +2,7 @@
   "schema": "ghrab-release-acceptance-v1",
   "stage": "P5",
   "appId": "sortio",
-  "appVersion": "1.1.12",
+  "appVersion": "1.1.13",
   "releaseStatus": "ecosystem-wave-candidate",
   "primaryRuntime": {
     "mode": "standalone-github-pages",
@@ -10,7 +10,7 @@
     "offlineCapable": true,
     "currentUseApproved": false,
     "candidateSyntheticOnly": true,
-    "note": "1.1.12 simplifies the seating workflow with collapsible student rules, front-to-back automatic placement, drag-and-drop swapping, and a ten-entry changelog. Existing saved seating plans remain compatible. The standard controlled release validation remains required before production approval."
+    "note": "1.1.13 fixes the seating-rule multi-select workflow: solo/front preference changes persist without rerendering the seating route, so the open rule list stays open while several students are selected. Existing saved seating plans remain compatible. The standard controlled release validation remains required before production approval."
   },
   "github": {
     "status": "candidate-not-released",
@@ -52,5 +52,5 @@
     "ecosystemSharedDeviceGate": "pending-wave-completion",
     "nativeBrowserTransportValidation": "pending-environment-capable-run"
   },
-  "note": "1.1.12 removes the mixed boy/girl pairing feature and its stored pairing metadata. Seating keeps the solo/front rules, front-to-back automatic placement, and manual drag-and-drop swapping. Existing saved plans remain compatible; obsolete pairing fields are ignored during sanitization."
+  "note": "1.1.13 is a UI workflow fix with no data-model migration. The mixed boy/girl pairing feature remains removed; seating keeps the solo/front rules, front-to-back automatic placement, and manual drag-and-drop swapping."
 }

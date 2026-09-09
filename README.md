@@ -1,6 +1,6 @@
 # SORTIO – Výukový panel
 
-**Aktuální verze:** 1.1.12  
+**Aktuální verze:** 1.1.13  
 **Platforma:** GHRAB Platform 1.1.2
 
 SORTIO je local-first aplikace pro organizaci třídy a řízení živé výuky. Spojuje import seznamu z IS, docházku, losování, chytré skupiny, role a zasedací pořádek s pracovní plochou navázanou na aktivní třídu pro časovače, hodiny, semafor, tabuli, kostky, skóre, obrázky, agendu, QR odkazy a hlasování.
@@ -65,4 +65,4 @@ GitHub Actions automaticky instalují Chromium, spouštějí GHRAB QA bránu a n
 
 Obsah ZIPu nahrajte do kořene samostatného repozitáře `SORTIO`. GitHub Pages musí používat **GitHub Actions**, nikoli nasazení z větve.
 
-**AI Studio není součástí tohoto balíčku.** SORTIO 1.1.12 používá společný kontrakt GHRAB Platform 1.1.2 a aktuální registr AI Studia GHRAB.
+**AI Studio není součástí tohoto balíčku.** SORTIO 1.1.13 používá společný kontrakt GHRAB Platform 1.1.2 a aktuální registr AI Studia GHRAB.

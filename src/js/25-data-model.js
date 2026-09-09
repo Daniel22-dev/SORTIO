@@ -22,7 +22,7 @@ function archiveClass(classId,archived=true){const item=App.data.classes.find(en
 function deleteClass(classId){const index=App.data.classes.findIndex(item=>item.id===classId);if(index<0)return false;App.data.classes.splice(index,1);if(App.data.selectedClassId===classId)App.data.selectedClassId=getClasses().find(Boolean)?.id||null;saveData({event:'class_delete'});recordEvent('class_delete');return true}
 function duplicateNameError(message){const error=new Error(message);error.code='DUPLICATE_STUDENT_NAME';return error}
 function addStudent(classId,firstName,lastName,{allowDuplicate=false}={}){const item=App.data.classes.find(entry=>entry.id===classId);if(!item)return null;const student=makeStudent(firstName,lastName);if(!student)return null;if(!allowDuplicate&&item.students.some(entry=>!entry.archived&&entry.key===student.key))throw duplicateNameError('Student se stejným jménem už ve třídě je. Přidat jej přesto?');item.students.push(student);touchClass(item,{rosterChanged:true});saveData({event:'student_add'});return student}
-function updateStudent(classId,studentId,patch={}, {allowDuplicate=false}={}){
+function updateStudent(classId,studentId,patch={}, {allowDuplicate=false,render=true}={}){
   const classItem=App.data.classes.find(entry=>entry.id===classId);
   const student=classItem?.students.find(entry=>entry.id===studentId);
   if(!student)return false;
@@ -43,7 +43,7 @@ function updateStudent(classId,studentId,patch={}, {allowDuplicate=false}={}){
   student.key=normalizeText(student.displayName);
   student.updatedAt=nowIso();
   touchClass(classItem,{rosterChanged,attendanceChanged});
-  saveData({event:'student_update'});
+  saveData({render,event:'student_update'});
   return true;
 }
 function removeStudent(classId,studentId){const classItem=App.data.classes.find(entry=>entry.id===classId);if(classItem){classItem.groupRules.together=classItem.groupRules.together.filter(pair=>!pair.includes(studentId));classItem.groupRules.apart=classItem.groupRules.apart.filter(pair=>!pair.includes(studentId));delete classItem.groupRules.pins[studentId]}return updateStudent(classId,studentId,{archived:true,present:false})}

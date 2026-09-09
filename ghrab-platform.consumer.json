@@ -2,7 +2,7 @@
   "schema": "ghrab-platform-consumer-v1",
   "appId": "sortio",
   "appName": "SORTIO · Výukový panel",
-  "appVersion": "1.1.12",
+  "appVersion": "1.1.13",
   "platform": {
     "version": "1.1.2",
     "contract": "ghrab-platform-v1",
@@ -58,7 +58,7 @@
     ]
   },
   "cache": {
-    "name": "ghrab-sortio-v1.1.12",
+    "name": "ghrab-sortio-v1.1.13",
     "updateMessage": "GHRAB_SKIP_WAITING"
   },
   "html": {
