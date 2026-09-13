@@ -1,0 +1,16 @@
+GARP 2.5.1 – SCA / DEPENDENCY VULNERABILITY SUMMARY
+Application: SORTIO 1.1.17
+
+PASS:
+- exact package-lock.json present;
+- CycloneDX 1.7 source SBOM generated from exact lockfile and verified;
+- deployment SBOM generated for the vendored GHRAB platform/error-reporter payload;
+- GitHub Actions references pinned to 40-character commit SHA;
+- no runtime npm dependency is required by the browser application.
+
+NOT TESTED / ENVIRONMENT LIMITATION:
+- live registry/advisory vulnerability intelligence (`npm audit`) could not reach registry.npmjs.org (EAI_AGAIN in audit environment);
+- therefore no current-CVE freshness claim is made here.
+
+Release rule:
+A reachable HIGH/CRITICAL advisory must block release unless repaired or technically demonstrated unreachable with reviewable evidence.

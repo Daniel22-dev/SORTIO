@@ -1,0 +1,15 @@
+GARP 2.5.1 – SECURITY ASSURANCE CROSSWALK
+Application: SORTIO 1.1.17
+
+External standard/control | GARP control | Relevance | Evidence | Status | Notes
+OWASP ASVS/web input & output handling | SH-APP-04/05/06, RT-07/08 | YES | qa:xss, hostile-render, domain/import regressions, CSP config | PASS app-local | served header boundary NOT TESTED
+OWASP web session/access principles | SH-APP-03, RT-01/03/11 | YES | permit-before-unlock/fail-closed regressions | PARTIAL | full central live lifecycle NOT TESTED
+OWASP software supply-chain principles | SH-SC-01..12 | YES | lockfile, action pins, SBOM, provenance, RI, evidence manifest | PARTIAL/PREP | repo governance and production key custody NOT TESTED
+SLSA provenance concepts | SH-SC-05/06/07 | YES | build-provenance.json + verifier + rebuild equivalence | PREP PASS | local-untrusted-builder; no SLSA level claimed
+CycloneDX 1.7 | SH-APP-09 | YES | source/deployment SBOM JSON | PASS | exact release inputs/payload
+NIST SSDF evidence/release integrity principles | SH-SC / RI | YES | source hash, signed manifest, anti-rollback, evidence | PARTIAL/PREP | no certification claim
+OWASP LLM Top 10 / GenAI | SH-AI | NO | call-graph/inventory shows no AI path | N/A | adding AI invalidates N/A
+OWASP Agentic guidance | SH-AG | NO | AGENTIC=NO | N/A | no tool/MCP/autonomous side effects
+
+CLAIM RULE:
+This crosswalk is an audit map only. It is not a claim of certification or complete compliance with any external standard.

@@ -1,0 +1,6 @@
+GARP 2.5.1 SHIELD tooling source
+Canonical input ZIP SHA-256: 8344aa7c93081edb84bd1ebc3f6aa149d61fe1376d81c4ad1d654439ed84e2d0
+Canonical package: GARP-2.5.1-ZAVEDENI-TOOLING-R2-N5-SECRET-SCAN-HOTFIX
+Copied from: TOOLS/*.mjs
+Copy date: 2026-09-13
+No local modifications to the copied canonical tooling files.

@@ -7,7 +7,7 @@ const read=(p)=>fs.readFileSync(path.join(root,p),'utf8');
 const json=(p)=>JSON.parse(read(p));
 const expect=(ok,msg)=>{if(!ok)failures.push(msg)};
 const pkg=json('package.json');
-expect(pkg.version==='1.1.14','package version není 1.1.14');
+expect(pkg.version==='1.1.17','package version není 1.1.17');
 const dep=json('src/config/deployment.json');
 expect(dep.sharedAccessVersion==='access-p1-20260824175535Z-k_wtm7Zj','produkční sharedAccessVersion není synchronizována');
 expect(dep.authMode==='signed-permit','produkční authMode není signed-permit');
@@ -73,7 +73,7 @@ for(const page of ['src/index.template.html','src/manual/index.html','src/tests/
 const sw=read('src/sw.js');
 const core=(sw.match(/const CORE\s*=\s*\[([\s\S]*?)\];/)||[])[1]||'';
 expect(!/config\/deployment(?:\.[^"']+)?\.json/.test(core),'service worker precache obsahuje deployment konfiguraci');
-expect(/\^config\\\/deployment/.test(sw),'service worker nemá deployment JSON mezi runtime-only cestami');
+expect(sw.includes('function isSecurityCriticalRequest')&&sw.includes("relative === 'config/deployment.json'")&&sw.includes('networkOnlyNoStore')&&sw.includes("cache: 'no-store'"),'service worker nemá deployment JSON v security-critical network-only/no-store cestě');
 const securityHeaders=json('src/config/security-headers.json');
 const template=read('src/index.template.html');
 expect(template.includes('content="__STATIC_CSP__"'),'index template nepoužívá build-time CSP token');
@@ -100,4 +100,4 @@ for(const dirent of fs.readdirSync(path.join(root,'.github/workflows'))){
  }
 }
 if(failures.length){console.error(JSON.stringify({schema:'garp-sortio-security-regressions-v1',status:'failed',failures},null,2));process.exit(1)}
-console.log(JSON.stringify({schema:'garp-sortio-security-regressions-v1',status:'passed',version:pkg.version,checks:['fail-closed deployment','permit-before-unlock','signed config age/version','service-worker runtime configuration exclusion','all deployment profiles no AI/local provider keys','effective CSP/frame guard','platform 1.1.2 suite-session lifecycle','manifest ownership/clearOnEndWork','F-02 observed-completed-ack separation','stale/BFCache write guard','cross-tab storage reload','duplicate import ID rejection','persistent ID collision repair','automated hostile-render/canary gates','hostile-render CDP target readiness','GitHub Actions SHA pins']},null,2));
+console.log(JSON.stringify({schema:'garp-sortio-security-regressions-v1',status:'passed',version:pkg.version,checks:['fail-closed deployment','permit-before-unlock','signed config age/version','service-worker security-critical network-only/no-store authority','all deployment profiles no AI/local provider keys','effective CSP/frame guard','platform 1.1.2 suite-session lifecycle','manifest ownership/clearOnEndWork','F-02 observed-completed-ack separation','stale/BFCache write guard','cross-tab storage reload','duplicate import ID rejection','persistent ID collision repair','automated hostile-render/canary gates','hostile-render CDP target readiness','GitHub Actions SHA pins']},null,2));

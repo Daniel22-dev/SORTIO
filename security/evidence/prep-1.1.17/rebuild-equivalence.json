@@ -1,0 +1,44 @@
+{
+  "schema": "sortio-rebuild-equivalence-v3",
+  "version": "1.1.17",
+  "profiles": {
+    "public": {
+      "filesA": 46,
+      "filesB": 46,
+      "rawIdentical": 44,
+      "timestampOnly": 2,
+      "differences": [
+        {
+          "path": "platform-build-info.json",
+          "status": "timestamp-only"
+        },
+        {
+          "path": "studio-manifest.json",
+          "status": "timestamp-only"
+        }
+      ],
+      "pass": true
+    },
+    "school": {
+      "filesA": 47,
+      "filesB": 47,
+      "rawIdentical": 44,
+      "timestampOnly": 3,
+      "differences": [
+        {
+          "path": "platform-build-info.json",
+          "status": "timestamp-only"
+        },
+        {
+          "path": "server-ready-build-info.json",
+          "status": "timestamp-only"
+        },
+        {
+          "path": "studio-manifest.json",
+          "status": "timestamp-only"
+        }
+      ],
+      "pass": true
+    }
+  }
+}

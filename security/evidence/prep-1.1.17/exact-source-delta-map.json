@@ -1,0 +1,195 @@
+{
+  "schema": "sortio-exact-source-delta-v1",
+  "fromVersion": "1.1.16",
+  "toVersion": "1.1.17",
+  "counts": {
+    "added": 4,
+    "removed": 3,
+    "modified": 30,
+    "unchanged": 220
+  },
+  "added": [
+    {
+      "path": "RELEASE-NOTES-1.1.17.md",
+      "sha256": "d2c6acb96358ca83d44624f4cff584dd3cd57819b9b930c3f01527891ddfcbcc"
+    },
+    {
+      "path": "scripts/ux-1.1.17-regressions.mjs",
+      "sha256": "c003b3b89305e955860ea281ca32d35c70417a66964b74653a4a8a97c804e882"
+    },
+    {
+      "path": "security/sbom/sortio-1.1.17-deployment.cdx.json",
+      "sha256": "e36d13e1f81ca2e4cb81eb6a0520abae4b9cf6bb823052419c8f9d805539369f"
+    },
+    {
+      "path": "security/sbom/sortio-1.1.17.cdx.json",
+      "sha256": "23181d7810c076ea66de139a316da76193fabfed5a1bb6eeee13f39083c1ef0d"
+    }
+  ],
+  "removed": [
+    {
+      "path": "scripts/ux-1.1.16-regressions.mjs",
+      "sha256": "6c6f4ce56f8dce25d6aed4f9e191997ba12af3cea1557e2d12c2c29203d585b4"
+    },
+    {
+      "path": "security/sbom/sortio-1.1.16-deployment.cdx.json",
+      "sha256": "61166714d95fb9599a1a23aee0bf3741b544a75cca18558339cf845d325d92aa"
+    },
+    {
+      "path": "security/sbom/sortio-1.1.16.cdx.json",
+      "sha256": "9c2ecf8c5581a49e25236aca51577fd29d41872e456f1aab4c6aeee45a95b6b9"
+    }
+  ],
+  "modified": [
+    {
+      "path": ".github/workflows/deploy.yml",
+      "oldSha256": "c146daf0c831e65f69cb9a416e5f93dae3b1eef391ee8334bce057a970289f6b",
+      "newSha256": "982cdbc9736000440544d5c1fcc08a6328e5c2f77fdcaf3ba548dc8aeecf7b7a"
+    },
+    {
+      "path": "ARCHITEKTURA.md",
+      "oldSha256": "12906a8aaf010922a26b462f74f4e7d75aac0238731987139f40844937740b36",
+      "newSha256": "a488e7c68e3eceb22e16f66194cb804d1069e9741ecd08bdf3ccb387ce290d70"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "oldSha256": "ea05d0d9333d9270305dc3f9b6661c782710940e9175c0fe20f9fea596bb5c1d",
+      "newSha256": "1c4c2eef9c589af7ac50bfaf321712d5637623728180e59e51699adb013cf3b4"
+    },
+    {
+      "path": "README.md",
+      "oldSha256": "942e8ba067559e3fa9cc969b57b7845446d33027bb1af1fa8dca8540d07e415b",
+      "newSha256": "2afa71f45244219e2a2a2b32d0380ba7b7531100e617aec371ed1cf5b0f45545"
+    },
+    {
+      "path": "ghrab-platform.consumer.json",
+      "oldSha256": "1dfb1377f37262c3d2e373fa962a0c99b417fb527350282e333ee2f5ee9dcf57",
+      "newSha256": "c7a0ef16b2b74ec244fc4c77ad7c8cc0397565b764fc14d9900e2438834b7cf6"
+    },
+    {
+      "path": "package-lock.json",
+      "oldSha256": "a71c8d79a2f1a5753a990346aa677e9edeb4bc9246d0fe7efe5c4d2adfc7b5a8",
+      "newSha256": "524f9b5b6218ab9fb9a548de3bd8a2590acbd1ac05f634e36c8b3e1125de0013"
+    },
+    {
+      "path": "package.json",
+      "oldSha256": "eb87eeb8c5fcf69dcfe55f43af3612418127297ecd534fdbb60f8a437b133532",
+      "newSha256": "704b9a46846aea99e2b19accfc32233b42ab29627c4e784a9c0cb9943a3acfbb"
+    },
+    {
+      "path": "qa/qa-manifest.json",
+      "oldSha256": "b381545846c3d53e17f804a5e196df9faaaabde02f7e8b2c624a9433f0b798f2",
+      "newSha256": "6168f81e72b457137999b5d6e7d202841ad7f68af96fa8e6691cb9709359acd1"
+    },
+    {
+      "path": "reporter-test.config.json",
+      "oldSha256": "82b48f17719f3dd5c9310426b74d74c19488c3e388b13129e0e89404b6d2cac1",
+      "newSha256": "067d48e0f141288437e7e68f0aace01f5056d33bcc7a38e331dbe65b1b4505f1"
+    },
+    {
+      "path": "scripts/deployment-staging-regressions.mjs",
+      "oldSha256": "7b283b67869323a1fb671181e0988bd963e620829eb980ca34292dd72e8d240d",
+      "newSha256": "b7d1d531c842d0381b3e8a4f3a5edaaffd1ffba54d3ae07289e1ef2d2f99c6a0"
+    },
+    {
+      "path": "scripts/garp-hostile-render.mjs",
+      "oldSha256": "34415744291b6de5bab9a9154bf1eac2faee85bdb2d263b40754a6cd90bd301c",
+      "newSha256": "45eb3ce7843837b71fa17b438d6a03e34a43efd51653262d62d7d544ec8328d2"
+    },
+    {
+      "path": "scripts/garp-security-regressions.mjs",
+      "oldSha256": "f02998dc0baa2e4c65b6ad03c7a24b943bfd8524761227869aa576ac30837328",
+      "newSha256": "f1f7ed780e5a8a50c20e790ef600a04bcff926b6b8afa30454095a07da58f7bb"
+    },
+    {
+      "path": "scripts/garp25/create-deterministic-source-zip.py",
+      "oldSha256": "5c6be5d30aebe220683edbaf8c5fb958ba18f8aa87d8713353994ba9869358b1",
+      "newSha256": "01c1adbf5d34de87ec113b4c214126cbc55de8b7456a782fcd1b4643173ad5ac"
+    },
+    {
+      "path": "scripts/generate-cyclonedx-sbom.mjs",
+      "oldSha256": "69a0a3d83767725c2e637dee176065f85151de4cc27fa578279e386147c7c570",
+      "newSha256": "00f98911bc914e7804619829ac95fa44633f37584a20860c134f6c960ceed8fe"
+    },
+    {
+      "path": "scripts/test-error-reporter.mjs",
+      "oldSha256": "80aeffbbef408319fa354852aaff500d8c5ada2c2761435478fb1b3c6f64bec4",
+      "newSha256": "b9d45d90952e4cd186b6e5d5affd7d66c489aed754b133b674256b5660b98a94"
+    },
+    {
+      "path": "src/access/error-reporter-adapter.js",
+      "oldSha256": "6de7893933336e8f48d2631fee28e42ab7a89796ec5c7e1e7ec2e1635905d62e",
+      "newSha256": "5fe9c1a950ed2802d1e09c90cf5287b7e27a38970889cad99b91be4cc89011b6"
+    },
+    {
+      "path": "src/access/error-reporter.js",
+      "oldSha256": "c92fdff124d4299709df7a8d10f2cd3478dbfc3c1948c7714c541e3d5b83df09",
+      "newSha256": "66400dbdd255661fee4b403dfacac63937b460102f03c27572869ee0528ce8b3"
+    },
+    {
+      "path": "src/body.html",
+      "oldSha256": "8179d3e09e41c0c082000a08cebfd1094248d2432cb8989a35f77efdd66fb8aa",
+      "newSha256": "896db5b131a751b2d0bd7bd2858a6e1eb2f219a27e7d2838f38fb199ae0cceb6"
+    },
+    {
+      "path": "src/config/data-manifest.json",
+      "oldSha256": "6b34496164d68ed91f34a152498491c46079e844996bb95aa7134eae25538e56",
+      "newSha256": "42997af89265e2330fc0623ac219758463845990abedb7b6053407de11aa743c"
+    },
+    {
+      "path": "src/config/platform-manifest.json",
+      "oldSha256": "a3cff69b199630072654d7089769073de2827f0b44a87ed29b259885eb25142e",
+      "newSha256": "46825a7924ef0c4e8a602eb1c7a02c05c58a0266911036a84126d299ed7bd323"
+    },
+    {
+      "path": "src/config/release-acceptance.json",
+      "oldSha256": "0ce7c431f9ea1366337e9986ddafdc94d3d60dd0ae1c7b47c8ab8c444496f322",
+      "newSha256": "e9a67d9493c58c92091e084438442989f8ca8f613e8c977442971f3aed89755e"
+    },
+    {
+      "path": "src/config/security-headers.json",
+      "oldSha256": "058841f390ce9e0b4bd0d37b5179f176cd87ee223557b933bb1f1171d4efb130",
+      "newSha256": "c59bb330075dc70261db23da93ff849da7632bcdd849d2dc7abef18656998cc4"
+    },
+    {
+      "path": "src/ghrab-platform.consumer.json",
+      "oldSha256": "1dfb1377f37262c3d2e373fa962a0c99b417fb527350282e333ee2f5ee9dcf57",
+      "newSha256": "c7a0ef16b2b74ec244fc4c77ad7c8cc0397565b764fc14d9900e2438834b7cf6"
+    },
+    {
+      "path": "src/index.template.html",
+      "oldSha256": "7d1a5b58ea54066d12d13a20eab4b4775c580cb92ef9f427c7ef3cda7b60eebd",
+      "newSha256": "cceb77eff7572c5fa091c50934ea9ebab9c6d222c7e1c200d8ee8af1540532cb"
+    },
+    {
+      "path": "src/lazy/seating-ui.css",
+      "oldSha256": "040d05dbbbb3f6d225e9d73571d8fdc29d14a95a21b7ffc63f2c200f1b3d87bd",
+      "newSha256": "812a414d44cef9e2228901e8ffe07ebb7d967aa364d414e7f8c1b95284639fe1"
+    },
+    {
+      "path": "src/manifest.webmanifest",
+      "oldSha256": "a6f10adcac819022202751694469d0f72d133b14b172aca19626338f8a80a7c3",
+      "newSha256": "1b9458763804d37e5c048ce4e59e74a4f864d80587cda064c1d53238303ef4de"
+    },
+    {
+      "path": "src/manual/index.html",
+      "oldSha256": "96cf3204d82ea46a87863ffe659ef5c308b472a8b1b1b05dea13cd7315b04109",
+      "newSha256": "c3fd2b5dffaaa27fdb4f7f00d183b01ef13de9efc97b133ed2906d7876b089b1"
+    },
+    {
+      "path": "src/sw.js",
+      "oldSha256": "feca6bd0cbc26c796840a9f61f58c5afbf2a7b0f748572dd50a6972fb3abeee7",
+      "newSha256": "07c3c81bc0d6b60ad777a37df479cfe56a1a1fb145604b4b4e8f1bb8ece96254"
+    },
+    {
+      "path": "src/tests/index.html",
+      "oldSha256": "6b75ced5a84212bc2d852a95d46bc0d5a3e4bb57afddaedbc00aa3000c0cc94f",
+      "newSha256": "1443cbb71a551d4d18d8327bb6b1a4e29f707ea4a489b29c37d81ac9fe4703ad"
+    },
+    {
+      "path": "src/tests/tests.js",
+      "oldSha256": "149245875d27546779cce56c6f190b8d0aab1abb22f8fe1b52659927c9659829",
+      "newSha256": "a4a815b41e456c8e31671ef82ed9560fa45867ca1c7a61be14000d9c211cfc8d"
+    }
+  ]
+}

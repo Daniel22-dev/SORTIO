@@ -1,0 +1,24 @@
+GARP 2.5.1 SHIELD – CARRIED SECURITY DEBT REGISTER
+Application: SORTIO 1.1.17
+Date: 2026-09-13
+
+D-01 AMBER  Live central auth/session/revocation controls are not proven in PREP.
+D-02 AMBER  SIM-03 browser back/restore/reopen remains NOT TESTED.
+D-03 AMBER  SIM-07 live service-worker update/recovery remains NOT TESTED.
+D-04 AMBER  Production key custody + account MFA/passkey/branch governance NOT TESTED.
+D-05 HARDENING  CSP still uses documented `unsafe-inline` compatibility; see EX-01.
+D-06 PRIVACY  Student/class data remain plaintext in teacher-browser localStorage; shared-device risk; see EX-02.
+D-07 PRIVACY  Exported backups are outside application control after download; see EX-02.
+D-08 AMBER  Current registry-backed SCA/advisory lookup for 1.1.17 is NOT TESTED in this environment (EAI_AGAIN). Independent 1.1.16 review found 0 advisories for the same dependency set, but it is not promoted to PASS for this version.
+D-09 AMBER  Full served DAST/security headers/TLS/session boundary NOT TESTED.
+D-10 AMBER  Integrity Service/app-guard live integrity link/watchdog/alerts are SHIELD-LIVE NOT TESTED.
+D-11 AMBER  qa:runtime timeout, axe scanned=0/not-ready and qa:critical missing Playwright remain environment-limited; no silent PASS.
+D-12 PREP  Build provenance uses `local-untrusted-builder`; no SLSA level is claimed.
+
+OPEN HARDENING OUTSIDE D-01..D-12
+N-04  Validate `studioBaseUrl`, derived `guardUrl` and `apiBaseUrl` against explicit allowed origins before use. Deferred by independent reviewer to a separate narrow round.
+
+CLOSED IN 1.1.17
+N-05  Deploy workflow builds required school staging before cross-profile regression.
+N-06  Full assurance documentation/control/debt package restored.
+N-07  Public deployment SW security-freeze added directly over `dist-deployment`.

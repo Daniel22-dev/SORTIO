@@ -1,0 +1,39 @@
+SORTIO 1.1.17 – GARP 2.5.1 NEGATIVE CONTROL REGISTER
+All destructive mutations were performed only in disposable copies with synthetic data.
+
+SHNC-01 source credential sentinel: PASS – scanner failed on injected secret-like value; clean tree passes.
+SHNC-02 / RISIM-01 deployment byte tamper: PASS – RI verifier rejected modified app byte.
+SHNC-03 provenance subject tamper: PASS – provenance verifier rejected changed artifact hash.
+SHNC-04 / RISIM-10 development/source leak: PASS – deployment leak scanner rejected injected source map.
+SHNC-05 / RISIM-03 signed rollback: PASS – registry verifier denied rollback of 1.1.17 when synthetic approved 1.1.18 existed.
+SHNC-06 / RISIM-06 mixed version deployment: PASS – RI verifier detected modified manifest/version mix.
+SHNC-07 resource abuse/rate/concurrency: N/A for AI/server request budget in this local static release; client import/resource limits remain covered by existing domain tests. Server limits move to SHIELD-LIVE.
+SHNC-08 logging/reporter canary: PASS – synthetic sensitive markers are not leaked by tested logging paths.
+SHNC-09 unpinned build input: PASS – injected actions/checkout@main is rejected; clean workflows pass.
+SHNC-10 evidence manifest tamper: PASS – mutation of a frozen evidence file is detected by the evidence-manifest verifier.
+SHNC-11 served security-header removal: NOT TESTED – no controllable live served school-server boundary in this PREP environment.
+SHNC-12 auth/app-guard mutation: PASS – removing permit guard markers from all protected entry pages makes GARP security regressions fail.
+SHNC-13 hostile AI output: N/A – no AI path.
+SHNC-14 model/provider change invalidation: N/A – no model/provider identity.
+SHNC-15 security alert channel: NOT TESTED – Integrity Service/alert channel is SHIELD-LIVE.
+SHNC-16 revoked signing key: PASS – verifier rejects revoked key.
+SHNC-17..20 agentic negative controls: N/A – AGENTIC=NO.
+
+RISIM-02 manifest/signature substitution: PASS – manifest mutation without valid matching signature is rejected.
+RISIM-04 unknown/wrong trust root or keyId: PASS – verification denied.
+RISIM-05 missing signature: PASS – verification denied.
+RISIM-07 verifier/Integrity Service outage: NOT TESTED live.
+RISIM-08 Release Registry governance/tamper workflow: NOT TESTED live (synthetic anti-rollback logic itself is covered by RISIM-03).
+RISIM-09 watchdog visibility: NOT TESTED live.
+
+
+SORTIO 1.1.17 CORRECTIVE-ROUND CONTROLS
+- N05-NC: clean source -> build only public deployment -> cross-profile staging regression MUST FAIL because school staging is missing. PASS control: observed FAIL/ENOENT or explicit missing staging. Clean full workflow PASS.
+- N07-NC coverage: canonical SW checker is run directly against `dist-deployment`; GARP selftest retains bounded SW mutation coverage.
+- SHNC-01 current: synthetic OpenAI-shaped credential sentinel -> source scanner FAIL; clean source scan PASS.
+- SHNC-02 current: one-byte/app.js tamper -> release-integrity verifier FAIL; clean RI PASS.
+- SHNC-04 current: injected app.js.map -> deployment leak scanner FAIL; clean deployment scan PASS.
+- SHNC-10 current: evidence-manifest tamper test is executed after manifest freeze; mutation must FAIL and clean evidence must reverify PASS.
+- SHNC-16 current: revoked PREP key control must DENY; clean active key verifies PASS.
+- SHNC-05 current: synthetic registry approving 1.1.18 must deny rollback of 1.1.17; clean 1.1.17 registry APPROVED.
+All mutations are disposable and use no real student data.

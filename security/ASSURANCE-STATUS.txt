@@ -1,0 +1,14 @@
+SORTIO 1.1.17 / GARP 2.5.1 SHIELD-PREP
+STATUS: AMBER — corrective candidate for independent Prompt E re-check
+
+Independent 1.1.16 findings addressed in this round:
+- N-05 deploy workflow missing school staging before cross-profile regression: FIXED, local exact-sequence simulation PASS.
+- N-06 assurance package/documentation regression: FIXED, full SHIELD docs + control matrix + debt/exception register restored.
+- N-07 public deployment SW direct coverage: FIXED, `garp25:sw:deployment` PASS.
+
+Still deliberately open:
+- N-04 origin validation hardening: DEFERRED to separate narrow round.
+- SHIELD-LIVE: NOT TESTED.
+- real student data: NOT ALLOWED by this PREP candidate.
+
+No known open CRITICAL or HIGH finding. Final promotion awaits independent Prompt E review of 1.1.17.

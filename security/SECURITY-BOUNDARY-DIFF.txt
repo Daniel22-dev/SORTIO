@@ -1,0 +1,19 @@
+GARP 2.5.1 SHIELD – SECURITY BOUNDARY DIFF
+Application: SORTIO 1.1.17
+Baseline: independently reviewed SORTIO 1.1.16
+Source snapshot SHA-256: fe0687ad82787018b33c2fd286eaf4e66b66e4fd3133da8ae526fe03434734c3
+
+CHANGED IN 1.1.17
+1. CI/deployment build boundary (N-05): GitHub Pages workflow now builds both `dist-deployment` and `dist-school-server` before the cross-profile staging regression. Missing school staging remains a hard FAIL; nothing is skipped.
+2. Public deployment SW assurance (N-07): canonical service-worker security-freeze now runs directly against `dist-deployment`, the artifact actually uploaded to GitHub Pages.
+3. Assurance packaging (N-06): full SHIELD documentation, control matrix, debt/exception register and current negative-control evidence are restored to the candidate.
+4. Version/provenance/SBOM/release-integrity identities are advanced to 1.1.17.
+
+UNCHANGED SECURITY BOUNDARIES
+- C-01 critical-authority service-worker routing remains network-only/no-store; only the version/cache identifiers changed.
+- Import/storage/XSS/privacy logic and student-data schema are unchanged.
+- AI/agentic profile remains NO / N/A.
+- School server remains PREPARED-NOT-CONNECTED; SHIELD-LIVE is NOT TESTED.
+
+DELIBERATELY NOT CHANGED
+- N-04 origin validation for `studioBaseUrl` / `guardUrl` / `apiBaseUrl` remains DEFERRED_HARDENING for a separate narrow round.

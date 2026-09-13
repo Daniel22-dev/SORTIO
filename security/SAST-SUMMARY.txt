@@ -1,0 +1,17 @@
+GARP 2.5.1 – SAST / STATIC ASSURANCE SUMMARY
+Application: SORTIO 1.1.17
+Status: PASS for the project-specific automated static/regression assurance available in this migration; no claim of commercial SAST certification.
+
+Executed controls include:
+- qa:security – PASS, 0 findings;
+- qa:xss – PASS inventory/regression;
+- qa:technical – PASS, 0 findings;
+- garp-security-regressions – PASS;
+- GARP 2.5.1 source high-confidence secret scan – PASS;
+- action pin checker – PASS;
+- service-worker security-freeze checker – PASS public + school builds;
+- vendored consistency – PASS;
+- package/domain/platform structural regressions via npm test – PASS.
+
+Limitation:
+This is a documented automated project-specific static assurance equivalent. No external CodeQL/Semgrep/Sonar service result is claimed in this local environment. Any CI/static analyzer added later must be fail-closed and its report bound into evidence.

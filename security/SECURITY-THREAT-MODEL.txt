@@ -1,0 +1,61 @@
+GARP 2.5.1 SHIELD – THREAT MODEL
+
+Application: SORTIO – organizátor třídy
+Version: 1.1.17
+Source snapshot SHA-256: fe0687ad82787018b33c2fd286eaf4e66b66e4fd3133da8ae526fe03434734c3
+Date: 2026-09-13
+Agentic profile: NO
+AI profile: NO AI transport/model/tool path in this release
+
+ASSETS
+- identity/session: signed-permit access in public profile; prepared server-session profile for school server;
+- student/teacher data: names, classes, seating, groups, engagement/history, lesson-board state, teacher settings;
+- secrets: no application/provider secret is required by SORTIO; production signing private key must remain outside repo/app/server;
+- release trust: source snapshot, build provenance, deployment inventory/digest, signature, trust root, release registry;
+- availability: local-first PWA, service worker, local storage, optional same-origin school APIs and Wikimedia media search.
+
+ACTORS
+- authorized teacher using the application;
+- student/unprivileged browser user with a shared or accessible device;
+- author of malicious imported/backup data;
+- attacker able to tamper localStorage, stale cache or downloaded deployment bytes;
+- compromised dependency/workflow/release input;
+- school server administrator/root (outside the protection boundary of a static client);
+- external Wikimedia Commons service; no AI provider is in the application call graph.
+
+TRUST BOUNDARIES
+TB-01 Browser -> central AI Studio access guard: access permit/session; fail-closed application unlock required. IMPORTANT: in a public static client, permit-before-unlock protects application use/UX flow, not confidentiality of downloadable JS/HTML payload bytes. Authoritative access to any future server-side student data must be enforced by central/server session controls. Full live central lifecycle remains NOT TESTED in this PREP migration.
+TB-02 Browser -> localStorage/import: student/class/teacher data are untrusted persistent input; schema, identifier and reference sanitization plus collision controls apply.
+TB-03 Browser -> DOM/export: persisted/imported strings are untrusted; HTML/attribute contexts must be escaped/sanitized; hostile-render regression protects this boundary.
+TB-04 Service worker -> security-authoritative files: deployment/auth/platform/release-integrity resources are NETWORK-ONLY / no-store and must never be satisfied from application cache.
+TB-05 Source/build -> deployment: exact source snapshot -> clean build -> provenance -> release inventory/digest -> signature -> registry -> verifier.
+TB-06 Browser -> Wikimedia Commons: only the documented search/image path; credentials omitted, no-referrer; returned metadata/URLs are sanitized and remain untrusted.
+TB-07 Browser -> future school server: same-origin session/API profile is prepared but NOT CONNECTED; runtime hardening and server-side authorization are SHIELD-LIVE NOT TESTED.
+
+ATTACK SURFACE
+- direct entry pages: index, manual, tests; central permit-before-unlock and frame guard;
+- service worker install/fetch/update and stale/poisoned cache;
+- localStorage and cross-tab storage events;
+- import/export/re-import and generated HTML/data files;
+- lesson-board URL/QR fields and DOM rendering;
+- Wikimedia Commons query/results/image URLs;
+- optional school-server poll/session/telemetry endpoints in prepared profile;
+- GitHub Actions/build dependencies and release artifacts;
+- error reporter/diagnostic output;
+- no model, prompt, RAG, vector DB, agent, tool, MCP or autonomous side-effect surface.
+
+TOP THREATS
+T-01 Unauthorized direct URL / stale permit / revoked access -> confidentiality/integrity risk. Controls: fail-closed bootstrap, signed permit/server-session profile, permit-before-unlock regressions. Residual: live central lifecycle NOT TESTED. Status: AMBER.
+T-02 Stored/DOM XSS from names/imported identifiers/URLs -> code execution in app origin. Controls: identifier sanitization, escaping, CSP, hostile-render regression, XSS inventory. Status: PASS for app-local tested paths; served-header boundary remains NOT TESTED.
+T-03 Malicious/tampered backup or localStorage -> identity collision/state corruption. Controls: strict import validation, deterministic repair for already-persisted collisions, reference remapping, domain regressions. Status: PASS app-local.
+T-04 Stale/tampered service-worker cache serves old security authority -> authorization/release bypass. Control added in 1.1.17: explicit security-critical request classifier and networkOnlyNoStore; canonical GARP 2.5.1 SW freeze on public and school builds. Status: PASS PREP.
+T-05 Deployment byte tamper / partial update / rollback -> unapproved runtime. Controls: SHA inventory, deterministic digest, detached Ed25519 PREP signature, synthetic registry/anti-rollback and negative controls. Residual: live Integrity Service/watchdog/alerting and production key custody NOT TESTED. Status: AMBER.
+T-06 Supply-chain drift -> malicious build/workflow input. Controls: exact lockfile, 40-char SHA GitHub Actions pins, SBOM, vendored consistency, clean build, provenance. Residual: live advisory/SCA feed and repository governance evidence NOT TESTED. Status: AMBER.
+T-07 Leakage of student data via logs/diagnostics/export/shared device. Controls: reporter redaction/canary, deletion paths, app-local privacy regressions. Residual: plaintext localStorage on teacher device and exported backups are outside app control. Status: AMBER privacy risk.
+T-08 Resource/availability abuse. SORTIO has no AI cost path. Client-side/browser and future school-server resource/rate constraints differ; server limits are NOT TESTED until deployment. Status: NOT TESTED for server-only controls.
+
+
+OPEN HARDENING N-04 (DEFERRED):
+- `studioBaseUrl` / derived `guardUrl` / `apiBaseUrl` are not yet allowlisted against `allowedOrigins` before use.
+- Current CSP blocks cross-origin dynamic guard import and failure remains fail-closed, but configuration content validation is still a planned narrow hardening change.
+- This document does not mark N-04 fixed.

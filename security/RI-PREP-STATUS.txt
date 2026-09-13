@@ -1,0 +1,9 @@
+SORTIO 1.1.17 RELEASE INTEGRITY PREP
+- frozen build-input ZIP SHA-256: fe0687ad82787018b33c2fd286eaf4e66b66e4fd3133da8ae526fe03434734c3
+- clean public + school rebuild equivalence: PASS (timestamp-only generated metadata differences)
+- build vs final school payload: PASS (47/47 excluding RI files)
+- release-integrity v2 artifactDigest: 026b98ccbd896a33b1508438b1f4117ef83cfc90de6fb7ba4bbae7dac47f4e65
+- Ed25519 PREP signature: VERIFIED against candidate trust root
+- synthetic PREP registry / anti-rollback: APPROVED 1.1.17
+- build provenance: local-untrusted-builder, PREP only
+- LIVE key custody / production registry: NOT TESTED

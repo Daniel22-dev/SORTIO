@@ -2,6 +2,24 @@
 
 V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizací. Starší technická historie zůstává v samostatných `RELEASE-NOTES-*.md`.
 
+## 1.1.17 — 2026-09-13
+- Opravné GARP 2.5.1 SHIELD kolo po nezávislé kontrole 1.1.16.
+- GitHub Pages workflow nyní před cross-profile regresí deterministicky staví i school-server staging, takže nasazení nezastaví chybějící `dist-school-server`.
+- Veřejný `dist-deployment` má vlastní service-worker security-freeze kontrolu přímo nad artefaktem, který se publikuje.
+- Obnoven kompletní SHIELD assurance balík, matice kontrol, registr výjimek a přenášený registr dluhů; N-04 zůstává záměrně otevřený hardening.
+
+## 1.1.16 — 2026-09-13
+- Opravný GARP 2.5.1 SHIELD-PREP release po nezávislé Prompt E kontrole.
+- Přidán deterministický production staging: interní `tests/` zůstávají v QA buildu, ale nejsou součástí veřejného ani school-server deploymentu.
+- Produkční UI a manuál již neodkazují na nepublikované testovací centrum.
+- Leak scanner kontroluje skutečné deployment stagingy; evidence reprodukovatelnosti nově porovnává build i finální payload.
+- N-04 (origin hardening autoritativní konfigurace) zůstává záměrně oddělen pro další kolo.
+
+## 1.1.15 — 2026-09-13
+- GARP 2.5.1 SHIELD-PREP: security-critical runtime resources jsou v service workeru network-only/no-store a nejsou precachovány.
+- Doplněny release-integrity nástroje, CycloneDX SBOM, provenance, evidence manifest, supply-chain a negative-control kontroly.
+- Funkční workflow SORTIO a datový model zůstávají beze změny.
+
 ## 1.1.14 — 2026-09-09
 - Opravena volba barvy pera ve widgetu Tabule: změna barvy se ukládá okamžitě přes `input` i `change`, bez překreslení widgetu, takže následující tah používá skutečně vybranou barvu.
 - Tlačítko „Smazat“ ve widgetu Tabule nyní rovnou vyčistí všechny tahy bez potvrzovacího dialogu. Potvrzení pro „Vyčistit panel“ zůstává zachované.
@@ -38,16 +56,4 @@ V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizac
 ## 1.1.8 — 2026-09-08
 - Nový zasedací plán začíná prázdnou mřížkou bez automatického předkreslení.
 - Rychlé tvary jsou volitelné a počet míst začíná na nule.
-
-## 1.1.7 — 2026-09-08
-- Odstraněny technické texty o cyklu z losování a projekce.
-- Přidán mřížkový editor skutečného tvaru učebny a přímý PDF export A4 naležato.
-- Opraven fullscreen Výukového panelu, pozadí a vizuál kostek.
-
-## 1.1.6 — 2026-09-07
-- Rychlejší přepínání tříd, lepší skupiny a role a drag & drop zasedacího pořádku.
-- Rozšířen živý Výukový panel a projekce.
-
-## 1.1.5 — 2026-09-06
-- Opraven suite-session negative-control harness bez změny produkčního cleanupu.
 

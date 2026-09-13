@@ -1,0 +1,33 @@
+{
+  "schema": "ghrab-build-provenance-v1",
+  "subject": {
+    "name": "SORTIO-1.1.17-GARP2.5-SHIELD-DEPLOYMENT.zip",
+    "sha256": "5ddb9f52a23d0451f7d311a4471a50bb2d658df9bd29bec47c50d8b19532fb56"
+  },
+  "source": {
+    "repository": null,
+    "revision": null,
+    "sourcePackageSha256": "fe0687ad82787018b33c2fd286eaf4e66b66e4fd3133da8ae526fe03434734c3"
+  },
+  "builder": {
+    "id": "local-untrusted-builder",
+    "workflow": null,
+    "entrypoint": "npm run build:school-server; deterministic production cleanup in build; create RI v2 + detached PREP signature; package deterministic deployment ZIP"
+  },
+  "invocation": {
+    "startedAt": null,
+    "finishedAt": "2026-09-13T08:13:48.120Z",
+    "lockfileSha256": "524f9b5b6218ab9fb9a548de3bd8a2590acbd1ac05f634e36c8b3e1125de0013",
+    "parameters": {
+      "profile": "school-server-prep"
+    }
+  },
+  "releaseIntegrity": {
+    "artifactDigest": "026b98ccbd896a33b1508438b1f4117ef83cfc90de6fb7ba4bbae7dac47f4e65"
+  },
+  "assurance": {
+    "slsaReference": "v1.2",
+    "claimedSlsaLevel": null,
+    "note": "Custom GARP provenance is not by itself a SLSA level attestation."
+  }
+}

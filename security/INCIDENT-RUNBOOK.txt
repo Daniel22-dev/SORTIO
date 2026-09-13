@@ -1,0 +1,19 @@
+SORTIO 1.1.17 – SECURITY INCIDENT RUNBOOK
+
+Trigger examples:
+- invalid release signature / integrity mismatch / rollback denial;
+- unexpected authorization bypass or revoked-access failure;
+- confirmed secret leak or student-data leak;
+- exploitable HIGH/CRITICAL XSS/import/runtime finding;
+- compromised release key, dependency or workflow input.
+
+Immediate roles/actions:
+1. Application maintainer: stop promotion of the affected release; preserve version/hash/evidence; reproduce only with synthetic data.
+2. School IT/release owner: disable or roll back the affected deployment only to an explicitly approved release; revoke compromised key/session/release as applicable.
+3. AI Studio/platform owner: block the app/release in central app-guard/integrity policy once SHIELD-LIVE is connected.
+4. Preserve evidence: candidate/deployment SHA, release-integrity manifest/signature, registry state, logs stripped of student data/secrets, exact reproduction steps.
+5. Fix on a new version, rerun affected GARP controls plus negative control, then independent review before reactivation.
+6. If a signing key is compromised: mark keyId revoked, generate a new protected key, update trust root under controlled overlap, prove old release/key rejection, sign new approved release.
+7. If real personal data may be involved: follow school privacy/incident obligations and do not place student data into public issue trackers or AI prompts.
+
+This PREP package verifies local incident mechanics only. Live app-guard/alert/watchdog execution is NOT TESTED until SHIELD-LIVE.

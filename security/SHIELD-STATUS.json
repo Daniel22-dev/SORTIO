@@ -1,0 +1,23 @@
+{
+  "schema": "ghrab-shield-status-v1",
+  "appId": "sortio",
+  "version": "1.1.17",
+  "overall": "AMBER",
+  "shieldPrep": "AMBER",
+  "shieldLive": "NOT_TESTED",
+  "riPrep": "AMBER",
+  "riLive": "NOT_TESTED",
+  "agenticProfile": "NO",
+  "openCritical": 0,
+  "openHigh": 0,
+  "correctiveRound": {
+    "N-01": "CLOSED_PREVIOUS",
+    "N-02": "CLOSED_PREVIOUS",
+    "N-03": "CLOSED_PREVIOUS",
+    "N-04": "DEFERRED_HARDENING",
+    "N-05": "FIXED_PENDING_INDEPENDENT_REVIEW",
+    "N-06": "FIXED_PENDING_INDEPENDENT_REVIEW",
+    "N-07": "FIXED_PENDING_INDEPENDENT_REVIEW"
+  },
+  "realStudentDataAllowed": false
+}

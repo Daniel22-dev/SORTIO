@@ -1,0 +1,15 @@
+GARP 2.5.1 – DAST / SERVED TEST SUMMARY
+Application: SORTIO 1.1.17
+Status: NOT TESTED as a full served DAST / school-server DAST.
+
+Available browser evidence:
+- qa:browser PASS;
+- hostile-render and privacy canary regressions PASS;
+- error reporter static part PASS, browser part reports NOT_READY under managed Chromium URLBlocklist.
+
+Environment blockers:
+- qa:runtime could not complete local page startup (timeout in managed environment);
+- qa:axe is NOT_READY because exact axe-core runtime package is not installed;
+- qa:critical cannot load Playwright in this environment.
+
+These limitations are not silently converted to PASS. A real served school-server DAST and header/TLS/session validation belong to SHIELD-LIVE.

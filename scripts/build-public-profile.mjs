@@ -1,0 +1,10 @@
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
+import { cleanProductionDeployment } from "./production-deployment-cleanup.mjs";
+const root=process.cwd(), source=path.join(root,"dist"), target=path.join(root,"dist-deployment");
+if(!fs.existsSync(source)) throw new Error("Chybí dist/. Nejprve spusťte standardní build.");
+fs.rmSync(target,{recursive:true,force:true}); fs.cpSync(source,target,{recursive:true});
+cleanProductionDeployment(target);
+const pkg=JSON.parse(fs.readFileSync(path.join(root,"package.json"),"utf8"));
+console.log(`${pkg.name} ${pkg.version}: dist-deployment/ sestaven jako production-clean public profil.`);

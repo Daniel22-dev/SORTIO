@@ -2,15 +2,15 @@
   "schema": "ghrab-release-acceptance-v1",
   "stage": "P5",
   "appId": "sortio",
-  "appVersion": "1.1.14",
-  "releaseStatus": "ecosystem-wave-candidate",
+  "appVersion": "1.1.17",
+  "releaseStatus": "garp25-shield-prep-candidate",
   "primaryRuntime": {
     "mode": "standalone-github-pages",
     "serverRequired": false,
     "offlineCapable": true,
     "currentUseApproved": false,
     "candidateSyntheticOnly": true,
-    "note": "1.1.14 fixes the lesson-board drawing widget: pen color changes persist immediately without rerendering the widget, and clearing the drawing no longer asks for confirmation. Existing lesson-board data remain compatible. The standard controlled release validation remains required before production approval."
+    "note": "1.1.17 fixes the GARP 2.5.1 deployment staging boundary: internal tests remain available to QA builds but are deterministically excluded from production deployment artifacts. No data-model migration or AI transport is introduced."
   },
   "github": {
     "status": "candidate-not-released",
@@ -52,5 +52,5 @@
     "ecosystemSharedDeviceGate": "pending-wave-completion",
     "nativeBrowserTransportValidation": "pending-environment-capable-run"
   },
-  "note": "1.1.14 is a lesson-board interaction fix with no data-model migration. The full-panel clear action still uses the in-app confirmation modal; only the drawing widget's own Smazat action is immediate."
+  "note": "1.1.17 is a narrow GARP 2.5.1 SHIELD-PREP corrective release for deployment staging and evidence accuracy after independent Prompt E review."
 }

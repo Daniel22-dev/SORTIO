@@ -1,0 +1,26 @@
+GARP 2.5.1 – DEPLOYMENT SECURITY / IT HANDOFF
+Application: SORTIO 1.1.17
+Deployment state: PREPARED, NOT CONNECTED
+
+Artifact separation:
+- GitHub/source candidate: source, tests, GARP tooling, SBOM and audit evidence; no generated dist.
+- Deployment artifact: operational school-server build only + release-integrity.json + detached signature; no .git, tests, audit evidence, source maps, private keys or working ZIPs.
+
+Before SHIELD-LIVE production approval school IT must verify at minimum:
+1. app served only from approved path/origin behind HTTPS;
+2. server-side session authorization is authoritative and fail-closed;
+3. correct CSP and other headers from src/config/security-headers.json are actually served;
+4. app/backend/container identities use least privilege and non-root where applicable;
+5. application files are immutable/read-only where practical; only explicit data/temp areas writable;
+6. no signing private key on the school web/app server;
+7. outbound egress allowlist matches actual dependencies; unexpected egress blocked/alerted;
+8. CPU/RAM/body/request/concurrency/time limits configured for any dynamic endpoints;
+9. retention/deletion/backup policy tested with synthetic data;
+10. Integrity Service/Release Registry/app-guard/watchdog and alert channel tested with tamper/rollback/outage drills;
+11. release verifier checks artifact digest/signature/keyId/registry before activation;
+12. rollback uses only explicitly approved releases, never an arbitrary older tree.
+
+Current public/static behavior:
+- critical deployment/auth/platform/release authority is network-only/no-store in the service worker;
+- Wikimedia Commons is the documented external media-search origin;
+- there is no AI/model/provider egress in SORTIO.

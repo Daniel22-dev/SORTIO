@@ -1,0 +1,219 @@
+GARP 2.5.1 SHIELD – SECURITY CONTROL MATRIX
+Application: SORTIO 1.1.17
+Date: 2026-09-13
+Profile: SHIELD-PREP corrective candidate; SHIELD-LIVE NOT TESTED
+
+CORRECTIVE ROUND DISPOSITION
+- N-01/N-02/N-03: CLOSED in 1.1.16 and independently confirmed by Claude.
+- N-04: DEFERRED_HARDENING; origin validation intentionally not mixed into this round.
+- N-05: FIXED_PENDING_INDEPENDENT_REVIEW – deploy workflow now builds both required stagings before cross-profile regression.
+- N-06: FIXED_PENDING_INDEPENDENT_REVIEW – full assurance documents, matrices, exceptions and D-01..D-12 debt register restored.
+- N-07: FIXED_PENDING_INDEPENDENT_REVIEW – direct SW security-freeze now runs against dist-deployment.
+- Real student data: NOT ALLOWED by this PREP candidate.
+
+STATUS RULE
+PASS means evidence exists for this PREP/app-local scope. NOT TESTED is never promoted from static/source evidence. N/A is used only when the surface is architecturally absent.
+
+RT-00 až RT-20
+--------------
+RT-00  PASS          Inventory data/storage/network/AI surface znovu zmapován; AI cesta není přítomna.
+RT-01  NOT TESTED    Statická permit-before-unlock a SHNC-12 PASS; skutečný centrální signed-permit/server-session lifecycle nebyl v PREP live ověřen.
+RT-02  PASS          Tampered/localStorage a sanitizační invarianty kryjí existující domain/GARP regrese.
+RT-03  NOT TESTED    Kryptografie/revokace centrálního access permitu je mimo tento aplikační ZIP.
+RT-04  NOT TESTED    Plný časový rollback/stale-permit drill centrální vrstvy nebyl proveden.
+RT-05  NOT TESTED    PREP anti-rollback RI PASS; plný runtime offline/SW rollback drill SIM-07 zůstává NOT TESTED.
+RT-06  PASS          App-local canary/redaction/deletion/import cesty bez nového nálezu; sdílené zařízení je residual privacy risk.
+RT-07  PASS          Hostile-render, XSS inventory, sanitizace ID a relevantní regrese PASS.
+RT-08  PASS          Strict import validation, duplicate-ID rejection a persisted-state repair regressions PASS.
+RT-09  N/A           SORTIO nemá AI prompt/model transport.
+RT-10  PASS          Finální source secret scan PASS; deployment leak/secret scan PASS; žádný private key v kandidátu.
+RT-11  NOT TESTED    Plná role/session enforcement je centrální/live boundary.
+RT-12  NOT TESTED    Lokální frame guard/config je přítomen; úplná integration boundary nebyla live ověřena.
+RT-13  NOT TESTED    CSP/frame/SW source evidence PASS, ale skutečné served HTTP security headers/TLS boundary nebyly live ověřeny.
+RT-14  NOT TESTED    Statická část reportéru 51/0 a logging canary PASS; browserová část je NOT_READY kvůli managed Chromium policy.
+RT-15  PASS          Multi-tab/state/suite-session regrese a pairwise testy PASS.
+RT-16  NOT TESTED    PREP supply-chain mechanics PASS, ale produkční key custody, MFA/branch protection a current advisory intelligence nejsou doloženy.
+RT-17  N/A           Aplikace nemá serverové per-student účty; náhradní shared-device privacy hranice zůstává provozní riziko.
+RT-18  NOT TESTED    School-server build/config je prepared-not-connected; SHIELD-LIVE runtime není připojen.
+RT-19  PASS          Výčet call graphu neobsahuje AI/provider egress; aiTransport=not-applicable.
+RT-20  PASS          Existují delete/end-work/canary cesty pro app-local data; server retention bude live control.
+
+SIM-01 až SIM-08
+----------------
+SIM-01  NOT TESTED    Cross-app authorization/token confusion vyžaduje centrální live guard.
+SIM-02  NOT TESTED    Revocation propagation vyžaduje centrální live guard/server.
+SIM-03  NOT TESTED    Vyhrazený browser back/restore/reopen drill nebyl dokončen.
+SIM-04  PASS          Multi-tab state collision pokryta existujícími domain/suite-session regresními testy.
+SIM-05  N/A           Žádný AI response path.
+SIM-06  N/A           Žádný AI request/retry path.
+SIM-07  NOT TESTED    Live service-worker update/recovery drill nebyl proveden; statický/behaviorální SW security-freeze je PASS.
+SIM-08  PASS          Export/import trust boundary, validace a duplicate-ID ochrany jsou regresně pokryté.
+
+PC-01
+-----
+PC-01  PASS          App-local security path coverage pro permit-before-unlock marker, persistent/import paths, SW critical authority a release-verification paths je regresně doložena; live central controls zůstávají explicitně v příslušných RT jako NOT TESTED.
+
+AIR-01 až AIR-12
+----------------
+AIR-01  N/A           No AI transport, prompt assembly, provider/model/tool scope.
+AIR-02  N/A           No AI transport, prompt assembly, provider/model/tool scope.
+AIR-03  N/A           No AI transport, prompt assembly, provider/model/tool scope.
+AIR-04  N/A           No AI transport, prompt assembly, provider/model/tool scope.
+AIR-05  N/A           No AI transport, prompt assembly, provider/model/tool scope.
+AIR-06  N/A           No AI transport, prompt assembly, provider/model/tool scope.
+AIR-07  N/A           No AI transport, prompt assembly, provider/model/tool scope.
+AIR-08  N/A           No AI transport, prompt assembly, provider/model/tool scope.
+AIR-09  N/A           No AI transport, prompt assembly, provider/model/tool scope.
+AIR-10  N/A           No AI transport, prompt assembly, provider/model/tool scope.
+AIR-11  N/A           No AI transport, prompt assembly, provider/model/tool scope.
+AIR-12  N/A           No AI transport, prompt assembly, provider/model/tool scope.
+
+RI-01 až RI-15
+--------------
+RI-01  PASS          Frozen sourcePackage SHA + artifact/provenance identity doloženy.
+RI-02  PASS          Source candidate bez dist; samostatný deployment ZIP bez source/audit/test pracovních dat.
+RI-03  PASS          release-integrity.json inventarizuje 47 podepisovaných deployment souborů.
+RI-04  PASS          artifactDigest 026b98ccbd896a33b1508438b1f4117ef83cfc90de6fb7ba4bbae7dac47f4e65 ověřen.
+RI-05  PASS          Detached Ed25519 PREP signature ověřena.
+RI-06  PASS          PREP trust root/keyId/algorithm verifier PASS.
+RI-07  PASS          Canonical verifier běží mimo app runtime.
+RI-08  PASS          Synthetic PREP registry APPROVED + rollback negative control PASS; live governance stále samostatný control.
+RI-09  PASS          Mixed-version/byte tamper negative controls odmítnuty.
+RI-10  NOT TESTED    Live Integrity Service/status endpoint není součástí PREP.
+RI-11  NOT TESTED    Live AI Studio integrity app-guard link není připojen.
+RI-12  NOT TESTED    Live alert channel pro tamper/rollback není připojen.
+RI-13  NOT TESTED    Produkční custody/rotation/recovery není doložena; revoked-key verifier negative control PASS.
+RI-14  PASS          PREP handoff artefakt + SHA + verifier postup připraven; skutečné live nasazení neprovedeno.
+RI-15  NOT TESTED    Evidence continuity je připravena, ale RI-LIVE ještě neproběhla.
+
+RISIM-01 až RISIM-10
+--------------------
+RISIM-01  PASS          Byte tamper deploymentu -> RI verifier FAIL.
+RISIM-02  PASS          Manifest/signature substitution bez odpovídajícího podpisu -> DENY.
+RISIM-03  PASS          Synthetic higher 1.1.18 registry -> 1.1.17 rollback DENIED.
+RISIM-04  PASS          Wrong/unknown keyId/trust root -> DENY.
+RISIM-05  PASS          Missing signature -> DENY.
+RISIM-06  PASS          Mixed-version deployment -> RI TAMPERED/FAIL.
+RISIM-07  NOT TESTED    Live verifier/Integrity Service outage nemá PREP runtime.
+RISIM-08  NOT TESTED    Live registry governance/admin tamper workflow není nasazen.
+RISIM-09  NOT TESTED    External watchdog visibility není nasazena.
+RISIM-10  PASS          Injected source map/development leak -> deployment leak scanner FAIL.
+
+SH-APP-01 až SH-APP-12
+----------------------
+SH-APP-01  PASS          Aplikační threat model vytvořen: assets, actors, boundaries, surfaces, threats.
+SH-APP-02  PASS          Inventarizovány entry pages, SW, storage, import/export, Wikimedia, future school API; žádná AI/agent surface.
+SH-APP-03  NOT TESTED    App-local permit-before-unlock regrese PASS, ale server/central auth/session/revocation live není dostupná.
+SH-APP-04  PASS          Relevantní XSS/DOM/import/identifier injection testy a hostile-render PASS; žádný shell/SQL backend v tomto release.
+SH-APP-05  NOT TESTED    CSP/frame/SW source controls PASS; actual served school headers/TLS boundary live není ověřen.
+SH-APP-06  PASS          Import/export schema/ID/size a trust-boundary regrese PASS v existujícím chainu.
+SH-APP-07  PASS          Projektový automatizovaný security/XSS/technical/GARP static equivalent PASS; bez claimu komerční SAST certifikace.
+SH-APP-08  NOT TESTED    Lockfile/SBOM/pins PASS, ale registry-backed current CVE scan `npm audit` pro 1.1.17 nebyl dostupný (EAI_AGAIN).
+SH-APP-09  PASS          CycloneDX 1.7 source + deployment SBOM current/verified.
+SH-APP-10  NOT TESTED    Full served DAST/school-server DAST nebyl dostupný; browser subtesty jsou odděleně reportovány.
+SH-APP-11  PASS          Final candidate source scan PASS; deployment scan PASS; SHNC-01 sensitivity PASS. Přesný počet files je v source-scan.log.
+SH-APP-12  PASS          Security exception register vytvořen, včetně unsafe-inline, localStorage/shared-device, key/live gaps.
+
+SH-SC-01 až SH-SC-12
+--------------------
+SH-SC-01  PASS          Frozen source snapshot SHA-256 fe0687ad...34c3; commit nebyl ve vstupním ZIPu dostupný a není domyšlen.
+SH-SC-02  NOT TESTED    MFA/passkey, branch/ruleset/force-push/push-protection organizační evidence není v ZIPu.
+SH-SC-03  PASS          Exact lockfile + 15/15 external GitHub Actions full 40-char SHA pins.
+SH-SC-04  PASS          Clean build:school-server ze samostatně rozbaleného frozen source snapshotu PASS; full npm ci dev-tool environment nebyl dokončen.
+SH-SC-05  PASS          Build provenance vytvořena pro deployment ZIP; builder pravdivě local-untrusted-builder PREP.
+SH-SC-06  PASS          Provenance verifier PASS s PREP-only allow-local-builder warning.
+SH-SC-07  PASS          2 clean rebuildy: public 46/46 files (2 ISO timestamp-only), school 47/47 files (3 ISO timestamp-only); po normalizaci 0 rozdílů.
+SH-SC-08  PASS          School deployment ZIP oddělen; 49 files včetně RI+signature / 47 payload; no .git/tests/audit/source maps/private keys. Public staging má 46 payload files a tests/ NE.
+SH-SC-09  PASS          PREP release detached Ed25519 signature + independent verify PASS.
+SH-SC-10  NOT TESTED    Produkční key rotation/custody není doložena; revoked-key syntetický control PASS.
+SH-SC-11  PASS          Canonical PREP release gate GREEN v explicitně provedeném 8-step scope; nejde o SHIELD-LIVE GREEN. Negative controls pro tamper/pins/evidence/auth jsou citlivé.
+SH-SC-12  PASS          Evidence manifest v2 pokrývá finalizovaný PREP evidence pack + externí assurance soubory; přesné počty jsou v security-evidence-manifest.json; SHNC-10 tamper control PASS.
+
+SH-RUN-01 až SH-RUN-15
+----------------------
+SH-RUN-01  NOT TESTED    School-server runtime je prepared-not-connected; server-only enforcement se podle GARP nesmí povýšit na PASS.
+SH-RUN-02  NOT TESTED    School-server runtime je prepared-not-connected; server-only enforcement se podle GARP nesmí povýšit na PASS.
+SH-RUN-03  NOT TESTED    School-server runtime je prepared-not-connected; server-only enforcement se podle GARP nesmí povýšit na PASS.
+SH-RUN-04  NOT TESTED    School-server runtime je prepared-not-connected; server-only enforcement se podle GARP nesmí povýšit na PASS.
+SH-RUN-05  NOT TESTED    School-server runtime je prepared-not-connected; server-only enforcement se podle GARP nesmí povýšit na PASS.
+SH-RUN-06  NOT TESTED    Source/deploy bez secrets PASS; skutečný server secret manager/custody bude live control.
+SH-RUN-07  NOT TESTED    School-server runtime je prepared-not-connected; server-only enforcement se podle GARP nesmí povýšit na PASS.
+SH-RUN-08  NOT TESTED    School-server runtime je prepared-not-connected; server-only enforcement se podle GARP nesmí povýšit na PASS.
+SH-RUN-09  N/A           Žádný AI/model request/cost path.
+SH-RUN-10  NOT TESTED    School-server runtime je prepared-not-connected; server-only enforcement se podle GARP nesmí povýšit na PASS.
+SH-RUN-11  NOT TESTED    School-server runtime je prepared-not-connected; server-only enforcement se podle GARP nesmí povýšit na PASS.
+SH-RUN-12  NOT TESTED    School-server runtime je prepared-not-connected; server-only enforcement se podle GARP nesmí povýšit na PASS.
+SH-RUN-13  NOT TESTED    Fail-closed konfigurace je navržena/testována staticky; live auth/Integrity Service fail-closed drill nebyl proveden.
+SH-RUN-14  N/A           SORTIO samo nedefinuje break-glass admin capability; případná platformní admin cesta je mimo app.
+SH-RUN-15  NOT TESTED    School-server runtime je prepared-not-connected; server-only enforcement se podle GARP nesmí povýšit na PASS.
+
+SH-DET-01 až SH-DET-12
+----------------------
+SH-DET-01  NOT TESTED    Live security event pipeline není nasazena; event model je v GARP/runtime designu.
+SH-DET-02  PASS          Logging/reporter sanitizer canary SHNC-08 PASS; app-local minimal logging evidence.
+SH-DET-03  NOT TESTED    Tamper-resistant/off-host/append-only server audit není nasazen.
+SH-DET-04  NOT TESTED    Live Integrity Service alert není nasazen.
+SH-DET-05  NOT TESTED    External watchdog není nasazen.
+SH-DET-06  NOT TESTED    Alert channel není dostupný pro syntetický alert negative control.
+SH-DET-07  PASS          Aplikační incident runbook vytvořen: block/revoke/restore/evidence/retest roles.
+SH-DET-08  NOT TESTED    Live server backup/restore drill nebyl proveden.
+SH-DET-09  NOT TESTED    Produkční key compromise -> rotate -> new release drill nebyl proveden; revoked-key verifier PASS pouze PREP.
+SH-DET-10  PASS          Version-bound evidence pack + evidence manifest; žádný private signing key.
+SH-DET-11  PASS          Vulnerability intake/triage procedure vytvořen; live owner/SLA organizačně doplní SHIELD-LIVE.
+SH-DET-12  N/A           Žádný AI provider/model v SORTIO 1.1.17.
+
+SH-AI-01 až SH-AI-12
+--------------------
+SH-AI-01  N/A           No AI/model/provider path; MODEL CHANGE RULE invalidates this N/A if one is added.
+SH-AI-02  N/A           No AI/model/provider path; MODEL CHANGE RULE invalidates this N/A if one is added.
+SH-AI-03  N/A           No AI/model/provider path; MODEL CHANGE RULE invalidates this N/A if one is added.
+SH-AI-04  N/A           No AI/model/provider path; MODEL CHANGE RULE invalidates this N/A if one is added.
+SH-AI-05  N/A           No AI/model/provider path; MODEL CHANGE RULE invalidates this N/A if one is added.
+SH-AI-06  N/A           No AI/model/provider path; MODEL CHANGE RULE invalidates this N/A if one is added.
+SH-AI-07  N/A           No AI/model/provider path; MODEL CHANGE RULE invalidates this N/A if one is added.
+SH-AI-08  N/A           No AI/model/provider path; MODEL CHANGE RULE invalidates this N/A if one is added.
+SH-AI-09  N/A           No AI/model/provider path; MODEL CHANGE RULE invalidates this N/A if one is added.
+SH-AI-10  N/A           No AI/model/provider path; MODEL CHANGE RULE invalidates this N/A if one is added.
+SH-AI-11  N/A           No AI/model/provider path; MODEL CHANGE RULE invalidates this N/A if one is added.
+SH-AI-12  N/A           No AI/model/provider path; MODEL CHANGE RULE invalidates this N/A if one is added.
+
+SH-AG-01 až SH-AG-15
+--------------------
+SH-AG-01  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-02  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-03  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-04  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-05  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-06  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-07  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-08  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-09  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-10  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-11  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-12  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-13  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-14  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+SH-AG-15  N/A           AGENTIC=NO; no autonomous/semi-autonomous tool/API/MCP side effects.
+
+SHNC-01 až SHNC-20
+------------------
+SHNC-01  PASS          Injected credential-like sentinel -> source scanner FAIL; clean PASS.
+SHNC-02  PASS          Deployment byte tamper -> RI verifier FAIL.
+SHNC-03  PASS          Provenance subject hash tamper -> verifier FAIL.
+SHNC-04  PASS          Injected .map/development leak -> deployment leak scanner FAIL.
+SHNC-05  PASS          Synthetic newer 1.1.18 registry -> rollback of 1.1.17 DENIED.
+SHNC-06  PASS          Mixed-version deployment -> RI verifier FAIL.
+SHNC-07  N/A           No server/AI request-budget/rate/concurrency surface in local static PREP release; future server limits are SHIELD-LIVE.
+SHNC-08  PASS          Synthetic logging PII/secret canary sanitized; prohibited marker not leaked.
+SHNC-09  PASS          Injected actions/checkout@main -> action pin checker FAIL; clean 15 refs PASS.
+SHNC-10  PASS          Mutated frozen evidence file -> evidence verifier FAIL on size+SHA.
+SHNC-11  NOT TESTED    No controllable live served school-server header boundary.
+SHNC-12  PASS          Permit guard removed from all protected entry pages -> GARP auth regression FAIL.
+SHNC-13  N/A           No AI output path.
+SHNC-14  N/A           No model/provider/system-prompt identity.
+SHNC-15  NOT TESTED    Integrity/policy alert channel not live.
+SHNC-16  PASS          Revoked synthetic keyId -> signature/trust verifier DENY.
+SHNC-17  N/A           AGENTIC=NO.
+SHNC-18  N/A           AGENTIC=NO.
+SHNC-19  N/A           AGENTIC=NO / no agent memory.
+SHNC-20  N/A           AGENTIC=NO / no autonomous loop.

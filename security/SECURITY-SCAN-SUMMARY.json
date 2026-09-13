@@ -1,0 +1,56 @@
+{
+  "schema": "ghrab-security-scan-summary-v1",
+  "appId": "sortio",
+  "version": "1.1.17",
+  "sourceRevision": "sha256:fe0687ad82787018b33c2fd286eaf4e66b66e4fd3133da8ae526fe03434734c3",
+  "scans": [
+    {
+      "kind": "SAST_EQUIVALENT",
+      "tool": "SORTIO project security/technical/XSS/GARP regression suite",
+      "toolVersion": "1.1.17",
+      "status": "PASS",
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "evidence": "security/evidence/prep-1.1.17/npm-test.log",
+      "notes": "Project-specific automated equivalent; no external SAST certification claimed."
+    },
+    {
+      "kind": "SECRET_SWEEP",
+      "tool": "garp25-source-scan + canonical deployment leak scanner",
+      "toolVersion": "GARP 2.5.1",
+      "status": "PASS",
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "evidence": "security/evidence/prep-1.1.17/source-scan.log",
+      "notes": "SHNC-01 current synthetic sentinel proves scanner sensitivity."
+    },
+    {
+      "kind": "SCA_INVENTORY",
+      "tool": "CycloneDX generator/verifier",
+      "toolVersion": "CycloneDX 1.7",
+      "status": "PASS_INVENTORY_ONLY",
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "evidence": "security/sbom/sortio-1.1.17.cdx.json",
+      "notes": "Current live advisory/CVE lookup NOT_TESTED due registry EAI_AGAIN; SBOM is not a vulnerability scan."
+    },
+    {
+      "kind": "DAST",
+      "tool": "served runtime suite",
+      "toolVersion": "n/a",
+      "status": "NOT_TESTED",
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "evidence": "security/DAST-SUMMARY.txt",
+      "notes": "Managed browser/runtime limitations; school-server DAST belongs to SHIELD-LIVE."
+    }
+  ]
+}

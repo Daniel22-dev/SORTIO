@@ -1,0 +1,8 @@
+GARP 2.5.1 – AI RESOURCE BUDGET
+Application: SORTIO 1.1.17
+Status: N/A
+
+SORTIO 1.1.17 has no AI transport, model/provider call, prompt assembly, RAG/vector store, tool/MCP capability or agent loop. Therefore token/call/model concurrency budgets are not applicable to this release.
+
+MODEL CHANGE RULE:
+If any AI/model/provider/tool path is added or activated later, this N/A expires. SH-AI, RT-09/RT-19 as applicable, AI resource budgets, provider/model identity, adversarial AI tests and model-change evidence must be revalidated before release.

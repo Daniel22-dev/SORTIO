@@ -1,0 +1,441 @@
+OVĚŘENÍ KANDIDÁTA – SORTIO 1.1.15 – GARP 2.5.1 SHIELD
+PROMPT E · NEZÁVISLÁ KONTROLA (ROLE B / CLAUDE)
+Datum: 2026-09-13
+Kontrolor: Claude, role B. Neopravuje, pouze ověřuje a nalézá.
+
+VERDIKT: PREP KANDIDÁT POTVRZEN JAKO AMBER, S NÁLEZY.
+Žádný nový CRITICAL ani HIGH. Dva nálezy vyžadují opravu před nahráním
+na GitHub, dva jsou hardening pro další kolo.
+REÁLNÁ STUDENTSKÁ DATA: NADÁLE NEPOVOLENO.
+SCHOOL SERVER PRODUCTION: NADÁLE NOT TESTED / NEPOVOLENO.
+
+======================================================================
+0. VSTUPY, ROZSAH A OMEZENÍ KONTROLY
+======================================================================
+
+Obdržené vstupy:
+  SORTIO-1.1.15-GARP2.5-SHIELD-KANDIDAT.zip
+  SORTIO-1.1.15-GARP2.5-SHIELD-DEPLOYMENT.zip
+  PREDANI-SORTIO-1.1.15-GARP2.5-SHIELD.txt
+
+NEOBDRŽENO: samostatný balík GARP 2.5.1 (bod 4 předávacího seznamu).
+Kontrola proto probíhala proti vendorovanému canonical toolingu uvnitř
+kandidáta (security/garp25/tools/) a proti textu předávacího protokolu.
+Tooling jsem nebral jako důvěryhodný – jeho citlivost jsem ověřoval
+vlastními negativními kontrolami (oddíl 7).
+
+Kontrolní prostředí: Linux, Node v22.22.2, Python 3 s knihovnou
+cryptography, síť do registry.npmjs.org dostupná.
+
+Metodická zásada: kde to šlo, neběžel jsem jen jejich nástroj, ale
+algoritmus jsem přeimplementoval nezávisle a porovnal výsledky.
+
+======================================================================
+1. IDENTITA A INTEGRITA BALÍČKŮ – PASS
+======================================================================
+
+SHA-256 přepočteno, shoda s protokolem:
+  KANDIDAT   3ecc76550cc30dc7f2e32460d34b9d0a97fb4a37648a89e57d6d0c405f8a7f5f  SHODA
+  DEPLOYMENT ecb68634eff8d3e28dec89e8982d112d937995cfe5fe8528757badfd0343a0da  SHODA
+  BUILD-INPUT (uvnitř kandidáta)
+             36818a6ebd73cfdd3d5eddd647d9faa61bbfb7000e5ce3a0658cb4b1c6709f81  SHODA
+
+unzip -t: PASS u všech tří.
+Počty souborů: kandidát 345, deployment 49, build-input 249 – souhlasí.
+Package-lock SHA 06c5212e...8c14 souhlasí s NEW hodnotou v delta mapě.
+Deployment SBOM SHA 012efaae...1db1 souhlasí.
+
+======================================================================
+2. ZMRAZENÍ BUILD-INPUTU A EXACT DELTA – PASS, SILNÉ
+======================================================================
+
+Ověřil jsem tvrzení, že po zmrazení build-inputu se do kandidáta přidaly
+jen assurance a evidence dokumenty. Porovnal jsem strom 249 souborů
+build-input ZIPu proti stromu kandidáta:
+
+  chybějící v kandidátovi:           0
+  s odlišným SHA-256 v kandidátovi:  0
+  navíc v kandidátovi:               96
+
+Všech 96 přírůstků jsou skutečně jen security/*, security/evidence/*,
+security/release-integrity/*, audit-evidence/* a samotný frozen ZIP.
+Žádný runtime ani build vstup se po zmrazení nezměnil. Toto je jedno
+z nejsilněji doložených tvrzení celého balíčku.
+
+exact-source-delta-map.json: ověřil jsem 55 položek (28 added + 27
+modified) proti skutečným souborům ve frozen build-inputu – všechny
+new-side SHA-256 sedí. Smazaný soubor scripts/ux-1.1.14-regressions.mjs
+skutečně ve build-inputu není. Součet 28+27+194 = 249 odpovídá počtu
+souborů. Delta mapa je věrohodná.
+
+======================================================================
+3. NEZÁVISLÝ REBUILD A ODDĚLENÍ SOURCE/DEPLOYMENT – PASS S NÁLEZEM
+======================================================================
+
+Rozbalil jsem frozen build-input do čistého adresáře a sestavil jej
+sám:  node scripts/build.mjs  a  node scripts/build-school-profile.mjs
+Obojí proběhlo bez chyby a bez potřeby instalace závislostí.
+
+Porovnání mého výstupu dist-school-server/ proti dodanému deploymentu:
+
+  bajtově identických souborů:        44
+  odlišných:                           3  (platform-build-info.json,
+                                          server-ready-build-info.json,
+                                          studio-manifest.json)
+  rozdíl v těchto třech:              výhradně jedno ISO razítko
+                                      builtAt / publishedAt na soubor
+  navíc v deploymentu:                release-integrity.json, .sig
+  navíc v mém buildu:                 tests/index.html, tests/tests.js
+
+Závěr: payload deploymentu je z frozen source reprodukovatelný. To jsem
+doložil sám, nikoli převzetím jejich logu.
+
+NÁLEZ: adresář tests/ byl z deploymentu odstraněn ručně, mimo build.
+Build jej naopak vyžaduje – scripts/build.mjs při jeho absenci hodí
+výjimku „Chybí interní testovací centrum.“ Odstranění je poctivě
+zapsáno v build-provenance.json v poli builder.entrypoint
+(„remove deployment-only tests/“), takže není nezdokumentované.
+V předávacím protokolu ale zmíněno není a má dva důsledky – viz N-01
+a N-02 v oddílu 10.
+
+Ostatní kontroly oddělení: v kandidátovi ani v deploymentu není žádný
+privátní klíč, .git, node_modules, dist, source mapa ani sourceMappingURL.
+Nalezené shody na vzor „PRIVATE KEY“ jsou jen definice vzorů uvnitř
+samotných skenerů.
+
+======================================================================
+4. SERVICE WORKER – JÁDRO OPRAVY C-01 – PASS
+======================================================================
+
+Přečetl jsem src/sw.js i nasazený dep/sw.js a ověřil strukturu:
+
+- isSecurityCriticalRequest se vyhodnocuje hned po kontrole origin
+  a scope, tedy PŘED větví navigate, před manifest/build-info větví,
+  před cacheFirst i před řádkem `if (request.cache === 'no-store') return;`.
+  Kritická větev tedy nemá obejitelnou cestu.
+- networkOnlyNoStore dělá jediný fetch s cache:'no-store' a nesahá
+  na Cache API.
+- CORE precache neobsahuje žádný security-authoritative soubor.
+- Seznam v sw.js je v úplné shodě se
+  security/security-critical-assets.json (14 položek) plus regulární
+  výraz na api|auth|session|health.
+- Query string nemůže predikát obejít, protože se pracuje s
+  url.pathname.
+- activate maže staré cache podle prefixů, po aktualizaci tedy
+  nezůstávají zastaralé necritical položky.
+
+Canonical checker jsem spustil na dodaný deployment i na oba mé vlastní
+buildy (dist i dist-school-server): status PASS, findings [] ve všech
+třech případech, včetně behavioralGuard PASS, fetchRouteBehavior PASS,
+networkOnlySink PASS a přesně jedné registrace fetch handleru.
+
+Ověřil jsem též, že checker není maskovaný string-matching: používá
+node:vm a skutečně vyhodnocuje predikát, celý fetch handler i sink.
+To potvrzuje pravidlo GARP, že čtení kódu samo o sobě nezakládá PASS.
+
+======================================================================
+5. RELEASE INTEGRITY, PODPIS, REGISTR, PROVENANCE, SBOM – PASS
+======================================================================
+
+artifactDigest: algoritmus ghrab-artifact-digest-v2 jsem přeimplementoval
+v Pythonu podle create-release-integrity.mjs a spočítal nad deploymentem
+nezávisle:
+  můj výpočet     49384ed01240078d10535f634e45bc682a96464de64fe44db447ef9455247499
+  manifest        49384ed01240078d10535f634e45bc682a96464de64fe44db447ef9455247499
+  SHODA. fileCount 47 sedí. Kanonické bajtové řazení cest ověřeno.
+  Porovnání po jednotlivých souborech: 0 rozdílů, 0 chybějících,
+  0 přebývajících.
+
+Podpis Ed25519: ověřen mimo jejich nástroj, knihovnou cryptography
+proti publicKeyPem z prep-trust-root.json. Délka 64 B, keyId
+prep-sortio-1.1.15-20260913, klíč active, podpis PLATNÝ.
+Kontrolní protiklad: po překlopení jediného bajtu manifestu podpis
+správně neprošel.
+
+Canonical nástroje spuštěné znovu mnou:
+  verify-release-integrity      VERIFIED, 47 souborů
+  verify-release-signature      VERIFIED
+  verify-release-registry       APPROVED, 1.1.15
+  verify-build-provenance       PASS, subject sha ecb68634...a0da,
+                                builder local-untrusted-builder
+                                (varování jen PREP – správně)
+  verify-evidence-manifest      PASS, 59 interních + 6 externích
+  scan-deployment-leaks (dep)   PASS
+  selftest-garp251              PASS 69/69
+  verify-cyclonedx-sbom         PASS, 5 komponent
+  SBOM source i deployment      --check current
+  check-action-pins             PASS, 5 workflow, 15 externích uses
+  check-vendored-consistency    PASS, drift 0 (nad rebuildnutým stromem)
+
+npm test jsem spustil celý nezávisle nad frozen sourcem: exit 0.
+
+Workflow oprávnění: všech 5 workflow má permissions contents: read,
+deploy navíc pages: write a id-token: write. Žádný pull_request_target.
+Verze 1.1.15 je konzistentní napříč manifestem, studio-manifestem,
+sw.js i release-acceptance.
+
+======================================================================
+6. AI A AGENTIC PROFIL – N/A POTVRZENO
+======================================================================
+
+Prošel jsem celý call graph a všechny řetězce URL ve src/ a vendor/.
+Jediné externí cíle, které aplikace používá:
+  https://commons.wikimedia.org/w/api.php   (vyhledávání obrázků)
+  https://upload.wikimedia.org              (obrázky)
+  self-origin odkazy na GitHub Pages
+  https://mail.google.com/mail/ – POUZE jako uživatelem otevíraný
+    compose odkaz v hlásiči chyb, nikoli automatický egress
+
+Žádný AI provider, model, prompt, tool, MCP ani agentní smyčka.
+Jediné shody na hledané vzory byly navigator.userAgentData, tedy
+falešně pozitivní.
+
+Potvrzuji tedy jako SPRÁVNÉ: RT-09 N/A, RT-19 PASS, AIR-01..12 N/A,
+SH-AI-01..12 N/A, SH-AG-01..15 N/A, SHNC-13/14/17/18/19/20 N/A,
+SIM-05/06 N/A, SH-RUN-09 N/A, SH-DET-12 N/A. Nic z toho není vydáváno
+za PASS, což je správně.
+
+======================================================================
+7. CITLIVOST NEGATIVNÍCH KONTROL – 11 Z 11 VLASTNÍCH PROŠLO
+======================================================================
+
+Nespoléhal jsem na jejich logy. Sestavil jsem jedenáct vlastních
+sabotáží v odhoditelných kopiích a ověřoval, že nástroj selže:
+
+  NC-1  config/deployment.json přidán do CORE precache
+        -> FAIL „security-critical asset je v Cache API write ceste“
+  NC-2  odstraněna celá kritická větev s early return
+        -> FAIL „fetch handler neroutuje kriticky asset fail-closed“
+  NC-3  networkOnlyNoStore doplněn o cache.put
+        -> FAIL „networkOnlyNoStore obsahuje Cache API write“
+  NC-4  z predikátu vypuštěn release-integrity.json
+        -> FAIL „predikat behavioralne nechrani autoritativni asset“
+  NC-5  guard přesunut až za větev navigate
+        -> FAIL, správně odhaleno jako pre-guard efekt
+  NC-6  změněn jeden bajt v dep/app.js
+        -> RI verifier TAMPERED (size + sha256)
+  NC-7  do deploymentu vložen app.js.map
+        -> leak scanner FAIL forbidden-ext
+  NC-8  do zdroje vložen sentinel podobný API klíči
+        -> source scan FAIL
+  NC-9  mutován zmrazený evidence soubor
+        -> evidence verifier FAIL (size + sha256)
+  NC-10 klíč v trust rootu nastaven na revoked
+        -> podpis UNVERIFIED, errors ["key-status:revoked"]
+  NC-11 registr schválil novější 1.1.16
+        -> DENY, "rollback-denied:1.1.15<1.1.16"
+
+Závěr: kontrolní řetězec není deklaratorní. Reaguje na skutečné
+oslabení. Tvrzení protokolu o citlivosti negative controls potvrzuji.
+
+======================================================================
+8. INTEGRITA POLOŽEK NOT TESTED – POTVRZENO, BEZ TICHÉHO POVÝŠENÍ
+======================================================================
+
+Prošel jsem evidence logy položek, které protokol označuje jako
+NOT TESTED, a ověřoval, že jde o skutečná selhání prostředí:
+
+  qa:runtime    reálný timeout stránky, ne přeskočení
+  qa:axe        status not-ready-environment, scanned 0
+  qa:critical   ERR_MODULE_NOT_FOUND playwright
+  npm audit     EAI_AGAIN registry.npmjs.org
+  test:reporter browserová část NOT_READY
+
+Ve svém prostředí jsem potvrdil, že qa:axe, qa:runtime a qa:critical
+nelze spustit ani zde – chybí binárka Chromia a playwright CDN není
+dostupné. Omezení je tedy skutečné, ne výmluva.
+
+Historie qa:technical je zachována poctivě: qa-technical.log obsahuje
+„TECHNICAL FAIL: 1 nálezů“, qa-technical-final.log „TECHNICAL PASS:
+0 nálezů“. Starší log nebyl přepsán, jak protokol tvrdí.
+
+Křížová kontrola SHIELD-STATUS.json, ASSURANCE-STATUS.txt,
+RI-PREP-STATUS.txt a SECURITY-SCAN-SUMMARY.json proti maticím
+v protokolu: všechny se shodují. Nikde jsem nenašel položku, která by
+byla v jednom dokumentu NOT TESTED a v jiném PASS.
+
+ČÁSTEČNÉ UZAVŘENÍ DLUHU D-08 / SH-APP-08:
+V mém prostředí byl registry.npmjs.org dostupný, takže jsem spustil
+`npm audit` nad totožným package-lock.json (SHA 06c5212e...8c14):
+  total 0 – žádná známá zranitelnost
+  komponenty: axe-core 4.12.1, fsevents 2.3.2, playwright 1.61.1,
+              playwright-core 1.61.1, pngjs 7.0.0
+Všech pět je devDependencies, v deploymentu nekončí žádná z nich.
+Produkční závislosti jsou prázdné.
+Tento výsledek platí k 2026-09-13 a lze jej doložit jako aktuální
+advisory kontrolu. Nenahrazuje trvalý advisory monitoring.
+
+======================================================================
+9. SOUKROMÍ A HRANICE – OVĚŘENO
+======================================================================
+
+Tvrzení z UI „E-maily se používají jen při importu. Do uložených dat se
+nepřenášejí“ jsem ověřil v kódu. makeStudent ukládá pouze id, firstName,
+lastName, present, archived, groupLevel, frontPreference, soloPreference
+a časová razítka. Pole row.local slouží jen k dedupikaci v paměti a
+neukládá se. rememberImportAliases ukládá do App.data.aliases pouze
+normalizované tvary jména a příjmení kvůli diakritice, nikoli adresu ani
+doménu. Tvrzení tedy platí. Alias mapa je součástí hlavního datového
+bloku, který data-manifest klasifikuje jako potentially-personal, takže
+je pokrytá.
+
+Logging canary SHNC-08 proběhl PASS i u mě.
+qa:security PASS 0 nálezů, qa:xss passed, garp-security-regressions PASS.
+
+Dluhy D-05 (unsafe-inline), D-06 (plaintext localStorage, sdílené
+zařízení) a D-07 (exportované zálohy) jsou v registru výjimek EX-01
+a EX-02 popsané věcně a bez zlehčování. Nic k doplnění.
+
+UPŘESNĚNÍ HRANICE, které v modelu hrozeb chybí explicitně:
+permit-before-unlock na klientu není autorizační hranicí pro samotný
+payload. Kdo otevře stránku, stáhne si app.js i všechna data
+deploymentu přímo; unlockProtectedScripts je jen DOM transformace.
+U SORTIO to nemá dopad na důvěrnost, protože za bránou nejsou žádná
+serverová studentská data – vše je lokální. Formulace TB-01 a T-01
+ale mohou být čtena jako silnější ochrana, než jakou statický klient
+může poskytnout. Doporučuji větu v modelu hrozeb zpřesnit.
+
+======================================================================
+10. NÁLEZY
+======================================================================
+
+N-01  STŘEDNÍ – procesní / evidenční
+      npm skripty garp25:leaks:public a garp25:leaks:school míří na
+      dist a dist-school-server. Spustil jsem je proti čerstvě
+      sestaveným adresářům a oba skončí FAIL s chybou
+      "forbidden-dir:tests", protože build tests/ vždy vytvoří.
+      PASS zaznamenaný v protokolu a v evidenci vznikl až proti ručně
+      ořezané složce deploymentu.
+      Důsledek: garp25:prep-static nelze zeleně doběhnout. CI to
+      nezachytí jen proto, že qa:p5:ci volá garp25:ci, kde leak kroky
+      nejsou.
+      Doporučení: buď zavést build krok, který produkuje deploy-clean
+      adresář, a skripty nasměrovat na něj, nebo dát scanneru
+      explicitní staging cestu. Není to zranitelnost aplikace, ale
+      zelený PASS u kroku, který takto nikdy neproběhne, je přesně to,
+      co GARP nemá připustit.
+
+N-02  NÍZKÝ – funkční vada v nasazeném artefaktu
+      dep/index.html obsahuje v Nastavení odkaz href="./tests/"
+      („Interní testovací centrum – Otevřít testy“), ale adresář
+      tests/ byl z deploymentu odstraněn. Na školním serveru tedy
+      tento odkaz vrátí 404. Veřejný build na GitHub Pages se
+      nasazuje z dist včetně tests/, takže tam odkaz funguje.
+      Doporučení: buď odkaz ve školním profilu odstranit při buildu,
+      nebo tests/ ponechat i ve školním deploymentu. Zvolil bych
+      první – interní testovací centrum na školním serveru nemá co
+      dělat.
+      Pozor: jde o zásah do distribuovaného runtime, tedy nová verze
+      a nové hashe.
+
+N-03  NÍZKÝ – rozsah důkazu
+      rebuild-equivalence.json porovnává dva buildy mezi sebou
+      (49 souborů včetně tests/, bez RI souborů). Neporovnává build
+      proti dodanému 47souborovému payloadu. Formulace v oddílu 4
+      protokolu zní šířeji, než jaký rozsah důkaz má.
+      Věcně je reprodukovatelnost v pořádku – doložil jsem ji sám
+      v oddílu 3 – ale evidence sama tvrzení nepokrývá.
+      Doporučení: doplnit srovnání build vs. finální payload, nebo
+      formulaci zúžit.
+
+N-04  HARDENING – hranice originu u autoritativní konfigurace
+      access/deployment-config.js odvozuje guardUrl a gateCssUrl ze
+      studioBaseUrl z config/deployment.json. Hodnota se nikde
+      neomezuje na vlastní origin. Empiricky ověřeno:
+        "/ai-studio/"            -> https://skola.example/ai-studio/...
+        "https://evil.example/x" -> https://evil.example/x/access/app-guard.js
+        "//evil.example/x"       -> https://evil.example/x/access/app-guard.js
+      Pole allowedOrigins v konfiguraci existuje, ale používá se jen
+      v originIsAllowed / currentLocationMatchesApp, což jsou
+      v nasazeném balíčku exportované, ale nikde nevolané funkce.
+      Na odvození guardUrl se neaplikuje vůbec.
+      Zmírňující okolnosti: CSP default-src 'self' dynamický import
+      z cizího originu zablokuje, bootstrap spadne do catch a
+      showAccessBootstrapFailure, tedy fail-closed. A k podvržení
+      konfigurace je potřeba už ovládat server nebo odpověď.
+      Přesto: celé téma 1.1.15 je „konfigurace je bezpečnostní
+      autorita“. Soubor se nově vždy tahá čerstvý ze sítě, ale jeho
+      OBSAH se nevaliduje. Doporučuji validovat, že výsledné
+      studioBaseUrl, guardUrl a apiBaseUrl leží v allowedOrigins,
+      a jinak fail-closed. Je to malá, dobře ohraničená změna.
+
+N-05  INFORMATIVNÍ – přesnost predikátu
+      isSecurityCriticalRequest porovnává relativní cestu na přesnou
+      shodu řetězce. Varianty jako procentně kódované "%2F" nebo jiná
+      velikost písmen by se neshodovaly. Praktická využitelnost je
+      zanedbatelná: server takové cesty vrátí jako 404, pod takovým
+      klíčem tedy nic v cache není, a k vyvolání takového requestu
+      je stejně potřeba už mít běh skriptu. Uvádím pro úplnost, ne
+      jako požadavek na opravu.
+
+N-06  INFORMATIVNÍ – stopy prostředí v evidenci
+      Logy v security/evidence/ obsahují absolutní cesty stavitelského
+      prostředí, například /mnt/data/work_sortio_garp/sortio/SORTIO-main/
+      a /home/oai/.npm/. Do deploymentu se nedostanou, ale zůstanou
+      v repozitáři. Zvážit normalizaci cest při ukládání evidence.
+
+N-07  INFORMATIVNÍ – nevyužité AI endpointy v konfiguraci
+      config/deployment.json deklaruje endpoints ai/generate a
+      ai/health, přestože aiTransport je not-applicable a aplikace je
+      nevolá. Sdílené schéma platformy to vysvětluje a MODEL CHANGE
+      RULE je zapsané. Upozorňuji jen proto, že přesně tento blok je
+      místo, kde by AI cesta poprvé vznikla, a příští delta by to
+      měla explicitně hlídat.
+
+POZITIVNÍ ZJIŠTĚNÍ, která stojí za zápis:
+  - Zmrazení build-inputu drží bajt po bajtu. To je nejsilnější část
+    celého balíčku.
+  - Negative controls jsou skutečně citlivé, ne dekorativní.
+  - Žádná položka NOT TESTED nebyla nikde tiše povýšena.
+  - N/A u AI a agentic je podloženo call graphem, ne tvrzením.
+  - Deployment neobsahuje jediný privátní klíč, source mapu ani .git.
+
+======================================================================
+11. GATES PO NEZÁVISLÉ KONTROLE
+======================================================================
+
+SECURITY GATE            AMBER   potvrzeno, beze změny
+PRIVACY GATE             AMBER   potvrzeno, beze změny
+RED TEAM GATE            AMBER   potvrzeno, citlivost kontrol ověřena
+RELEASE INTEGRITY GATE   AMBER   PREP mechanika potvrzena nezávisle;
+                                 N-03 zužuje rozsah jednoho důkazu
+SHIELD ASSURANCE GATE    AMBER   potvrzeno; N-01 je nedostatek
+                                 v provedení, ne v metodice
+
+OVERALL: AMBER
+SHIELD-PREP: AMBER
+SHIELD-LIVE: NOT TESTED
+RI-PREP: AMBER
+RI-LIVE: NOT TESTED
+AGENTIC PROFILE: NO
+Otevřené CRITICAL: 0
+Otevřené HIGH: 0
+Otevřené MEDIUM po této kontrole: 1 (N-01)
+Otevřené LOW: 2 (N-02, N-03)
+
+======================================================================
+12. DOPORUČENÝ POSTUP
+======================================================================
+
+1. N-02 je aplikační nález v distribuovaném runtime. Podle oddílu 9
+   předávacího protokolu následuje oprava v příslušném GARP opravném
+   workflow a nové hashe. Prakticky to znamená verzi 1.1.16.
+2. Spolu s tím opravit N-01, protože jde o stejné téma – ořez tests/
+   patří do buildu, ne do ruky. Tím se obojí vyřeší jednou změnou.
+3. N-03 dořešit doplněním jednoho srovnání do evidence, nebo zúžením
+   formulace. Nevyžaduje změnu kódu.
+4. N-04 zařadit jako hardening do dalšího kola, ne do této opravy.
+   Míchat hranici originu do opravy odkazu by porušilo zásadu úzké
+   bezpečnostní změny.
+5. Výsledek D-08 z oddílu 8 lze přiložit jako doložená aktuální
+   advisory kontrola k datu 2026-09-13.
+6. Po opravě znovu PROMPT E nad novým kandidátem. Jakákoli změna
+   distribuovaného runtime ruší bajtovou identitu tohoto ověření.
+7. Připojení školního serveru a SHIELD-LIVE nadále až PROMPT F/G.
+
+Tento dokument neopravňuje zpracování reálných studentských dat ani
+produkční nasazení na školní server.
+
+======================================================================
+KONEC OVĚŘENÍ
+======================================================================

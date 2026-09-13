@@ -1,0 +1,77 @@
+{
+  "gate": "GARP-2.5.1-RELEASE-GATE-R2",
+  "profile": "prep",
+  "status": "GREEN",
+  "serviceWorker": "/mnt/data/work_sortio_garp_117/final-deployment/sw.js",
+  "criticalAssetList": "/mnt/data/work_sortio_garp_117/candidate/security/security-critical-assets.json",
+  "stepsRun": 8,
+  "steps": [
+    {
+      "step": "deployment-leaks",
+      "script": "scan-deployment-leaks.mjs",
+      "status": "PASS",
+      "exitCode": 0,
+      "detail": "{\n  \"status\": \"PASS\",\n  \"root\": \"/mnt/data/work_sortio_garp_117/final-deployment\",\n  \"info\": [\n    \"INFO-binary-not-scanned:assets/brand/school-logo.png\",\n    \"INFO-binary-not-scanned:icons/icon-128.png\",\n    \"INFO-binary-not-scanned:icons/icon-180.png\",\n    \"INFO-binary-not-scanned:icons/icon-192.png\",\n    \"INFO-binary-not-scanned:icons/icon-32.png\",\n    \"INFO-binary-not-scanned:icons/icon-48.png\",\n    \"INFO-binary-not-scanned:icons/icon-512.png\",\n    \"INFO-binary-not-scanned:icons/icon-72.png\",\n    \"INFO-binary-not-scanned:icons/icon-96.png\"\n  ]\n}"
+    },
+    {
+      "step": "release-integrity",
+      "script": "verify-release-integrity.mjs",
+      "status": "PASS",
+      "exitCode": 0,
+      "detail": "{\n  \"status\": \"VERIFIED\",\n  \"files\": 47,\n  \"artifactDigest\": \"026b98ccbd896a33b1508438b1f4117ef83cfc90de6fb7ba4bbae7dac47f4e65\"\n}"
+    },
+    {
+      "step": "release-signature",
+      "script": "verify-release-signature.mjs",
+      "status": "PASS",
+      "exitCode": 0,
+      "detail": "{\n  \"status\": \"VERIFIED\",\n  \"algorithm\": \"Ed25519\",\n  \"keyId\": \"prep-sortio-1.1.17-20260913\",\n  \"keyStatus\": \"active\"\n}"
+    },
+    {
+      "step": "release-registry",
+      "script": "verify-release-registry.mjs",
+      "status": "PASS",
+      "exitCode": 0,
+      "detail": "{\n  \"status\": \"APPROVED\",\n  \"appId\": \"sortio\",\n  \"version\": \"1.1.17\",\n  \"artifactDigest\": \"026b98ccbd896a33b1508438b1f4117ef83cfc90de6fb7ba4bbae7dac47f4e65\",\n  \"keyId\": \"prep-sortio-1.1.17-20260913\"\n}"
+    },
+    {
+      "step": "build-provenance",
+      "script": "verify-build-provenance.mjs",
+      "status": "PASS",
+      "exitCode": 0,
+      "detail": "{\n  \"status\": \"PASS\",\n  \"subjectSha256\": \"5ddb9f52a23d0451f7d311a4471a50bb2d658df9bd29bec47c50d8b19532fb56\",\n  \"builderId\": \"local-untrusted-builder\",\n  \"sourceRevision\": null,\n  \"warnings\": [\n    \"builder=local-untrusted-builder (PREP only, nikdy skolni release)\"\n  ]\n}"
+    },
+    {
+      "step": "evidence-manifest",
+      "script": "verify-evidence-manifest.mjs",
+      "status": "PASS",
+      "exitCode": 0,
+      "detail": "{\n  \"status\": \"PASS\",\n  \"files\": 100,\n  \"externalFiles\": 12\n}"
+    },
+    {
+      "step": "sw-security-freeze",
+      "script": "check-sw-security-freeze.mjs",
+      "status": "PASS",
+      "exitCode": 0,
+      "detail": "{\n  \"status\": \"PASS\",\n  \"serviceWorker\": \"/mnt/data/work_sortio_garp_117/final-deployment/sw.js\",\n  \"criticalListSource\": \"/mnt/data/work_sortio_garp_117/candidate/security/security-critical-assets.json\",\n  \"precachedEntries\": 25,\n  \"precacheSources\": [\n    {\n      \"source\": \"addAll:expression\",\n      \"entries\": [\n        \"./\",\n        \"./index.html\",\n        \"./app.js\",\n        \"./lazy/print-exports.js\",\n        \"./lazy/seating-ui.js\",\n        \"./lazy/seating-ui.css\",\n        \"./lazy/media-library.js\",\n        \"./lazy/production-tools.js\",\n        \"./manifest.webmanifest\",\n        \"./access/access-gate.css\",\n        \"./access/reporter-bootstrap.js\",\n        \"./access/error-reporter.js\",\n        \"./access/error-reporter.css\",\n        \"./access/error-reporter-adapter.js\",\n        \"./assets/brand/school-logo.png\",\n        \"./assets/sortio-mark.svg\",\n        \"./icons/icon-192.png\",\n        \"./icons/icon-512.png\",\n        \"./manual/\",\n        \"./manual/index.html\",\n        \"./config/brand-manifest.json\"\n      ]\n    },\n    {\n      \"source\": \"map-add:GHRAB_PLATFORM_P3_ASSETS\",\n      \"entries\": [\n        \"./ghrab/ghrab-platform.css\",\n        \"./ghrab/ghrab-artifact-envelope-v1.schema.json"
+    },
+    {
+      "step": "vendored-consistency",
+      "script": "check-vendored-consistency.mjs",
+      "status": "PASS",
+      "exitCode": 0,
+      "detail": "{\n  \"status\": \"PASS\",\n  \"canonicalRoot\": \"..\",\n  \"components\": [\n    {\n      \"id\": \"platform-js\",\n      \"sha256\": \"199d03d9dc9263a9e74ed1f1102df0324f3b63e78704f1c70aeacec5feec530c\"\n    },\n    {\n      \"id\": \"platform-css\",\n      \"sha256\": \"eb465488df46f3d1672d721094800b0be3eb1278924b7699873a483f130b07ad\"\n    },\n    {\n      \"id\": \"error-reporter\",\n      \"sha256\": \"66400dbdd255661fee4b403dfacac63937b460102f03c27572869ee0528ce8b3\"\n    },\n    {\n      \"id\": \"deployment-config-loader\",\n      \"sha256\": \"c0dcbef5a6513c80881ce90ee06a69384d10f02d8815308aa9209a295d0ea7b6\"\n    }\n  ],\n  \"checkedCopies\": 8,\n  \"drift\": 0,\n  \"findings\": []\n}"
+    }
+  ],
+  "skippedSteps": [
+    {
+      "step": "ai-assurance-fingerprint",
+      "reason": "no-ai-assurance-inputs-detected"
+    },
+    {
+      "step": "assurance-links",
+      "reason": "verifier-not-present-in-this-tooling-profile"
+    }
+  ],
+  "note": "PREP profil muze pouzit lokalni builder. Vystup vzdy uvadi stepsRun a skippedSteps; GREEN bez uvedeni rozsahu se nesmi interpretovat jako plny SHIELD-PREP. Pokud deployment obsahuje service worker, SW kontrola a autoritativni critical-asset list jsou povinne. Neni to school-server LIVE GREEN."
+}

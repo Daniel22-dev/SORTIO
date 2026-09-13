@@ -1,0 +1,49 @@
+GARP 2.5.1 SHIELD – SECURITY EXCEPTION REGISTER
+Application: SORTIO 1.1.17
+Date: 2026-09-13
+
+EX-01 – INLINE CSP COMPATIBILITY
+Finding/control: SH-APP-05 / CSP uses 'unsafe-inline' for script-src and style-src.
+Severity: HARDENING / LOW-to-MEDIUM depending on future data flows; no confirmed exploitable HIGH/CRITICAL in tested release.
+Scope: public and prepared school-server CSP.
+Reason: current single-page architecture still contains required inline bootstrap/style behavior. Removing it is a separate modularization refactor and was not mixed into this security migration.
+Impact: CSP is weaker than a nonce/hash-only policy.
+Compensating controls: untrusted values are sanitized/escaped; hostile-render/XSS regressions; no unsafe-eval; frame guard; school profile adds server-delivered frame/security headers.
+Owner role: application maintainer + school IT for served headers.
+Target closure: future modularization/hardening release.
+Closure condition: no executable inline code or a nonce/hash-based CSP verified behaviorally.
+
+EX-02 – LOCAL STORAGE / SHARED DEVICE PRIVACY
+Finding/control: privacy / SH-RUN-12.
+Severity: PRIVACY / AMBER.
+Scope: student/class data stored locally in teacher browser; exported backups.
+Reason: local-first design.
+Impact: another person with access to the same browser profile/device or exported file may access the data.
+Compensating controls: clear/end-work flows, import validation, shared-device controls, no student data in diagnostic canaries, minimal logging.
+Owner role: application maintainer + school operational policy.
+Target closure: school-server/shared-device operational controls and/or stronger local isolation where practical.
+Closure condition: validated shared-device lifecycle and server/session isolation with synthetic users.
+
+EX-03 – PREP-ONLY RELEASE KEY
+Finding/control: RI-13 / SH-SC-10.
+Severity: AMBER evidence gap, not an application vulnerability.
+Scope: this GARP migration candidate only.
+Reason: real production release key custody is an organizational/live control and cannot be truthfully established from this source ZIP.
+Impact: PREP signature is evidence that the verification chain works, not authorization for production.
+Compensating controls: disposable private key removed after signing; only public trust root is retained; revoked-key negative control passes.
+Owner role: school IT/release owner.
+Target closure: SHIELD-LIVE setup.
+Closure condition: documented production key custody, backup, rotation, revoke and recovery drill.
+
+EX-04 – LIVE SERVER / DETECTION CONTROLS NOT YET AVAILABLE
+Finding/control: SH-RUN and SH-DET live controls, RI-10..13 as applicable.
+Severity: AMBER / NOT TESTED.
+Scope: school-server runtime and integrity monitoring.
+Reason: school server is prepared-not-connected in this package.
+Impact: no claim is made for non-root/read-only/container limits/TLS/session enforcement/integrity alerts/watchdog on a live server.
+Compensating controls: fail-closed configuration design; separate deployment artifact; PREP release verification; explicit NOT TESTED status.
+Owner role: school IT + application maintainer.
+Target closure: PROMPT F/G SHIELD-LIVE phase after real deployment.
+Closure condition: live synthetic drills and independent review.
+
+REGISTER LINK: Carried debts D-01..D-12 are tracked in security/SECURITY-DEBT-REGISTER.txt. N-04 remains an open hardening item and is not silently accepted as an exception.

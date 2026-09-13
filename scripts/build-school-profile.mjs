@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { cleanProductionDeployment } from "./production-deployment-cleanup.mjs";
 
 const root = process.cwd();
 const sourceDist = path.join(root, "dist");
@@ -85,4 +86,5 @@ writeJson(path.join(targetDist, "server-ready-build-info.json"), {
   aiCoreVersion: deployment.aiTransport === "school-gateway" ? "1.0.0" : null,
   contractVersion: deployment.aiTransport === "school-gateway" ? "1" : null,
 });
-console.log(`${pkg.name} ${pkg.version}: dist-school-server/ sestaven jako same-origin P3 school-server profil.`);
+cleanProductionDeployment(targetDist);
+console.log(`${pkg.name} ${pkg.version}: dist-school-server/ sestaven jako production-clean same-origin P3 school-server profil.`);

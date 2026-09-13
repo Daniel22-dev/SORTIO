@@ -1,0 +1,20 @@
+GARP 2.5.1 – KEY CUSTODY & RECOVERY STATUS
+Application: SORTIO 1.1.17
+
+PREP implementation:
+- Ed25519 used for detached release-integrity signature.
+- KeyId: prep-sortio-1.1.17-20260913.
+- A disposable PREP private key was created outside the source tree, used once, then deleted.
+- Candidate/deployment/audit artifacts contain no private signing key.
+- Public trust root and synthetic PREP registry are retained as verification evidence.
+- Negative control with revoked signing key is rejected.
+
+NOT CLAIMED / NOT TESTED FOR PRODUCTION:
+- real school production key owner/custodian;
+- hardware/offline storage, backup and dual-control requirements;
+- release-account MFA/passkey evidence;
+- production rotation overlap and emergency revoke procedure;
+- production recovery drill.
+
+SHIELD-LIVE requirement:
+Production private key must never be placed in web root, container image, application repo, logs, audit ZIP or school app runtime. The school server and AI Studio receive only the approved public trust root. A revoke -> new keyId -> old release rejected -> new trusted release drill must be evidenced before RI-LIVE GREEN.

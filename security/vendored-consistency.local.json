@@ -1,0 +1,50 @@
+{
+  "schema": "ghrab-vendored-consistency-v1",
+  "canonicalRoot": "..",
+  "components": [
+    {
+      "id": "platform-js",
+      "canonical": "vendor/ghrab-platform-1.1.2/ghrab-platform.js",
+      "severity": "CRITICAL"
+    },
+    {
+      "id": "platform-css",
+      "canonical": "vendor/ghrab-platform-1.1.2/ghrab-platform.css",
+      "severity": "HIGH"
+    },
+    {
+      "id": "error-reporter",
+      "canonical": "src/access/error-reporter.js",
+      "severity": "HIGH"
+    },
+    {
+      "id": "deployment-config-loader",
+      "canonical": "src/access/deployment-config.js",
+      "severity": "CRITICAL"
+    }
+  ],
+  "consumers": [
+    {
+      "appId": "sortio",
+      "root": "..",
+      "copies": {
+        "platform-js": [
+          "dist-deployment/ghrab/ghrab-platform.js",
+          "dist-school-server/ghrab/ghrab-platform.js"
+        ],
+        "platform-css": [
+          "dist-deployment/ghrab/ghrab-platform.css",
+          "dist-school-server/ghrab/ghrab-platform.css"
+        ],
+        "error-reporter": [
+          "dist-deployment/access/error-reporter.js",
+          "dist-school-server/access/error-reporter.js"
+        ],
+        "deployment-config-loader": [
+          "dist-deployment/access/deployment-config.js",
+          "dist-school-server/access/deployment-config.js"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "ghrab-trust-root-v1",
+  "purpose": "SORTIO 1.1.17 disposable PREP verification only; NOT production key custody",
+  "updatedAt": "2026-09-13T08:20:00.000Z",
+  "keys": [
+    {
+      "keyId": "prep-sortio-1.1.17-20260913",
+      "algorithm": "Ed25519",
+      "status": "active",
+      "notBefore": "2026-09-13T00:00:00.000Z",
+      "notAfter": "2026-10-13T23:59:59.000Z",
+      "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAJ/AhXI9ZR+ORuIk1VSkKmE3bNoZUJpPlfVLqunFQzAg=\n-----END PUBLIC KEY-----\n"
+    }
+  ]
+}

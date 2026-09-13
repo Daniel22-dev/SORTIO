@@ -1,0 +1,29 @@
+{
+  "schema": "ghrab-release-registry-v1",
+  "updatedAt": "2026-09-13T08:21:00.000Z",
+  "purpose": "synthetic PREP registry; not production approval",
+  "apps": [
+    {
+      "appId": "sortio",
+      "approvedVersion": "1.1.17",
+      "artifactDigest": "026b98ccbd896a33b1508438b1f4117ef83cfc90de6fb7ba4bbae7dac47f4e65",
+      "keyId": "prep-sortio-1.1.17-20260913",
+      "approvedAt": "2026-09-13T08:21:00.000Z",
+      "status": "approved",
+      "history": [
+        {
+          "version": "1.1.16",
+          "approvedAt": "2026-09-13T07:46:00.000Z"
+        },
+        {
+          "version": "1.1.15",
+          "approvedAt": "2026-09-13T06:45:00.000Z"
+        },
+        {
+          "version": "1.1.14",
+          "approvedAt": "2026-09-09T00:00:00.000Z"
+        }
+      ]
+    }
+  ]
+}

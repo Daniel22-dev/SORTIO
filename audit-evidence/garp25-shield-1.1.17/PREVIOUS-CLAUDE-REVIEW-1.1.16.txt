@@ -1,0 +1,383 @@
+OVĚŘENÍ KANDIDÁTA – SORTIO 1.1.16 – GARP 2.5.1 SHIELD
+PROMPT E · NEZÁVISLÁ KONTROLA, KOLO 2
+Datum: 2026-09-13
+Kontrolor: Claude, role B. Neopravuje, pouze ověřuje a nalézá.
+
+VERDIKT: N-01, N-02 a N-03 JSOU SKUTEČNĚ UZAVŘENY.
+Ověřeno vlastním měřením, nikoli převzetím logů.
+Kandidát ale NENÍ připraven k nahrání na GitHub: nalezeny dva nové
+nálezy, z toho jeden blokuje samotné nasazení.
+
+OVERALL: AMBER
+Bez nového CRITICAL a HIGH. Oprava C-01 ze verze 1.1.15 je beze změny.
+REÁLNÁ STUDENTSKÁ DATA: NADÁLE NEPOVOLENO.
+SCHOOL SERVER PRODUCTION: NADÁLE NOT TESTED.
+
+======================================================================
+0. VSTUPY
+======================================================================
+
+KIT-CLAUDE-SORTIO-1_1_16-KOLO-2.zip
+  a3029267b1a9aba3edf8357bcd3ee058fb812b3a1d01521943b32c4c5d971bdf
+
+Obsah a ověřené otisky:
+  SORTIO-1.1.16-GARP2.5-SHIELD-KANDIDAT.zip
+    56a42f7724092b67f40298aff09ab890f6078db7a06ce3f446d5249a1a50bea8  SHODA
+  SORTIO-1.1.16-GARP2.5-SHIELD-DEPLOYMENT.zip
+    3e206c1d264f100cbc6ab125143b98dafb4c069dab6914e26a8ca7b7de7b5738  SHODA
+  GARP-2.5.1-AKTUAL.zip
+    8344aa7c93081edb84bd1ebc3f6aa149d61fe1376d81c4ad1d654439ed84e2d0  SHODA
+  OVERENI-KANDIDATA-SORTIO-1.1.15-...txt
+    5c72cf5dcf86ff61ac7a9f2717ae44611b78f3bdfe6f38829240a9bf00323052
+    – můj protokol z kola 1 se vrátil nezměněný, bit po bitu.
+  frozen build-input SORTIO-1.1.16-GARP2.5-BUILD-INPUT-SOURCE.zip
+    4e54756b94b57933ac991ee4788cd784aa9d2dd6aae5c7536aefe389205a21f2  SHODA
+    253 souborů, unzip -t PASS.
+
+Tentokrát jsem obdržel i referenční balík GARP 2.5.1, což v kole 1
+chybělo. Umožnilo to jednu novou kontrolu, viz oddíl 2.
+
+Prostředí: Linux, Node v22.22.2, Python 3 s cryptography, dostupná síť
+do registry.npmjs.org.
+
+======================================================================
+1. UZAVŘENÍ NÁLEZŮ Z KOLA 1
+======================================================================
+
+N-01 – UZAVŘEN, OVĚŘENO VLASTNÍM SPUŠTĚNÍM
+
+Rozbalil jsem frozen build-input do čistého adresáře a spustil celý
+řetězec sám:
+
+  npm run garp25:prep-static      EXIT 0, všechny kroky PASS
+
+Řetězec nově staví oba stagingy jako první krok a teprve pak pouští
+skenery. Skripty míří na skutečné nasazované adresáře:
+
+  garp25:leaks:public   -> dist-deployment
+  garp25:leaks:school   -> dist-school-server
+
+Naměřený stav po buildu:
+  dist                  48 souborů, tests/ ANO   (QA build, nepublikuje se)
+  dist-deployment       46 souborů, tests/ NE    (veřejný GitHub Pages)
+  dist-school-server    47 souborů, tests/ NE    (školní server)
+
+Negativní kontrolu jsem si zopakoval sám: leak scanner spuštěný proti
+QA dist stále končí FAIL "forbidden-dir:tests". Nová cesta tedy není
+přejmenování, ale skutečné oddělení.
+
+deploy.yml nově staví build:deployment a publikuje dist-deployment,
+nikoli QA dist. Leak scan a staging regrese běží v CI ještě před
+uploadem, což je správné pořadí.
+
+N-02 – UZAVŘEN
+
+  dep16/tests/                     neexistuje
+  href="./tests/" v index.html     0 výskytů
+  jakýkoli odkaz na /tests/        0 výskytů v celém deploymentu
+  zbylé zmínky                     pouze textové v changelogu a manuálu
+
+Oprava je navíc udělaná dobře, ne narychlo. scripts/production-
+deployment-cleanup.mjs pracuje s explicitními HTML markery
+SORTIO_INTERNAL_TEST_CENTER_START/END, hodí výjimku, když markery
+chybí, a po zásahu znovu ověří obě podmínky – že v indexu není odkaz
+a že adresář tests/ zmizel. Je to fail-closed v buildu, ne volitelná
+kontrola vedle něj. Přesně tak to mělo být řešeno.
+
+N-03 – UZAVŘEN
+
+Neporovnával jsem jejich evidenci, ale postavil si školní staging
+z frozen sourcu sám a porovnal proti dodanému payloadu:
+
+  můj clean rebuild            47 souborů
+  dodaný deployment            49 souborů
+  jen v dodaném                release-integrity.json, release-integrity.sig
+  jen v mém                    nic
+  bajtově identických          44
+  bajtově odlišných            3
+    platform-build-info.json, server-ready-build-info.json,
+    studio-manifest.json – po normalizaci ISO razítek SHODA u všech tří
+
+0 chybějících, 0 přebývajících, 0 reálných rozdílů. Nová evidence
+build-vs-final-payload.json tvrdí totéž a odpovídá mému měření.
+rebuild-equivalence.json je nově v2 a pokrývá oba profily.
+
+N-04 – SPRÁVNĚ PONECHÁN OTEVŘENÝ
+
+Ověřil jsem, že validace originu studioBaseUrl / guardUrl / apiBaseUrl
+skutečně nebyla měněna a že položka není nikde vydávána za opravenou.
+SHIELD-STATUS.json ji vede jako DEFERRED_HARDENING. To je korektní.
+
+======================================================================
+2. ZNOVUOVĚŘENÍ CELÉHO ŘETĚZCE PRO 1.1.16
+======================================================================
+
+ZMRAZENÍ BUILD-INPUTU – PASS
+Všech 253 souborů build-input ZIPu je v kandidátovi bajtově totožných.
+0 chybějících, 0 s odlišným otiskem. Všech 54 přírůstků po zmrazení
+leží pod security/ nebo audit-evidence/. Žádný runtime ani build vstup
+se po zmrazení nezměnil.
+
+DELTA 1.1.15 -> 1.1.16 – PASS
+Spočítal jsem ji sám proti frozen build-inputu verze 1.1.15:
+  naměřeno   added=7  removed=3  modified=31  unchanged=215
+  tvrzeno    added=7  removed=3  modified=31  unchanged=215
+Přesná shoda. Prošel jsem všech 31 modifikovaných souborů. Změny
+v bezpečnostně citlivých souborech jsou pouze verzovací řetězce:
+  src/access/error-reporter.js       jen REPORTER_VERSION
+  src/access/error-reporter-adapter  jen appVersion
+  src/config/security-headers.json   jen version
+  src/config/data-manifest.json      jen appVersion
+Věcné změny jsou soustředěny do buildu, workflow, body.html (markery)
+a vendored-consistency (přesměrování na dist-deployment). Rozsah
+opravy je úzký, jak GARP vyžaduje.
+
+SERVICE WORKER, OPRAVA C-01 – BEZE ZMĚNY
+  diff src/sw.js 1.1.15 -> 1.1.16: jediný řádek, CACHE_NAME v1.1.16.
+  diff nasazeného sw.js: APP_VERSION, CACHE_NAME a jeden cache klíč
+  v platform precache. Žádná změna logiky.
+Dále ověřeno na nasazeném artefaktu:
+  právě jeden fetch handler
+  GHRAB_PLATFORM_P3_ASSETS obsahuje jen CSS, schémata a logo –
+    ghrab-platform.js v něm stále není, tedy hardening z 1.1.15 drží
+  checker: status PASS, findings [], guard PASS, route PASS, sink PASS
+  sw.js je bajtově identický v dist, dist-deployment i
+    dist-school-server
+
+RELEASE INTEGRITY – PASS
+artifactDigest jsem opět přepočítal vlastní implementací algoritmu
+ghrab-artifact-digest-v2 v Pythonu:
+  můj výpočet  94ef570078483c1e4134b95600b6195c0fedd1644f51a51d6c7d0a2926792e97
+  manifest     94ef570078483c1e4134b95600b6195c0fedd1644f51a51d6c7d0a2926792e97
+  SHODA, fileCount 47, 0 rozdílů po jednotlivých souborech.
+  sourcePackageSha256 v manifestu odpovídá frozen build-inputu.
+
+Podpis Ed25519 ověřen nezávisle knihovnou cryptography, mimo jejich
+nástroj: PLATNÝ, keyId prep-sortio-1.1.16-20260913, klíč active.
+Protikontrola s překlopeným bajtem manifestu správně odmítnuta.
+
+Canonical nástroje spuštěné mnou nad dodaným balíčkem:
+  verify-release-integrity      VERIFIED, 47 souborů
+  verify-release-signature      VERIFIED
+  verify-release-registry       APPROVED 1.1.16
+  verify-build-provenance       PASS, local-untrusted-builder (PREP)
+  verify-evidence-manifest      PASS, 43 interních + 7 externích
+  scan-deployment-leaks         PASS
+  check-sw-security-freeze      PASS
+  npm test                      EXIT 0
+
+Provenance entrypoint je nově poctivý a odráží, že ořez probíhá
+v buildu: "npm run build:school-server; deterministic production
+cleanup in build; create RI v2 + detached PREP signature; package
+deterministic deployment ZIP". Ruční krok z 1.1.15 zmizel.
+
+NOVÁ KONTROLA, MOŽNÁ AŽ TEĎ – VENDOROVANÝ TOOLING
+Díky přiloženému referenčnímu balíku GARP jsem mohl porovnat všech
+15 vendorovaných nástrojů proti canonical verzi:
+  15 z 15 bajtově shodných, 0 rozdílů, 0 nástrojů navíc.
+Tvrzení "canonical GARP 2.5.1 tools vendored beze změny" je tím
+doloženo, nikoli jen deklarováno.
+
+CITLIVOST NEGATIVNÍCH KONTROL – 8 Z 8 VLASTNÍCH PROŠLO
+Postavil jsem si sabotáže znovu, proti 1.1.16, a u každé jsem navíc
+ověřoval, že mutace opravdu proběhla:
+  deployment.json do CORE precache  -> FAIL, Cache API write path
+  odstraněná kritická větev         -> FAIL, neroutuje fail-closed
+  cache.put v networkOnlyNoStore    -> FAIL, Cache API write
+  vypuštěný release-integrity.json  -> FAIL, behaviorální false negative
+  tamper bajtu v app.js             -> TAMPERED
+  vložená app.js.map                -> FAIL, forbidden-ext
+  revokovaný klíč v trust rootu     -> UNVERIFIED, key-status:revoked
+  registr schvaluje 1.1.17          -> DENY, rollback-denied:1.1.16<1.1.17
+Poznámka k metodě: první pokus o tři z těchto mutací se neaplikoval,
+protože nasazený sw.js má jiné formátování než zdroj. Kontrola by
+tehdy vypadala jako PASS. Proto u každé sabotáže porovnávám soubor
+proti originálu a mutaci potvrzuji, než výsledek vezmu vážně.
+
+AKTUÁLNÍ ADVISORY KONTROLA
+V mém prostředí byla síť dostupná, spustil jsem npm audit nad
+lockfilem a71c8d79a2f1a5753a990346aa677e9edeb4bc9246d0fe7efe5c4d2adfc7b5a8
+(totožný v kandidátovi, build-inputu i mé kopii):
+  celkem 0 zranitelností
+  axe-core 4.12.1, fsevents 2.3.2, playwright 1.61.1,
+  playwright-core 1.61.1, pngjs 7.0.0 – všechny devDependencies
+  produkční závislosti prázdné
+Oceňuji, že výsledek z kola 1 nebyl povýšen na PASS pro 1.1.16.
+Tento nový běh platí k 2026-09-13 pro lockfile verze 1.1.16.
+
+======================================================================
+3. NOVÉ NÁLEZY
+======================================================================
+
+N-05  STŘEDNÍ – DEPLOY WORKFLOW SPADNE, NASAZENÍ NEPROBĚHNE
+      Reprodukováno, nikoli odvozeno.
+
+      .github/workflows/deploy.yml spouští pouze
+        npm run build:deployment
+      a nikde nestaví dist-school-server. Zkontroloval jsem to:
+      ve všech pěti workflow není jediná zmínka o school profilu.
+
+      O dva kroky později ale workflow volá
+        node scripts/deployment-staging-regressions.mjs
+      a tento skript iteruje přes OBA stagingy:
+        const roots=['dist-deployment','dist-school-server'];
+      Na druhém padne readFileSync na neexistujícím
+      dist-school-server/index.html.
+
+      Simuloval jsem přesnou posloupnost z CI v čistém stromu:
+        npm run build:deployment      OK, vznikne dist a dist-deployment
+        npm run garp25:leaks:public   PASS
+        node scripts/deployment-staging-regressions.mjs
+          FAIL dist-school-server:exists
+          Error: ENOENT ... 'dist-school-server/index.html'
+          EXIT 1
+
+      Důsledek: krok "Deployment staging regression" selže, workflow
+      skončí chybou a kroky Configure Pages / Upload / Deploy se
+      nikdy neprovedou. Nasazení na GitHub Pages tedy vůbec
+      neproběhne.
+
+      Bezpečnostně to selhává bezpečným směrem – nic se nepublikuje.
+      Prakticky to ale blokuje přesně ten krok, který je podle
+      předávacího protokolu na řadě.
+
+      Doporučení: do deploy.yml přidat před regresní krok
+        npm run build:school-server
+      nebo skriptu předávat kontrolované adresáře argumentem, aby
+      v CI kontroloval jen to, co se tam skutečně staví. Variantu
+      "chybějící staging přeskoč" nedoporučuji, oslabila by kontrolu.
+
+      Vedlejší poznámka ke stejnému skriptu: při chybějícím adresáři
+      spadne neošetřenou výjimkou ENOENT místo toho, aby vypsal svůj
+      JSON report a skončil řízeně. Report se tak v CI logu vůbec
+      neobjeví. Stálo by za to čtení indexu a manuálu obalit tak,
+      aby skript vždy doběhl do svého souhrnu.
+
+N-06  STŘEDNÍ – EVIDENČNÍ REGRESE V ASSURANCE BALÍČKU
+
+      Kandidát 1.1.16 přišel oproti 1.1.15 o čtrnáct SHIELD
+      dokumentů a o celý adresář negativních kontrol:
+
+        SECURITY-THREAT-MODEL.txt          (SH-APP-01)
+        SECURITY-EXCEPTIONS.txt            (SH-APP-12, EX-01..EX-04)
+        SECURITY-ASSURANCE-CROSSWALK.txt
+        SECURITY-BOUNDARY-DIFF.txt
+        NEGATIVE-CONTROLS.txt              (registr SHNC/RISIM)
+        SAST-SUMMARY.txt
+        SCA-SUMMARY.txt
+        SECRET-SCAN-SUMMARY.txt
+        DAST-SUMMARY.txt
+        INCIDENT-RUNBOOK.txt               (SH-DET-07)
+        KEY-CUSTODY-AND-RECOVERY.txt       (SH-SC-10, RI-13)
+        VULNERABILITY-INTAKE.txt           (SH-DET-11)
+        DEPLOYMENT-SECURITY.txt
+        AI-RESOURCE-BUDGET.txt
+        security/evidence/prep-1.1.15/negative-controls/  (13 logů)
+
+      Chci být spravedlivý: zbylé dokumenty 1.1.16 nic nepřehánějí.
+      ASSURANCE-STATUS.txt i RI-PREP-STATUS.txt jsou poctivě zúžené
+      na to, co se v tomto opravném kole skutečně dělalo, a NOT
+      TESTED položky jsou vedeny správně. Nejde o nepravdivé tvrzení.
+
+      Problém je jinde. SHIELD-STATUS.json stále deklaruje
+        shieldPrep AMBER, overall AMBER
+      ale artefakty, které v 1.1.15 tento stupeň podložily, v balíčku
+      nejsou. SHIELD ASSURANCE GATE tak pro 1.1.16 nemá v kandidátovi
+      žádnou dokumentační základnu. Matice RT, SIM, AIR, RI, RISIM,
+      SH-* a SHNC nejsou pro 1.1.16 uvedeny nikde.
+
+      Zároveň zmizel přenášený registr dluhů. Vyhledal jsem D-01 až
+      D-12 i EX-01 až EX-04 napříč celým kandidátem – jediný výskyt
+      je uvnitř kopie mého vlastního protokolu z kola 1 v souboru
+      audit-evidence/garp25-shield-1.1.16/PREVIOUS-CLAUDE-REVIEW-1.1.15.txt.
+      Dluhy přitom nadále platí: unsafe-inline v CSP, plaintext
+      localStorage na sdíleném zařízení, exportované zálohy mimo
+      kontrolu aplikace, PREP-only klíč, live server controls.
+      GARP od verze 2.2 přenášený registr dluhů vyžaduje.
+
+      Také SECURITY-SCAN-SUMMARY.json byl nahrazen jiným, tenčím
+      schématem (sortio-security-scan-summary-v1 místo
+      ghrab-security-scan-summary-v1) a už neeviduje kategorie
+      SAST / SECRET / SCA / DAST ani ukazatele na důkazy.
+
+      Doporučení: přenést těch čtrnáct dokumentů do 1.1.16
+      aktualizované na novou verzi, obnovit registr dluhů
+      D-01..D-12 a EX-01..EX-04 a doplnit matice pro 1.1.16. Není
+      to práce na kód, jen na balíček – ale bez toho nemá školní IT
+      v ruce ani model hrozeb, ani runbook, ani seznam otevřených
+      výjimek.
+
+N-07  NÍZKÝ / INFORMATIVNÍ
+      garp25:sw kontroluje dist a garp25:sw:school kontroluje
+      dist-school-server, ale žádný skript nekontroluje
+      dist-deployment, tedy veřejně publikovaný artefakt.
+      Prakticky to nevadí, protože jsem ověřil, že sw.js je bajtově
+      identický ve všech třech adresářích, a seznam kritických assetů
+      je stejný. Pro úplnost by ale stálo za to doplnit
+      garp25:sw:deployment, aby se kontrolovalo přímo to, co se
+      nahrává.
+
+STAV STARŠÍCH NÁLEZŮ
+  N-01  UZAVŘEN, ověřeno
+  N-02  UZAVŘEN, ověřeno
+  N-03  UZAVŘEN, ověřeno
+  N-04  otevřený hardening, správně nevydáván za opravený
+  N-05  NOVÝ, střední
+  N-06  NOVÝ, střední
+  N-07  NOVÝ, nízký
+
+======================================================================
+4. GATES PO KOLE 2
+======================================================================
+
+SECURITY GATE            AMBER   beze změny, žádná regrese, C-01 drží
+PRIVACY GATE             AMBER   beze změny
+RED TEAM GATE            AMBER   citlivost kontrol znovu doložena
+RELEASE INTEGRITY GATE   AMBER   mechanika potvrzena nezávisle;
+                                 N-03 uzavřen, rozsah důkazu je nyní
+                                 v pořádku
+SHIELD ASSURANCE GATE    AMBER s výhradou – viz N-06; gate není
+                                 v kandidátovi doložen
+
+OVERALL: AMBER
+SHIELD-PREP: AMBER
+SHIELD-LIVE: NOT TESTED
+RI-PREP: AMBER
+RI-LIVE: NOT TESTED
+AGENTIC PROFILE: NO
+Otevřené CRITICAL: 0
+Otevřené HIGH: 0
+Otevřené MEDIUM: 2 (N-05, N-06)
+Otevřené LOW: 1 (N-07)
+Otevřený hardening: 1 (N-04)
+
+======================================================================
+5. DOPORUČENÝ POSTUP
+======================================================================
+
+1. N-05 opravit jako první. Je to jednořádkový krok ve workflow a bez
+   něj se aplikace na GitHub Pages nenasadí. Doporučuji si opravu
+   ověřit stejnou simulací, jakou jsem použil: v čistém stromu pustit
+   jen build:deployment a pak regresní skript.
+2. N-06 vyřešit doplněním balíčku, ne přepisem kódu. Dokud v kandidátovi
+   chybí model hrozeb, registr výjimek a runbook, není co předat
+   školnímu IT a SHIELD ASSURANCE GATE stojí na dokumentech, které
+   v balíčku nejsou.
+3. N-07 přidat při nejbližší úpravě package.json, není naléhavé.
+4. N-04 nadále řešit samostatným úzkým kolem, nemíchat do těchto oprav.
+5. Obě opravy N-05 a N-06 se dotknou build inputu, tedy nová verze
+   a nové otisky. Po nich znovu PROMPT E.
+6. Připojení školního serveru a SHIELD-LIVE až PROMPT F/G.
+
+Co chci výslovně ocenit: opravy z kola 1 nejsou kosmetické. Ořez
+produkčního stagingu je fail-closed uvnitř buildu s explicitními
+markery a postkontrolou, skenery míří na skutečně nasazované
+adresáře, evidence rebuildu má nově správný rozsah a N-04 nebyl
+vydáván za opravený. To je přesně ten způsob, jak se nálezy zavírají.
+
+Tento dokument neopravňuje zpracování reálných studentských dat ani
+produkční nasazení na školní server.
+
+======================================================================
+KONEC OVĚŘENÍ, KOLO 2
+======================================================================

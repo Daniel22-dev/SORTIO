@@ -93,13 +93,30 @@ jobs:
       - name: Enforce P5 R2 release gate
         run: npm run qa:p5:ci
 
+      - name: Build production-clean deployment
+        run: npm run build:deployment
+
+      - name: Build school-server staging for cross-profile regression
+        run: npm run build:school-server
+
+      - name: GARP deployment leak scan
+        run: |
+          npm run garp25:leaks:public
+          npm run garp25:leaks:school
+
+      - name: GARP public deployment service-worker freeze
+        run: npm run garp25:sw:deployment
+
+      - name: Deployment staging regression
+        run: node scripts/deployment-staging-regressions.mjs
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b
         with:
-          path: dist
+          path: dist-deployment
           include-hidden-files: true
 
       - name: Deploy to GitHub Pages
