@@ -40,16 +40,17 @@ for (const required of [
   'AI_STUDIO_DISPATCH_TOKEN',
   'Missing AI_STUDIO_DISPATCH_TOKEN',
   'for attempt in $(seq 1 18)',
-  "releaseIdentity?.source?.repository",
-  "releaseIdentity?.source?.commit",
-  "event_type: 'app-updated'",
-  "app_id: 'sortio'",
-  'source_repository: process.env.SOURCE_REPOSITORY',
-  'source_sha: process.env.SOURCE_SHA',
+  'releaseIdentity?.source?.repository',
+  'releaseIdentity?.source?.commit',
+  'source_repository:process.env.SOURCE_REPOSITORY',
+  'source_sha:process.env.SOURCE_SHA',
   'https://api.github.com/repos/Daniel22-dev/AI-Studio-GHRAB/dispatches',
 ]) {
   if (!workflow.includes(required)) fail(`required contract fragment missing: ${required}`);
 }
+if (!/event_type:\s*["']app-updated["']/.test(workflow)) fail('dispatch event_type must be app-updated');
+if (!/app_id:\s*["']sortio["']/.test(workflow)) fail('dispatch app_id must be sortio');
+if (!/manifest_url:process\.env\.MANIFEST_URL/.test(workflow)) fail('dispatch must include the verified manifest URL');
 
 if (/echo[^\n]*AI_STUDIO_DISPATCH_TOKEN/.test(workflow)) {
   fail('dispatch credential must never be echoed');
