@@ -13,6 +13,13 @@ permissions:
 
 env:
   SORTIO_CI_MODE: deterministic
+  GHRAB_SOURCE_REPOSITORY: ${{ github.repository }}
+  GHRAB_SOURCE_COMMIT: ${{ github.sha }}
+  GHRAB_BUILD_ID: github-${{ github.run_id }}-${{ github.run_attempt }}
+  GHRAB_BUILDER_ID: github-actions
+  GHRAB_WORKFLOW_REF: ${{ github.workflow_ref }}
+  GHRAB_BUILD_PROFILE: github-pages-live
+  GHRAB_BUILD_ENTRYPOINT: npm run garp25:prep-static
 
 concurrency:
   group: pages
@@ -93,6 +100,21 @@ jobs:
 
       - name: Enforce full GARP 2.5.1 production release gate
         run: npm run garp25:prep-static
+
+      - name: Generate and verify LIVE release identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(node -p "require('./package.json').version")"
+          SBOM_SOURCE="security/sbom/sortio-${VERSION}.cdx.json"
+          test -f "$SBOM_SOURCE"
+          cp "$SBOM_SOURCE" dist-deployment/sbom.cdx.json
+          node security/garp25/tools/create-build-provenance.mjs dist-deployment/studio-manifest.json dist-deployment/build-provenance.json
+          export GHRAB_BUILD_PROVENANCE_SHA256="$(sha256sum dist-deployment/build-provenance.json | awk '{print $1}')"
+          export GHRAB_SBOM_SHA256="$(sha256sum dist-deployment/sbom.cdx.json | awk '{print $1}')"
+          node security/garp25/tools/create-release-integrity.mjs dist-deployment sortio "$VERSION" github-actions-live dist-deployment/release-integrity.json
+          node scripts/verify-live-release-identity.mjs dist-deployment/release-integrity.json
+          npm run garp25:leaks:public
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
