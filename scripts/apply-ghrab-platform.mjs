@@ -176,19 +176,44 @@ for (const name of ['studio-manifest.json', 'app-manifest.json']) {
   const target = path.join(dist, name);
   if (!fs.existsSync(target)) continue;
   const manifest = JSON.parse(fs.readFileSync(target, 'utf8'));
+  const existingPlatform = manifest.platform && typeof manifest.platform === 'object' && !Array.isArray(manifest.platform)
+    ? manifest.platform
+    : {};
   manifest.platform = {
+    ...existingPlatform,
+    schema: existingPlatform.schema || 'ghrab-platform-app-integration-v1',
     contract: consumer.platform.contract,
+    requiredPlatformRange: consumer.platform.requiredRange,
     platformVersion: consumer.platform.version,
-    requiredRange: consumer.platform.requiredRange,
     brandVersion: consumer.brand.version,
-    themeContract: 'ghrab-theme-v1',
+    themeContract: existingPlatform.themeContract ?? 1,
+    swContract: existingPlatform.swContract ?? 1,
+    studioBridge: existingPlatform.studioBridge ?? manifest.compatibility?.studioBridge ?? consumer.bridge.contract,
+    artifactEnvelope: existingPlatform.artifactEnvelope ?? 1,
+    storagePrefix: existingPlatform.storagePrefix || `ghrab.${consumer.appId}.`,
+    cacheName: consumer.cache.name,
+    requiredRange: consumer.platform.requiredRange,
     storageContract: 'ghrab-storage-namespace-v1',
     bridgeContract: consumer.bridge.contract,
     artifactContract: consumer.artifact.schema,
     accessibilityContract: consumer.quality.accessibilityContract,
     performanceContract: consumer.quality.performanceContract,
     moduleContract: consumer.quality.moduleContract,
-    cacheName: consumer.cache.name,
+  };
+  manifest.releaseIdentity = {
+    schema: 'ghrab-app-release-identity-v1',
+    appId: consumer.appId,
+    version: consumer.appVersion,
+    source: {
+      repository: process.env.GHRAB_SOURCE_REPOSITORY || manifest.repository || null,
+      commit: process.env.GHRAB_SOURCE_COMMIT || null,
+    },
+    buildId: process.env.GHRAB_BUILD_ID || null,
+    evidence: {
+      releaseIntegrity: 'release-integrity.json',
+      provenance: 'build-provenance.json',
+      sbom: 'sbom.cdx.json',
+    },
   };
   fs.writeFileSync(target, `${JSON.stringify(manifest, null, 2)}\n`);
 }
@@ -212,7 +237,7 @@ if (fs.existsSync(swPath)) {
   ];
   const blockedPlatformAssets = platformAssetsRaw.filter(asset=>criticalSet.has(normalizeAsset(asset)));
   if (blockedPlatformAssets.length) throw new Error(`GHRAB Platform P3 seznam obsahuje security-critical asset: ${blockedPlatformAssets.join(', ')}`);
-  const platformAssets = platformAssetsRaw.filter(asset=>!criticalSet.has(normalizeAsset(asset)));
+  const platformAssets = platformAssetsRaw.filter(asset=>!criticalSet.has(normalizeAsset(asset));
   const hasUpdateProtocol = sw.includes('GHRAB_SKIP_WAITING');
   sw += `\n/* GHRAB_PLATFORM_P3_START */\nconst GHRAB_PLATFORM_P3_ASSETS=${JSON.stringify(platformAssets)};\nself.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(${JSON.stringify(consumer.cache.name)});const results=await Promise.allSettled(GHRAB_PLATFORM_P3_ASSETS.map(asset=>cache.add(asset)));const failed=results.filter(item=>item.status==='rejected');if(failed.length)throw new Error('GHRAB Platform P3 precache selhal: '+failed.length);})()));\n${hasUpdateProtocol ? '' : "self.addEventListener('message',event=>{if(event.data?.type==='GHRAB_SKIP_WAITING')self.skipWaiting();});\n"}/* GHRAB_PLATFORM_P3_END */\n`;
   fs.writeFileSync(swPath, sw);
