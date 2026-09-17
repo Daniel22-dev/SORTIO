@@ -237,7 +237,7 @@ if (fs.existsSync(swPath)) {
   ];
   const blockedPlatformAssets = platformAssetsRaw.filter(asset=>criticalSet.has(normalizeAsset(asset)));
   if (blockedPlatformAssets.length) throw new Error(`GHRAB Platform P3 seznam obsahuje security-critical asset: ${blockedPlatformAssets.join(', ')}`);
-  const platformAssets = platformAssetsRaw.filter(asset=>!criticalSet.has(normalizeAsset(asset));
+  const platformAssets = platformAssetsRaw.filter(asset=>!criticalSet.has(normalizeAsset(asset)));
   const hasUpdateProtocol = sw.includes('GHRAB_SKIP_WAITING');
   sw += `\n/* GHRAB_PLATFORM_P3_START */\nconst GHRAB_PLATFORM_P3_ASSETS=${JSON.stringify(platformAssets)};\nself.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(${JSON.stringify(consumer.cache.name)});const results=await Promise.allSettled(GHRAB_PLATFORM_P3_ASSETS.map(asset=>cache.add(asset)));const failed=results.filter(item=>item.status==='rejected');if(failed.length)throw new Error('GHRAB Platform P3 precache selhal: '+failed.length);})()));\n${hasUpdateProtocol ? '' : "self.addEventListener('message',event=>{if(event.data?.type==='GHRAB_SKIP_WAITING')self.skipWaiting();});\n"}/* GHRAB_PLATFORM_P3_END */\n`;
   fs.writeFileSync(swPath, sw);
