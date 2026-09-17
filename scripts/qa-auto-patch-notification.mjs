@@ -52,8 +52,8 @@ if (!/event_type:\s*["']app-updated["']/.test(workflow)) fail('dispatch event_ty
 if (!/app_id:\s*["']sortio["']/.test(workflow)) fail('dispatch app_id must be sortio');
 if (!/manifest_url:process\.env\.MANIFEST_URL/.test(workflow)) fail('dispatch must include the verified manifest URL');
 
-if (/echo[^\n]*AI_STUDIO_DISPATCH_TOKEN/.test(workflow)) {
-  fail('dispatch credential must never be echoed');
+if (/echo[^\n]*(?:\$AI_STUDIO_DISPATCH_TOKEN|\$\{AI_STUDIO_DISPATCH_TOKEN(?:[^}]*)?\})/.test(workflow)) {
+  fail('dispatch credential value must never be echoed');
 }
 
 console.log('[AUTO-PATCH-NOTIFY] PASS: production notification topology is fail-closed.');
