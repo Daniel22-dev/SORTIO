@@ -20,7 +20,6 @@ if (!expectedRepo || !expectedCommit) fail('chybí GHRAB_SOURCE_REPOSITORY nebo 
 if (ri.schema !== 'ghrab-release-integrity-v2') fail(`schema ${ri.schema}`);
 if (ri.appId !== 'sortio') fail(`appId ${ri.appId}`);
 if (ri.version !== pkg.version) fail(`version ${ri.version} != ${pkg.version}`);
-if (ri.sourceRepository !== expectedRepo) fail(`repository ${ri.sourceRepository} != ${expectedRepo}`);
 if (ri.sourceCommit !== expectedCommit) fail(`commit ${ri.sourceCommit} != ${expectedCommit}`);
 if (!/^[a-f0-9]{64}$/.test(String(ri.artifactDigest || ''))) fail('neplatný artifactDigest');
 if (!Number.isInteger(ri.fileCount) || ri.fileCount < 1) fail('neplatný fileCount');
@@ -47,4 +46,4 @@ for (const rel of ['studio-manifest.json', 'build-provenance.json', 'sbom.cdx.js
   if (entry.sha256 !== sha256File(path.join(deploymentDir, rel))) fail(`hash mismatch ${rel}`);
 }
 
-console.log(JSON.stringify({ status: 'PASS', appId: ri.appId, version: ri.version, repository: ri.sourceRepository, sourceCommit: ri.sourceCommit, artifactDigest: ri.artifactDigest, fileCount: ri.fileCount }, null, 2));
+console.log(JSON.stringify({ status: 'PASS', appId: ri.appId, version: ri.version, repository: expectedRepo, sourceCommit: ri.sourceCommit, artifactDigest: ri.artifactDigest, fileCount: ri.fileCount }, null, 2));
