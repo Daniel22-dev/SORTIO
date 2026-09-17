@@ -13,13 +13,6 @@ permissions:
 
 env:
   SORTIO_CI_MODE: deterministic
-  GHRAB_SOURCE_REPOSITORY: ${{ github.repository }}
-  GHRAB_SOURCE_COMMIT: ${{ github.sha }}
-  GHRAB_BUILD_ID: github-${{ github.run_id }}-${{ github.run_attempt }}
-  GHRAB_BUILDER_ID: github-actions
-  GHRAB_WORKFLOW_REF: ${{ github.workflow_ref }}
-  GHRAB_BUILD_PROFILE: github-pages-live
-  GHRAB_BUILD_ENTRYPOINT: npm run garp25:prep-static
 
 concurrency:
   group: pages
@@ -103,11 +96,20 @@ jobs:
 
       - name: Generate and verify LIVE release identity
         shell: bash
+        env:
+          GHRAB_SOURCE_REPOSITORY: ${{ github.repository }}
+          GHRAB_SOURCE_COMMIT: ${{ github.sha }}
+          GHRAB_BUILD_ID: github-${{ github.run_id }}-${{ github.run_attempt }}
+          GHRAB_BUILDER_ID: github-actions
+          GHRAB_WORKFLOW_REF: ${{ github.workflow_ref }}
+          GHRAB_BUILD_PROFILE: github-pages-live
+          GHRAB_BUILD_ENTRYPOINT: npm run garp25:prep-static
         run: |
           set -euo pipefail
           VERSION="$(node -p "require('./package.json').version")"
           SBOM_SOURCE="security/sbom/sortio-${VERSION}.cdx.json"
           test -f "$SBOM_SOURCE"
+          node scripts/stamp-live-release-identity.mjs dist-deployment/studio-manifest.json
           cp "$SBOM_SOURCE" dist-deployment/sbom.cdx.json
           node security/garp25/tools/create-build-provenance.mjs dist-deployment/studio-manifest.json dist-deployment/build-provenance.json
           export GHRAB_BUILD_PROVENANCE_SHA256="$(sha256sum dist-deployment/build-provenance.json | awk '{print $1}')"
