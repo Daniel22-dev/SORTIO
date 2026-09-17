@@ -3,8 +3,9 @@ name: P5 R2 pre-production release gate
 on:
   workflow_dispatch:
   push:
-    branches: [main, master]
+    branches: [candidate, main]
   pull_request:
+    branches: [main]
 
 permissions:
   contents: read
