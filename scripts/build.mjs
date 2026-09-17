@@ -103,3 +103,5 @@ console.log(
 
 // P2: canonical cross-application platform post-processing.
 await import("./apply-ghrab-platform.mjs");
+// Stage 4: fail closed if post-processing drops Studio contract fields.
+await import("./verify-studio-manifest-contract.mjs");

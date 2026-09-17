@@ -7,6 +7,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "verify:structure": "node scripts/verify-structure.mjs",
+    "verify:studio-manifest": "node scripts/verify-studio-manifest-contract.mjs",
     "test": "npm run build && npm run verify:structure && npm run test:domain && npm run test:lesson-board && npm run test:ux && npm run test:package3 && npm run test:package4 && npm run test:package5 && npm run test:garp-security && npm run test:garp-hostile-render && npm run test:garp-canary && npm run test:garp-suite-session && npm run garp25:ci",
     "test:domain": "node scripts/domain-tests.mjs",
     "test:headless": "node scripts/headless-check.mjs",
@@ -66,8 +67,8 @@
     "garp25:leaks:school": "node security/garp25/tools/scan-deployment-leaks.mjs dist-school-server",
     "garp25:vendored": "node security/garp25/tools/check-vendored-consistency.mjs security/vendored-consistency.local.json",
     "garp25:logging-canary": "node scripts/qa-garp25-logging-canary.mjs",
-    "garp25:prep-static": "npm run build:deployment && npm run build:school-server && npm run garp25:selftest && npm run garp25:sbom:check && npm run garp25:sbom:verify && npm run garp25:source-scan && npm run garp25:action-pins && npm run garp25:logging-canary && npm run garp25:sw && npm run garp25:sw:deployment && npm run garp25:sw:school && npm run garp25:leaks:public && npm run garp25:leaks:school && npm run test:deployment-staging && npm run garp25:vendored",
-    "garp25:ci": "npm run garp25:selftest && npm run garp25:sbom:check && npm run garp25:sbom:verify && npm run garp25:source-scan && npm run garp25:action-pins && npm run garp25:logging-canary && npm run garp25:sw",
+    "garp25:prep-static": "npm run build:deployment && npm run build:school-server && npm run verify:studio-manifest && npm run garp25:selftest && npm run garp25:sbom:check && npm run garp25:sbom:verify && npm run garp25:source-scan && npm run garp25:action-pins && npm run garp25:logging-canary && npm run garp25:sw && npm run garp25:sw:deployment && npm run garp25:sw:school && npm run garp25:leaks:public && npm run garp25:leaks:school && npm run test:deployment-staging && npm run garp25:vendored",
+    "garp25:ci": "npm run verify:studio-manifest && npm run garp25:selftest && npm run garp25:sbom:check && npm run garp25:sbom:verify && npm run garp25:source-scan && npm run garp25:action-pins && npm run garp25:logging-canary && npm run garp25:sw",
     "build:deployment": "npm run build && node scripts/build-public-profile.mjs",
     "test:deployment-staging": "node scripts/deployment-staging-regressions.mjs",
     "garp25:sw:deployment": "node security/garp25/tools/check-sw-security-freeze.mjs dist-deployment/sw.js dist-deployment security/security-critical-assets.json"
