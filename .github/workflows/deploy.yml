@@ -23,7 +23,7 @@ jobs:
   deploy:
     name: Verify and publish SORTIO
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -90,25 +90,11 @@ jobs:
         run: npm run qa:platform
 
 
-      - name: Enforce P5 R2 release gate
+      - name: Enforce P5 R2 CI gate
         run: npm run qa:p5:ci
 
-      - name: Build production-clean deployment
-        run: npm run build:deployment
-
-      - name: Build school-server staging for cross-profile regression
-        run: npm run build:school-server
-
-      - name: GARP deployment leak scan
-        run: |
-          npm run garp25:leaks:public
-          npm run garp25:leaks:school
-
-      - name: GARP public deployment service-worker freeze
-        run: npm run garp25:sw:deployment
-
-      - name: Deployment staging regression
-        run: node scripts/deployment-staging-regressions.mjs
+      - name: Enforce full GARP 2.5.1 production release gate
+        run: npm run garp25:prep-static
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
