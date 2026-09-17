@@ -60,7 +60,6 @@ const manifest = {
   appId, version,
   buildId: process.env.GHRAB_BUILD_ID || `local-${Date.now()}`,
   createdAt: new Date().toISOString(),
-  sourceRepository: process.env.GHRAB_SOURCE_REPOSITORY || null,
   sourceCommit: process.env.GHRAB_SOURCE_COMMIT || null,
   sourcePackageSha256: process.env.GHRAB_SOURCE_PACKAGE_SHA256 || null,
   deploymentPackageSha256: process.env.GHRAB_DEPLOYMENT_PACKAGE_SHA256 || null,
@@ -74,4 +73,4 @@ const manifest = {
   files
 };
 await writeFile(path.resolve(outArg), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
-console.log(JSON.stringify({ status: 'PASS', output: path.resolve(outArg), files: files.length, artifactDigest: manifest.artifactDigest, sourceRepository: manifest.sourceRepository, sourceCommit: manifest.sourceCommit }, null, 2));
+console.log(JSON.stringify({ status: 'PASS', output: path.resolve(outArg), files: files.length, artifactDigest: manifest.artifactDigest }, null, 2));
