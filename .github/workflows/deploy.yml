@@ -159,19 +159,7 @@ jobs:
             if curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location --max-time 15 \
               "$manifest_url?run=${GITHUB_RUN_ID}-${attempt}" -o "$manifest_file"; then
               if EXPECTED_VERSION="$EXPECTED_VERSION" EXPECTED_REPOSITORY="$EXPECTED_REPOSITORY" EXPECTED_SHA="$EXPECTED_SHA" \
-                node --input-type=module - "$manifest_file" <<'NODE'
-import { readFileSync } from 'node:fs';
-const file = process.argv[2];
-const manifest = JSON.parse(readFileSync(file, 'utf8'));
-const repository = String(manifest?.releaseIdentity?.source?.repository || '');
-const commit = String(manifest?.releaseIdentity?.source?.commit || '');
-const ok = manifest?.id === 'sortio'
-  && manifest?.version === process.env.EXPECTED_VERSION
-  && repository.toLowerCase() === String(process.env.EXPECTED_REPOSITORY || '').toLowerCase()
-  && commit === process.env.EXPECTED_SHA;
-if (!ok) process.exit(1);
-NODE
-              then
+                node -e 'const fs=require("node:fs");const m=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));const repo=String(m?.releaseIdentity?.source?.repository||"");const sha=String(m?.releaseIdentity?.source?.commit||"");const ok=m?.id==="sortio"&&m?.version===process.env.EXPECTED_VERSION&&repo.toLowerCase()===String(process.env.EXPECTED_REPOSITORY||"").toLowerCase()&&sha===process.env.EXPECTED_SHA;if(!ok)process.exit(1);' "$manifest_file"; then
                 echo "LIVE manifest confirmed for SORTIO ${EXPECTED_VERSION} at ${EXPECTED_SHA}."
                 exit 0
               fi
@@ -194,20 +182,7 @@ NODE
           APP_VERSION="$(node -p "require('./package.json').version")"
           MANIFEST_URL="https://daniel22-dev.github.io/SORTIO/studio-manifest.json"
 
-          APP_VERSION="$APP_VERSION" MANIFEST_URL="$MANIFEST_URL" node <<'NODE' > "$RUNNER_TEMP/ai-studio-dispatch.json"
-const payload = {
-  event_type: 'app-updated',
-  client_payload: {
-    app_id: 'sortio',
-    app_version: process.env.APP_VERSION,
-    source_repository: process.env.SOURCE_REPOSITORY,
-    source_sha: process.env.SOURCE_SHA,
-    deployed_url: process.env.DEPLOYED_URL,
-    manifest_url: process.env.MANIFEST_URL,
-  },
-};
-process.stdout.write(JSON.stringify(payload));
-NODE
+          APP_VERSION="$APP_VERSION" MANIFEST_URL="$MANIFEST_URL" node -e 'const payload={event_type:"app-updated",client_payload:{app_id:"sortio",app_version:process.env.APP_VERSION,source_repository:process.env.SOURCE_REPOSITORY,source_sha:process.env.SOURCE_SHA,deployed_url:process.env.DEPLOYED_URL,manifest_url:process.env.MANIFEST_URL}};process.stdout.write(JSON.stringify(payload));' > "$RUNNER_TEMP/ai-studio-dispatch.json"
 
           curl --proto '=https' --tlsv1.2 --fail-with-body --silent --show-error \
             -X POST \
