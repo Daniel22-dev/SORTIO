@@ -147,7 +147,6 @@ jobs:
       - name: Wait for deployed LIVE Studio manifest
         shell: bash
         env:
-          EXPECTED_VERSION: ${{ fromJSON(steps.release-meta-placeholder.outputs.value || 'null') }}
           EXPECTED_REPOSITORY: ${{ github.repository }}
           EXPECTED_SHA: ${{ github.sha }}
         run: |
