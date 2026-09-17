@@ -3,8 +3,9 @@ name: Legacy quality entrypoint (delegates to P5 R2)
 on:
   workflow_dispatch:
   push:
-    branches: [main, master]
+    branches: [candidate, main]
   pull_request:
+    branches: [main]
 
 permissions:
   contents: read
