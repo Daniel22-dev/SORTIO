@@ -31,8 +31,11 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
-      - name: Run P5 R2 release gate
+      - name: Run P5 R2 CI gate
         run: npm run qa:p5:ci
+      - name: Run full GARP 2.5.1 pre-production release gate
+        if: github.event_name != 'pull_request'
+        run: npm run garp25:prep-static
       - name: Upload audit evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
