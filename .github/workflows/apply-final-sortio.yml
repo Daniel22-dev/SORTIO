@@ -1,0 +1,63 @@
+name: Apply final SORTIO 1.0.2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/apply-final-sortio.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sortio-final-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    name: Apply and validate final SORTIO
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Reconstruct and apply verified Git patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .sortio-final/git-* | base64 --decode > /tmp/sortio-final.patch.gz
+          echo 'c4cde0123860dbcda64854a25ff15abf6ace6d2155988b21d309edb179ca0278  /tmp/sortio-final.patch.gz' | sha256sum -c -
+          gzip -dc /tmp/sortio-final.patch.gz > /tmp/sortio-final.patch
+          git apply --check --3way /tmp/sortio-final.patch
+          git apply --3way /tmp/sortio-final.patch
+          rm -rf .sortio-update .sortio-final
+          rm -f .github/workflows/apply-sortio-update.yml
+
+      - name: Install dependencies
+        run: npm ci --no-fund --no-audit
+
+      - name: Validate final version
+        run: |
+          npm test
+          npm run test:internal
+          npm run build
+          npm run qa:technical
+          npm run qa:security
+          npm run qa:pwa
+
+      - name: Commit validated final version to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/apply-final-sortio.yml
+          git config user.name 'SORTIO Update Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A
+          git commit -m 'Sloučit auditní opravy a vylepšení SORTIO 1.0.2'
+          git push origin HEAD:main
