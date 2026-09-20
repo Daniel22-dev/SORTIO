@@ -31,6 +31,9 @@ expect(built.platform?.bridgeContract === consumer.bridge.contract, 'platform.br
 expect(built.platform?.artifactContract === consumer.artifact.schema, 'platform.artifactContract alias', built.platform?.artifactContract, consumer.artifact.schema);
 
 expect(built.releaseIdentity?.schema === 'ghrab-app-release-identity-v1', 'release identity schema', built.releaseIdentity?.schema, 'ghrab-app-release-identity-v1');
+expect(built.releaseIdentity?.contract === 'ghrab-release-integrity-v2', 'release identity contract', built.releaseIdentity?.contract, 'ghrab-release-integrity-v2');
+expect(built.releaseIdentity?.url === './release-integrity.json', 'release identity url', built.releaseIdentity?.url, './release-integrity.json');
+expect(built.releaseIdentity?.assuranceMode === 'TRANSITIONAL', 'release identity assurance mode', built.releaseIdentity?.assuranceMode, 'TRANSITIONAL');
 expect(built.releaseIdentity?.appId === consumer.appId, 'release identity appId', built.releaseIdentity?.appId, consumer.appId);
 expect(built.releaseIdentity?.version === pkg.version, 'release identity version', built.releaseIdentity?.version, pkg.version);
 const expectedRepo = process.env.GHRAB_SOURCE_REPOSITORY || built.repository;
@@ -38,7 +41,7 @@ expect(built.releaseIdentity?.source?.repository === expectedRepo, 'release sour
 if (process.env.GHRAB_SOURCE_COMMIT) {
   expect(built.releaseIdentity?.source?.commit === process.env.GHRAB_SOURCE_COMMIT, 'release source commit', built.releaseIdentity?.source?.commit, process.env.GHRAB_SOURCE_COMMIT);
 }
-for (const [key, value] of Object.entries({ releaseIntegrity: 'release-integrity.json', provenance: 'build-provenance.json', sbom: 'sbom.cdx.json' })) {
+for (const [key, value] of Object.entries({ releaseIntegrity: 'release-integrity.json', provenance: 'build-provenance.json', sbom: 'sbom.cdx.json', securityEvidenceManifest: 'security-evidence-manifest.json' })) {
   expect(built.releaseIdentity?.evidence?.[key] === value, `release evidence ${key}`, built.releaseIdentity?.evidence?.[key], value);
 }
 

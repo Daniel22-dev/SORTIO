@@ -202,6 +202,9 @@ for (const name of ['studio-manifest.json', 'app-manifest.json']) {
   };
   manifest.releaseIdentity = {
     schema: 'ghrab-app-release-identity-v1',
+    contract: 'ghrab-release-integrity-v2',
+    url: './release-integrity.json',
+    assuranceMode: 'TRANSITIONAL',
     appId: consumer.appId,
     version: consumer.appVersion,
     source: {
@@ -213,6 +216,7 @@ for (const name of ['studio-manifest.json', 'app-manifest.json']) {
       releaseIntegrity: 'release-integrity.json',
       provenance: 'build-provenance.json',
       sbom: 'sbom.cdx.json',
+      securityEvidenceManifest: 'security-evidence-manifest.json',
     },
   };
   fs.writeFileSync(target, `${JSON.stringify(manifest, null, 2)}\n`);
