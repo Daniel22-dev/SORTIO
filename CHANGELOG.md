@@ -2,6 +2,16 @@
 
 V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizací. Starší technická historie zůstává v samostatných `RELEASE-NOTES-*.md`.
 
+## 1.1.19 — 2026-09-20
+- Opravena přesná GitHub Pages release identity: `.nojekyll` se už nezahrnuje do veřejně ověřovaného artifact digestu, protože jde o deployment marker spotřebovaný Pages a není veřejně dostupný přes HTTP.
+- AI Studio tak může nezávisle ověřit všechny deklarované soubory i výsledný `artifactDigest` bez oslabení fail-closed kontroly.
+- Funkce aplikace a datový model se nemění.
+
+## 1.1.18 — 2026-09-19
+- Safe Promotion používá chráněný `main`, produkční deploy navazuje na GREEN P5 a live release identity váže verzi na source commit, artifact digest, manifest, SBOM, provenance a security evidence.
+- Po live ověření aplikace odesílá `app-updated` do AI Studia.
+- Funkce aplikace a datový model se nemění.
+
 ## 1.1.17 — 2026-09-13
 - Opravné GARP 2.5.1 SHIELD kolo po nezávislé kontrole 1.1.16.
 - GitHub Pages workflow nyní před cross-profile regresí deterministicky staví i school-server staging, takže nasazení nezastaví chybějící `dist-school-server`.
@@ -47,13 +57,3 @@ V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizac
 - Rozšířená knihovna pozadí s automatickým načtením více výsledků.
 - Zelený provozní stav a procentuální průběh produkčních kontrol.
 - CI hotfix: interní testy správně kontrolují i lazy `production-tools.js`.
-
-## 1.1.9 — 2026-09-08
-- Jedno políčko editoru představuje dvojlavici pro dva studenty.
-- Nepravidelný tvar učebny se centruje v aplikaci, projekci i PDF.
-- Wikimedia pozadí se zobrazuje celé bez ořezu a nevhodné encyklopedické motivy jsou potlačené.
-
-## 1.1.8 — 2026-09-08
-- Nový zasedací plán začíná prázdnou mřížkou bez automatického předkreslení.
-- Rychlé tvary jsou volitelné a počet míst začíná na nule.
-

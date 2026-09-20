@@ -70,10 +70,10 @@ expect('draw pen color updates immediately without board rerender',board.include
 expect('draw clear is immediate while full panel clear still confirms',board.includes("if(action==='draw-clear'){d.strokes=[];lessonBoardPersist('lesson_draw_clear');return true}")&&!board.includes("confirm('Smazat obsah této tabule?')")&&board.includes('function lessonBoardShowClearConfirm'));
 const uiChangelogCount=(body.match(/class="changelog-entry(?: current)?"/g)||[]).length;
 const mdChangelogCount=(changelog.match(/^## 1\.1\./gm)||[]).length;
-expect('about page keeps exactly last ten changelog updates',uiChangelogCount===10&&body.includes('<b>1.1.18</b>')&&body.includes('<b>1.1.9</b>')&&!body.includes('<b>1.1.8</b>'));
-expect('repository changelog keeps exactly last ten release updates',mdChangelogCount===10&&/^## 1\.1\.17\b/m.test(changelog)&&/^## 1\.1\.8\b/m.test(changelog)&&!/^## 1\.1\.7\b/m.test(changelog));
+expect('about page keeps exactly last ten changelog updates',uiChangelogCount===10&&body.includes('<b>1.1.19</b>')&&body.includes('<b>1.1.10</b>')&&!body.includes('<b>1.1.9</b>'));
+expect('repository changelog keeps exactly last ten release updates',mdChangelogCount===10&&/^## 1\.1\.19\b/m.test(changelog)&&/^## 1\.1\.10\b/m.test(changelog)&&!/^## 1\.1\.9\b/m.test(changelog));
 expect('timer uses compact start button',board.includes('timer-start-compact')&&!board.includes('class="timer-start-big'));
 expect('agenda edits inline without prompt',board.includes('data-board-agenda-title')&&!board.includes("prompt('Agenda"));
 const failed=checks.filter(item=>!item.ok);
-console.log(`\nSORTIO 1.1.18 UX regressions: ${checks.length-failed.length}/${checks.length} PASS`);
+console.log(`\nSORTIO 1.1.19 UX regressions: ${checks.length-failed.length}/${checks.length} PASS`);
 if(failed.length)process.exit(1);
