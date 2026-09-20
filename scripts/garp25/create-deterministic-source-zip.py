@@ -3,7 +3,7 @@ from pathlib import Path
 from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 import os, sys
 root=Path(sys.argv[1] if len(sys.argv)>1 else '.').resolve()
-out=Path(sys.argv[2] if len(sys.argv)>2 else 'SORTIO-1.1.19-GARP2.5-BUILD-INPUT-SOURCE.zip').resolve()
+out=Path(sys.argv[2] if len(sys.argv)>2 else 'SORTIO-1.1.20-GARP2.5-BUILD-INPUT-SOURCE.zip').resolve()
 skip_dirs={'.git','node_modules','dist','dist-school-server','dist-deployment','qa-results','test-results','audit-evidence'}
 skip_prefixes=('security/evidence/','security/release-integrity/')
 skip_names={out.name}

@@ -2,26 +2,30 @@
   "schema": "ghrab-release-acceptance-v1",
   "stage": "P5",
   "appId": "sortio",
-  "appVersion": "1.1.19",
-  "releaseStatus": "garp25-shield-prep-candidate",
+  "appVersion": "1.1.20",
+  "releaseStatus": "source-attestation-for-live-release",
   "primaryRuntime": {
     "mode": "standalone-github-pages",
     "serverRequired": false,
     "offlineCapable": true,
     "currentUseApproved": false,
     "candidateSyntheticOnly": true,
-    "note": "1.1.19 hardens Safe Promotion, exact release identity and AI Studio auto-patch notification. No data-model migration or generative-AI transport is introduced."
+    "note": "Technický release řetězec je empiricky ověřen; currentUseApproved zůstává false, protože technické nasazení samo o sobě není organizační schválení školy pro ostrá studentská data."
   },
   "github": {
-    "status": "candidate-not-released",
-    "uploadDeferredUntilEcosystemComplete": true,
+    "status": "safe-promotion-gated",
+    "uploadDeferredUntilEcosystemComplete": false,
     "postUploadValidationRequired": true,
+    "deploymentBranch": "main",
+    "candidateBranch": "candidate",
     "requiredChecks": [
-      "project-tests",
+      "candidate-to-main",
       "p5-release-gate",
-      "live-pages-smoke",
-      "pwa-update-from-previous-release"
-    ]
+      "axe"
+    ],
+    "promotionModel": "candidate-to-main-pr",
+    "autoMergeAfterGreen": true,
+    "directMainPushAllowed": false
   },
   "schoolServer": {
     "status": "prepared-not-connected",
@@ -39,11 +43,12 @@
     "sourceRepositoriesExcludedFromSchoolOperationalPackage": true,
     "legalTermsRequireSeparateAgreement": true
   },
-  "revision": "P5-R2",
+  "revision": "P5-R3-GARP25-N5-SAFE-PROMOTION-CLEANUP",
   "runtimeAudit": {
     "required": true,
     "scriptsExecuted": true,
-    "transport": "local-http"
+    "transport": "source-side acceptance metadata; live state attested by release-integrity.json and AI Studio release-wave",
+    "note": "This file is not the authority for live deployment state."
   },
   "suiteSession": {
     "contract": "ghrab-suite-session-v1",
@@ -52,5 +57,12 @@
     "ecosystemSharedDeviceGate": "pending-wave-completion",
     "nativeBrowserTransportValidation": "pending-environment-capable-run"
   },
-  "note": "1.1.19 is an infrastructure-only GARP 2.5.1 / Safe Promotion release that closes the live release-identity and AI Studio auto-patch chain without changing classroom features or the data model."
+  "note": "1.1.20 is a metadata/cleanup PATCH. It removes obsolete repository artifacts and duplicate legacy workflow entrypoints, neutralizes version-coupled tooling, and preserves classroom behavior and the data model.",
+  "publication": {
+    "runtimeDistributed": true,
+    "liveStatusAuthority": [
+      "release-integrity.json",
+      "AI Studio release-wave"
+    ]
+  }
 }

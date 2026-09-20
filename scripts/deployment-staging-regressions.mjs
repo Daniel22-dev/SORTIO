@@ -13,5 +13,5 @@ for(const root of roots){
   check(`${root}:manual-no-production-tests-route`,!manual.includes('Adresa /tests/ musí skončit bez selhání.'));
 }
 const failed=checks.filter(x=>!x.ok);
-console.log(JSON.stringify({schema:'sortio-deployment-staging-regressions-v1',version:'1.1.19',status:failed.length?'failed':'passed',checks},null,2));
+console.log(JSON.stringify({schema:'sortio-deployment-staging-regressions-v1',version:'1.1.20',status:failed.length?'failed':'passed',checks},null,2));
 if(failed.length)process.exit(1);
