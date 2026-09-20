@@ -8,7 +8,7 @@ const reporterGuideUrl = deployment?.access?.guideUrl || new URL('manualy/error-
 const reporter = setupErrorReporter({
   appId: 'sortio',
   appName: 'SORTIO',
-  appVersion: '1.1.17',
+  appVersion: '1.1.18',
   studioUrl: reporterStudioUrl,
   supportEmail: 'balaz@ghrabuvka.cz',
   guideUrl: reporterGuideUrl,

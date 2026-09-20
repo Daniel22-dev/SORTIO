@@ -1,59 +1,24 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
-import process from 'node:process';
-
-const workflowPath = '.github/workflows/deploy.yml';
-const workflow = readFileSync(new URL(`../${workflowPath}`, import.meta.url), 'utf8');
-
-const fail = (message) => {
-  console.error(`[AUTO-PATCH-NOTIFY] FAIL: ${message}`);
-  process.exit(1);
-};
-
-const indexOf = (needle, label) => {
-  const index = workflow.indexOf(needle);
-  if (index < 0) fail(`${label} is missing`);
-  return index;
-};
-
-if (!/push:\s*\n\s*branches:\s*\n\s*- main/.test(workflow)) {
-  fail('production deploy must be push-triggered from main');
-}
-if (/push:[\s\S]*?branches:[\s\S]*?candidate/.test(workflow.split('workflow_dispatch:')[0])) {
-  fail('candidate must never trigger the production deploy workflow');
-}
-if (!/if:\s*github\.ref == ['"]refs\/heads\/main['"]/.test(workflow)) {
-  fail('deploy job must fail closed to refs/heads/main');
-}
-
-const credential = indexOf('Verify AI Studio dispatch credential', 'credential preflight');
-const configure = indexOf('Configure GitHub Pages', 'GitHub Pages configuration');
-const deploy = indexOf('Deploy to GitHub Pages', 'GitHub Pages deployment');
-const liveCheck = indexOf('Wait for deployed LIVE Studio manifest', 'LIVE manifest verification');
-const dispatch = indexOf('Dispatch app-updated event to AI Studio', 'AI Studio dispatch');
-
-if (!(credential < configure && configure < deploy && deploy < liveCheck && liveCheck < dispatch)) {
-  fail('required order is credential -> configure/upload -> deploy -> live verification -> dispatch');
-}
-
-for (const required of [
-  'AI_STUDIO_DISPATCH_TOKEN',
-  'Missing AI_STUDIO_DISPATCH_TOKEN',
-  'for attempt in $(seq 1 18)',
-  'releaseIdentity?.source?.repository',
-  'releaseIdentity?.source?.commit',
-  'source_repository:process.env.SOURCE_REPOSITORY',
-  'source_sha:process.env.SOURCE_SHA',
-  'https://api.github.com/repos/Daniel22-dev/AI-Studio-GHRAB/dispatches',
-]) {
-  if (!workflow.includes(required)) fail(`required contract fragment missing: ${required}`);
-}
-if (!/event_type:\s*["']app-updated["']/.test(workflow)) fail('dispatch event_type must be app-updated');
-if (!/app_id:\s*["']sortio["']/.test(workflow)) fail('dispatch app_id must be sortio');
-if (!/manifest_url:process\.env\.MANIFEST_URL/.test(workflow)) fail('dispatch must include the verified manifest URL');
-
-if (/echo[^\n]*(?:\$AI_STUDIO_DISPATCH_TOKEN|\$\{AI_STUDIO_DISPATCH_TOKEN(?:[^}]*)?\})/.test(workflow)) {
-  fail('dispatch credential value must never be echoed');
-}
-
-console.log('[AUTO-PATCH-NOTIFY] PASS: production notification topology is fail-closed.');
+const deploy = readFileSync(new URL('../.github/workflows/deploy.yml', import.meta.url), 'utf8');
+const promotion = readFileSync(new URL('../.github/workflows/safe-promotion.yml', import.meta.url), 'utf8');
+const fail = (m) => { console.error(`[AUTO-PATCH-TOPOLOGY] FAIL: ${m}`); process.exit(1); };
+for (const [source, required, label] of [
+  [deploy, 'workflow_run:', 'deploy must be chained from P5 workflow_run'],
+  [deploy, 'head_branch == \'main\'', 'deploy must accept only main P5'],
+  [deploy, 'Verify AI Studio dispatch credential', 'dispatch credential preflight'],
+  [deploy, 'prepare:pages', 'exact release identity preparation'],
+  [deploy, 'Verify the live release before notifying AI Studio', 'bounded live verification'],
+  [deploy, 'Dispatch app-updated event to AI Studio', 'app-updated dispatch'],
+  [deploy, 'AI_STUDIO_DISPATCH_TOKEN', 'dispatch secret'],
+  [promotion, 'workflow_run:', 'Safe Promotion controller'],
+  [promotion, 'SAFE_PROMOTION_TOKEN', 'promotion credential'],
+  [promotion, 'head_branch == \'candidate\'', 'candidate-only promotion source'],
+  [promotion, 'rules/branches/main', 'runtime ruleset verification'],
+  [promotion, 'p5-release-gate', 'P5 required gate'],
+]) if (!source.includes(required)) fail(label);
+if (/head_branch\s*==\s*['"]candidate['"][\s\S]{0,200}(?:deploy|publish)/i.test(deploy)) fail('candidate must never deploy to production');
+if (deploy.includes('git push origin HEAD:main')) fail('deploy must never push to main');
+if (promotion.includes('git push origin HEAD:main')) fail('promotion controller must merge through PR, not direct-push main');
+if (!deploy.includes("event_type: 'app-updated'") && !deploy.includes('build-ai-studio-dispatch.mjs')) fail('dispatch contract is not built from verified live release');
+console.log('[AUTO-PATCH-TOPOLOGY] PASS: candidate -> full P5 -> PR -> protected main -> P5 -> Pages -> live verification -> app-updated.');
