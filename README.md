@@ -1,6 +1,6 @@
 # SORTIO – Výukový panel
 
-**Aktuální verze:** 1.1.17  
+**Aktuální verze:** 1.1.18  
 **Platforma:** GHRAB Platform 1.1.2
 
 SORTIO je local-first aplikace pro organizaci třídy a řízení živé výuky. Spojuje import seznamu z IS, docházku, losování, chytré skupiny, role a zasedací pořádek s pracovní plochou navázanou na aktivní třídu pro časovače, hodiny, semafor, tabuli, kostky, skóre, obrázky, agendu, QR odkazy a hlasování.
