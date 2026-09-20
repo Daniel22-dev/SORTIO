@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-const [sbomArg='security/sbom/ludus.cdx.json']=process.argv.slice(2);
-const root=process.cwd(), lock=JSON.parse(fs.readFileSync('package-lock.json','utf8')), bom=JSON.parse(fs.readFileSync(sbomArg,'utf8'));
+const root=process.cwd();
+const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
+const [sbomArg=`security/sbom/sortio-${pkg.version}.cdx.json`]=process.argv.slice(2);
+const lock=JSON.parse(fs.readFileSync('package-lock.json','utf8')), bom=JSON.parse(fs.readFileSync(sbomArg,'utf8'));
 const norm=s=>String(s||'').replace(/\\/g,'/');
 const inferName=lp=>{const n=norm(lp),m='node_modules/',i=n.lastIndexOf(m);if(i<0)return'';const seg=n.slice(i+m.length).split('/').filter(Boolean);return seg[0]?.startsWith('@')?seg.slice(0,2).join('/'):(seg[0]||'')};
 const expected=[];

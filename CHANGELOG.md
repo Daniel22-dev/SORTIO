@@ -2,6 +2,12 @@
 
 V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizací. Starší technická historie zůstává v samostatných `RELEASE-NOTES-*.md`.
 
+## 1.1.20 — 2026-09-20
+- Finální repository clean-up: odstraněn zastaralý ruční upload návod, kořenový 1.1.17 zdrojový ZIP a duplicitní legacy P3/P4 workflow entrypointy.
+- Aktivní UX a SBOM tooling už není názvem/výchozí cestou svázán s konkrétní starší PATCH verzí.
+- README, architektura a release-acceptance metadata byly sjednoceny s dnešním Safe Promotion a ověřovaným auto-patch řetězcem.
+- Funkce aplikace ani datový model se nemění.
+
 ## 1.1.19 — 2026-09-20
 - Opravena přesná GitHub Pages release identity: `.nojekyll` se už nezahrnuje do veřejně ověřovaného artifact digestu, protože jde o deployment marker spotřebovaný Pages a není veřejně dostupný přes HTTP.
 - AI Studio tak může nezávisle ověřit všechny deklarované soubory i výsledný `artifactDigest` bez oslabení fail-closed kontroly.
@@ -51,9 +57,3 @@ V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizac
 - Automatické rozsazení postupuje od tabule dozadu, takže běžná volná místa zůstávají v zadní části učebny. Výjimkou je volné druhé místo u studenta, který má sedět sám, a ručně uzamčené pozice.
 - Preference „Kluk + holka“ zůstává volitelná; párovací kategorie se nastavují výslovně v rozbalené sekci a nejsou odhadovány z jména.
 - Changelog v aplikaci i repozitáři je omezen na posledních 10 aktualizací.
-
-## 1.1.10 — 2026-09-08
-- Zasedací editor 3 × 7 dvojlavic, samostatné sezení, zvýraznění volných míst a volitelná preference kluk + holka.
-- Rozšířená knihovna pozadí s automatickým načtením více výsledků.
-- Zelený provozní stav a procentuální průběh produkčních kontrol.
-- CI hotfix: interní testy správně kontrolují i lazy `production-tools.js`.
