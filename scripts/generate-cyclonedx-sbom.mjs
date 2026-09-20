@@ -4,7 +4,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 const args=process.argv.slice(2), deployMode=args.includes('--deploy'), checkMode=args.includes('--check');
 const positional=args.filter(a=>!a.startsWith('--'));
-const outArg=positional[0]||(deployMode?'security/sbom/sortio-1.1.18-deployment.cdx.json':'security/sbom/sortio-1.1.18.cdx.json');
+const outArg=positional[0]||(deployMode?'security/sbom/sortio-1.1.19-deployment.cdx.json':'security/sbom/sortio-1.1.19.cdx.json');
 const deployRoot=path.resolve(positional[1]||'dist-school-server'), root=process.cwd();
 const norm=s=>String(s||'').replace(/\\/g,'/'), sha256=b=>createHash('sha256').update(b).digest('hex');
 const purl=(n,v)=>`pkg:npm/${n.startsWith('@')?n.split('/').map(encodeURIComponent).join('/'):encodeURIComponent(n)}@${encodeURIComponent(v)}`;

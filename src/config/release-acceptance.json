@@ -2,7 +2,7 @@
   "schema": "ghrab-release-acceptance-v1",
   "stage": "P5",
   "appId": "sortio",
-  "appVersion": "1.1.18",
+  "appVersion": "1.1.19",
   "releaseStatus": "garp25-shield-prep-candidate",
   "primaryRuntime": {
     "mode": "standalone-github-pages",
@@ -10,7 +10,7 @@
     "offlineCapable": true,
     "currentUseApproved": false,
     "candidateSyntheticOnly": true,
-    "note": "1.1.18 hardens Safe Promotion, exact release identity and AI Studio auto-patch notification. No data-model migration or generative-AI transport is introduced."
+    "note": "1.1.19 hardens Safe Promotion, exact release identity and AI Studio auto-patch notification. No data-model migration or generative-AI transport is introduced."
   },
   "github": {
     "status": "candidate-not-released",
@@ -52,5 +52,5 @@
     "ecosystemSharedDeviceGate": "pending-wave-completion",
     "nativeBrowserTransportValidation": "pending-environment-capable-run"
   },
-  "note": "1.1.18 is an infrastructure-only GARP 2.5.1 / Safe Promotion release that closes the live release-identity and AI Studio auto-patch chain without changing classroom features or the data model."
+  "note": "1.1.19 is an infrastructure-only GARP 2.5.1 / Safe Promotion release that closes the live release-identity and AI Studio auto-patch chain without changing classroom features or the data model."
 }

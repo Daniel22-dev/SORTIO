@@ -103,6 +103,9 @@ const sbomSha256 = sha256(sbomPath);
 const provenanceSha256 = sha256(provenancePath);
 const evidenceSha256 = sha256(evidencePath);
 const manifestSha256 = sha256(studioManifestPath);
+// GitHub Pages consumes .nojekyll as a deployment control marker and does not serve it as a public file.
+// Exclude it before computing the publicly verifiable artifact identity.
+fs.rmSync(path.join(dist, '.nojekyll'), { force: true });
 runNode('security/garp25/tools/create-release-integrity.mjs', [dist, appId, version, 'TRANSITIONAL-UNSIGNED', integrityPath], {
   GHRAB_BUILD_ID: buildId,
   GHRAB_SOURCE_COMMIT: source,

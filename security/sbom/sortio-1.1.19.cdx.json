@@ -1,0 +1,75 @@
+{
+  "$schema": "https://cyclonedx.org/schema/bom-1.7.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "name": "sortio-organizator-tridy",
+      "version": "1.1.19",
+      "purl": "pkg:npm/sortio-organizator-tridy@1.1.19",
+      "bom-ref": "pkg:npm/sortio-organizator-tridy@1.1.19?root=true"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "axe-core",
+      "version": "4.12.1",
+      "purl": "pkg:npm/axe-core@4.12.1",
+      "bom-ref": "pkg:npm/axe-core@4.12.1?path=node_modules%2Faxe-core",
+      "scope": "excluded",
+      "hashes": [{"alg":"SHA-512","content":"B3B8867F919A54CC441B410D37DC7EC53AFB1856426F564FFF5B804D4A4210AD97EFC9C30774706ED142A3DA4601FF6BBBE570A10E3AE0391A2C4791334F3024"}],
+      "properties": [{"name":"ghrab:lockfilePath","value":"node_modules/axe-core"}]
+    },
+    {
+      "type": "library",
+      "name": "fsevents",
+      "version": "2.3.2",
+      "purl": "pkg:npm/fsevents@2.3.2",
+      "bom-ref": "pkg:npm/fsevents@2.3.2?path=node_modules%2Ffsevents",
+      "scope": "excluded",
+      "hashes": [{"alg":"SHA-512","content":"C62A8C411E3101E1D3B81F6E5A6F9F1517083A02813223813FE7978B24FB8EC8150AAD5B915CA0B74D28012A3007B11DB6938769A3E02ADF35D8FF5A6FE0C328"}],
+      "properties": [{"name":"ghrab:lockfilePath","value":"node_modules/fsevents"}]
+    },
+    {
+      "type": "library",
+      "name": "playwright",
+      "version": "1.61.1",
+      "purl": "pkg:npm/playwright@1.61.1",
+      "bom-ref": "pkg:npm/playwright@1.61.1?path=node_modules%2Fplaywright",
+      "scope": "excluded",
+      "hashes": [{"alg":"SHA-512","content":"0D69D8E68DD86CB58AE06A2FB80570A6A2FED55C0635D506AD1AFEFBC8FC3ED410CEF01565420C8CA43DD1F63AF3DB042592416D9570D6B5DA38A4938AD9333D"}],
+      "properties": [{"name":"ghrab:lockfilePath","value":"node_modules/playwright"}]
+    },
+    {
+      "type": "library",
+      "name": "playwright-core",
+      "version": "1.61.1",
+      "purl": "pkg:npm/playwright-core@1.61.1",
+      "bom-ref": "pkg:npm/playwright-core@1.61.1?path=node_modules%2Fplaywright-core",
+      "scope": "excluded",
+      "hashes": [{"alg":"SHA-512","content":"87B425B7A9B8444A76E6ABC876F6C3B55983E0BA955DFA51C61391BFD2F48F3113334E69E1FB8F27774ACAE4974310D26D79E64BBF470208BDE7CF65192A4B92"}],
+      "properties": [{"name":"ghrab:lockfilePath","value":"node_modules/playwright-core"}]
+    },
+    {
+      "type": "library",
+      "name": "pngjs",
+      "version": "7.0.0",
+      "purl": "pkg:npm/pngjs@7.0.0",
+      "bom-ref": "pkg:npm/pngjs@7.0.0?path=node_modules%2Fpngjs",
+      "scope": "excluded",
+      "hashes": [{"alg":"SHA-512","content":"2CA5AA589461B2DC98A3DA46BE0A2BFE2BE4DB0F787928C4DD1195BB32C696BDCD983F1B7FB45C606CDED6635D10744FE9344FEAB32E0C7939B78E219D3472A3"}],
+      "properties": [{"name":"ghrab:lockfilePath","value":"node_modules/pngjs"}]
+    }
+  ],
+  "dependencies": [{
+    "ref":"pkg:npm/sortio-organizator-tridy@1.1.19?root=true",
+    "dependsOn":[
+      "pkg:npm/axe-core@4.12.1?path=node_modules%2Faxe-core",
+      "pkg:npm/playwright@1.61.1?path=node_modules%2Fplaywright",
+      "pkg:npm/pngjs@7.0.0?path=node_modules%2Fpngjs"
+    ]
+  }]
+}
