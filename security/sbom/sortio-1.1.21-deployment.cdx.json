@@ -1,0 +1,79 @@
+{
+  "$schema": "https://cyclonedx.org/schema/bom-1.7.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "name": "sortio-organizator-tridy",
+      "version": "1.1.21"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "ghrab-platform",
+      "version": "1.1.2",
+      "bom-ref": "pkg:generic/ghrab-platform@1.1.2",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "8415DBCF40EDC141613FB62EC401E9D39A615E7223C57A050665BD9F2B2134DA"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ghrab:fileSha256:ghrab/ghrab-platform.js",
+          "value": "199d03d9dc9263a9e74ed1f1102df0324f3b63e78704f1c70aeacec5feec530c"
+        },
+        {
+          "name": "ghrab:fileSha256:ghrab/ghrab-platform.css",
+          "value": "eb465488df46f3d1672d721094800b0be3eb1278924b7699873a483f130b07ad"
+        },
+        {
+          "name": "ghrab:fileSha256:ghrab/ghrab-platform-manifest-1.1.2.json",
+          "value": "760f1661b5a4349fc09d314d9da3d786356620680e038586cee28d98891f71a8"
+        },
+        {
+          "name": "ghrab:fileSha256:ghrab/ghrab-artifact-envelope-v1.schema.json",
+          "value": "8edeaaadd72c7bf60285440dd59eb31d0e7139755e1e4642d5ab457816e46d58"
+        },
+        {
+          "name": "ghrab:fileSha256:ghrab/ghrab-app-registry-v2.schema.json",
+          "value": "47c797999eb93fbd918b968b90a8f8545f938db486fe635b19efcc7936b5672f"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "ghrab-error-reporter",
+      "version": "1",
+      "bom-ref": "pkg:generic/ghrab-error-reporter@1",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "E6038BBBBEA1C04C4D8B998FD321097581CAB69FDED26DC09D2D8A0E6E906072"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ghrab:fileSha256:access/error-reporter.js",
+          "value": "da8a7ca8d5bc5f8c3e5a3ccb9fcc12caf96ff6b4c8a50fee4935dc524a65aa53"
+        },
+        {
+          "name": "ghrab:fileSha256:access/error-reporter.css",
+          "value": "7f78a6d81ac0d13e355229381bb435fe6fcb27cf7f8957a452e26b036ce958f9"
+        },
+        {
+          "name": "ghrab:fileSha256:access/error-reporter-adapter.js",
+          "value": "5fdd59fbda959e9afa1f00f32ea5bad8fd05f27ec91ca8e2923f12aacf92fb22"
+        },
+        {
+          "name": "ghrab:fileSha256:access/reporter-bootstrap.js",
+          "value": "1635fff64cd17762eabffe27590b3e87cc732a0f28dc47d8e22ae775741a78b2"
+        }
+      ]
+    }
+  ]
+}

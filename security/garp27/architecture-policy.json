@@ -1,0 +1,31 @@
+{
+  "schema": "garp27-architecture-policy-v1",
+  "garpVersion": "2.7",
+  "appId": "sortio",
+  "appVersion": "1.1.21",
+  "singleAuthority": "GARP-2.7",
+  "requiredFiles": [
+    "package.json",
+    "src/studio-manifest.template.json",
+    "src/config/deployment.json",
+    "src/config/deployment.school-server.json",
+    "src/config/security-headers.json",
+    "src/config/data-manifest.json",
+    "security/garp27/garp-policy.json",
+    "security/garp27/capability-inventory.json",
+    "security/garp27/application-migration-profile.json",
+    "security/garp27/live-status.json",
+    "scripts/garp27/contract-gate.mjs",
+    "scripts/garp27/architecture-integrity.mjs",
+    "scripts/garp27/policy-admission-mutations.mjs",
+    "scripts/garp27/mutation-tests.mjs",
+    "scripts/garp27/auto-patch-contract.mjs",
+    "scripts/garp27/foundation-gate.mjs"
+  ],
+  "sourceScopes": ["src", "scripts", "security"],
+  "minimumCheckedSourceFiles": 140,
+  "artifactDirectory": "dist-deployment",
+  "minimumArtifactFiles": 35,
+  "forbiddenArtifactPathPrefixes": ["tests/", "security/", "qa/", "scripts/", "vendor/", ".github/"],
+  "forbiddenArtifactFragments": ["GARP27_EXTERNAL_TRUST_SHA256", "AI_STUDIO_DISPATCH_TOKEN"]
+}

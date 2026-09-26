@@ -1,0 +1,28 @@
+{
+  "schema": "garp27-app-capability-inventory-v1",
+  "garpVersion": "2.7",
+  "appId": "sortio",
+  "appVersion": "1.1.21",
+  "aiOperations": [],
+  "providerTools": [],
+  "agentic": false,
+  "agenticProfile": "NO",
+  "autonomousToolCapabilities": [],
+  "dataClass": "D2-POTENTIALLY-PERSONAL-CLASSROOM-DATA",
+  "localProviderCredential": false,
+  "schoolProviderCredential": false,
+  "egressProfiles": [
+    "wikimedia-commons-read-only",
+    "future-same-origin-school-api"
+  ],
+  "fileCapabilities": [
+    "sortio-backup-json-import",
+    "sortio-backup-json-export",
+    "csv-export",
+    "pdf-export"
+  ],
+  "backupImportMaxBytes": 5242880,
+  "releaseIdentity": "ghrab-release-integrity-v2",
+  "studioBridge": "not-applicable",
+  "schoolServerPhase": "DEFERRED_BY_OWNER_DECISION"
+}

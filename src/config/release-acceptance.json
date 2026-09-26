@@ -2,7 +2,7 @@
   "schema": "ghrab-release-acceptance-v1",
   "stage": "P5",
   "appId": "sortio",
-  "appVersion": "1.1.20",
+  "appVersion": "1.1.21",
   "releaseStatus": "source-attestation-for-live-release",
   "primaryRuntime": {
     "mode": "standalone-github-pages",
@@ -31,7 +31,8 @@
     "status": "prepared-not-connected",
     "requiredForP5": false,
     "runtimeBuildIncluded": true,
-    "liveValidationPending": true
+    "liveValidationPending": true,
+    "liveValidationRequired": true
   },
   "accessibility": {
     "automatedOpenFindingsAllowed": 0,
@@ -43,7 +44,7 @@
     "sourceRepositoriesExcludedFromSchoolOperationalPackage": true,
     "legalTermsRequireSeparateAgreement": true
   },
-  "revision": "P5-R3-GARP25-N5-SAFE-PROMOTION-CLEANUP",
+  "revision": "P5-R3-GARP27-R2-G02-SAFE-PROMOTION",
   "runtimeAudit": {
     "required": true,
     "scriptsExecuted": true,
@@ -57,7 +58,7 @@
     "ecosystemSharedDeviceGate": "pending-wave-completion",
     "nativeBrowserTransportValidation": "pending-environment-capable-run"
   },
-  "note": "1.1.20 is a metadata/cleanup PATCH. It removes obsolete repository artifacts and duplicate legacy workflow entrypoints, neutralizes version-coupled tooling, and preserves classroom behavior and the data model.",
+  "note": "1.1.21 promotes GARP 2.7 r2/G-02 to the active security authority while preserving GARP 2.5.1/N5 as a regression baseline. Classroom behavior and the data model remain unchanged; school-server-dependent controls remain DEFERRED/NOT_TESTED.",
   "publication": {
     "runtimeDistributed": true,
     "liveStatusAuthority": [

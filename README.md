@@ -1,7 +1,8 @@
 # SORTIO – Výukový panel
 
-**Aktuální verze:** 1.1.20  
-**Platforma:** GHRAB Platform 1.1.2
+**Aktuální verze:** 1.1.21  
+**Platforma:** GHRAB Platform 1.1.2  
+**Bezpečnostní autorita:** GARP 2.7 r2/G-02 (GARP 2.5.1/N5 zachován jako regresní baseline)
 
 SORTIO je local-first aplikace pro organizaci třídy a řízení živé výuky. Spojuje import seznamu z IS, docházku, losování, chytré skupiny, role a zasedací pořádek s pracovní plochou navázanou na aktivní třídu pro časovače, hodiny, semafor, tabuli, kostky, skóre, obrázky, agendu, QR odkazy a hlasování.
 
@@ -57,6 +58,7 @@ npm test
 npm run test:internal
 npm run build
 npm run qa:release
+npm run qa:garp27:foundation
 ```
 
 GitHub Actions automaticky instalují Chromium, spouštějí P5/GARP release bránu, vytvářejí přesnou release identity a na GitHub Pages nasazují kanonický veřejný artefakt `dist-deployment/`.
@@ -67,4 +69,4 @@ Produkční změny se připravují ve větvi `candidate`. Po GREEN P5 vytvoří 
 
 `main` je chráněný rulesetem a přímý vývojový push do produkční cesty se nepoužívá.
 
-**AI Studio není součástí tohoto repozitáře.** SORTIO 1.1.20 používá GHRAB Platform 1.1.2 a je zapojeno do ověřovaného auto-patch řetězce AI Studia.
+**AI Studio není součástí tohoto repozitáře.** SORTIO 1.1.21 používá GHRAB Platform 1.1.2, aktivní GARP 2.7 r2/G-02 a je zapojeno do ověřovaného auto-patch řetězce AI Studia. Školní serverová fáze zůstává DEFERRED/NOT_TESTED, dokud nebude reálně nasazena a ověřena.

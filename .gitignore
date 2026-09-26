@@ -1,5 +1,10 @@
 node_modules/
 dist/
+dist-deployment/
+dist-school-server/
 qa-results/
+audit-evidence/
+test-results/
+playwright-report/
 .DS_Store
 *.log

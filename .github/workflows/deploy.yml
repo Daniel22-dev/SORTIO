@@ -128,11 +128,15 @@ jobs:
       - name: Verify GHRAB Platform P3 conformance
         run: npm run qa:platform
 
-      - name: Enforce P5 R2 CI gate
+      - name: Enforce P5 R2 + cumulative GARP 2.7 release gate
         run: npm run qa:p5:ci
+        env:
+          GARP27_EXTERNAL_TRUST_SHA256: e0b379233bdfa7beaaeab1bd902403d58cc2191e01802812c25be081b02277a2
 
-      - name: Enforce full GARP 2.5.1 production release gate
-        run: npm run garp25:prep-static
+      - name: Enforce cumulative GARP 2.7 foundation and legacy regressions
+        run: npm run qa:garp27:foundation
+        env:
+          GARP27_EXTERNAL_TRUST_SHA256: e0b379233bdfa7beaaeab1bd902403d58cc2191e01802812c25be081b02277a2
 
       - name: Verify AI Studio dispatch credential
         shell: bash

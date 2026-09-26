@@ -17,7 +17,7 @@ SORTIO je modulární local-first PWA. Od verze 1.1 spojuje dvě rovnocenné č�
 11. bezpečná projekční vrstva;
 12. lokální tiskové/PDF výstupy;
 13. produkční diagnostika, přístupnost, PWA a AI Studio bridge;
-14. GHRAB Platform 1.1.2 + suite-session lifecycle + QA/GARP brány.
+14. GHRAB Platform 1.1.2 + suite-session lifecycle + GARP 2.7 r2/G-02 jako aktivní bezpečnostní autorita; GARP 2.5.1/N5 zůstává regresní baseline.
 
 ## Výukový panel
 
@@ -54,6 +54,12 @@ Kontrolní součet není elektronický podpis. Chrání proti náhodnému poško
 ## GHRAB suite-session
 
 SORTIO používá GHRAB Platform 1.1.2 a kontrakt `ghrab-suite-session-v1`. Při ukončení společné relace AI Studia se zabrání dalším zápisům obsahu, uklidí vlastní potenciálně osobní data a až poté se zapíše acknowledgement. Stav nového Výukového panelu je uložen uvnitř stejného aplikačního datového trezoru, takže je tímto cleanupem pokryt automaticky.
+
+## GARP 2.7
+
+SORTIO 1.1.21 používá GARP 2.7 r2/G-02 jako jedinou aktivní aplikační bezpečnostní autoritu. Konsolidovaný referenční balík je vendorizovaný a kryptograficky připnutý trust anchorem. Aplikační policy a capability inventory deklarují nulovou generativní AI/tool boundary, explicitní Wikimedia egress, 5MiB JSON backup boundary a budoucí same-origin poll API. Architecture-integrity a mutation testy ověřují, že se tyto hranice nedají tiše rozšířit.
+
+Dosavadní GARP 2.5.1/N5 kontroly se neodstraňují; běží dál jako regresní baseline. School-server závislé kontroly jsou označeny `DEFERRED/NOT_TESTED` a live release claim je fail-closed, dokud nebude existovat skutečné serverové prostředí a runtime evidence.
 
 ## PWA a přístupová brána
 

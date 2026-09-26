@@ -1,6 +1,6 @@
 {
   "name": "sortio-organizator-tridy",
-  "version": "1.1.20",
+  "version": "1.1.21",
   "private": true,
   "description": "SORTIO – produkční local-first výukový panel s odolným ukládáním, diagnostikou, projekcí a tiskem",
   "type": "module",
@@ -40,8 +40,8 @@
     "qa:a11y": "node scripts/qa-p5-runtime.mjs",
     "qa:p4": "npm run qa:p5",
     "qa:p4:ci": "npm run qa:p5:ci",
-    "qa:p5": "npm run qa:lock && npm run build && npm run verify:platform && npm run qa:quality && npm run test:garp-security && npm run garp25:ci && npm run qa:browser && npm run qa:runtime && npm run qa:xss && node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs",
-    "qa:p5:ci": "npm run qa:lock && npm run build && npm run verify:platform && npm run qa:quality && npm run test:garp-security && npm run test:garp-hostile-render && npm run test:garp-canary && npm run test:garp-suite-session && npm run garp25:ci && npm run test:studio-dispatch && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe && AXE_REQUIRED=1 node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs",
+    "qa:p5": "npm run qa:lock && npm run build && npm run verify:platform && npm run qa:quality && npm run test:garp-security && npm run garp25:ci && npm run qa:browser && npm run qa:runtime && npm run qa:xss && node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs && npm run qa:garp27:static",
+    "qa:p5:ci": "npm run qa:lock && npm run build && npm run verify:platform && npm run qa:quality && npm run test:garp-security && npm run test:garp-hostile-render && npm run test:garp-canary && npm run test:garp-suite-session && npm run garp25:ci && npm run test:studio-dispatch && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe && AXE_REQUIRED=1 node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs && npm run qa:garp27:static",
     "test:p5": "npm run qa:p5",
     "qa:runtime": "node scripts/qa-p5-runtime.mjs",
     "qa:xss": "node scripts/qa-p5-xss-sinks.mjs",
@@ -59,8 +59,8 @@
     "garp25:sbom": "node scripts/generate-cyclonedx-sbom.mjs",
     "garp25:sbom:check": "node scripts/generate-cyclonedx-sbom.mjs --check",
     "garp25:sbom:verify": "node scripts/verify-cyclonedx-sbom.mjs",
-    "garp25:sbom:deploy": "node scripts/generate-cyclonedx-sbom.mjs --deploy dist-school-server",
-    "garp25:sbom:deploy:check": "node scripts/generate-cyclonedx-sbom.mjs --deploy dist-school-server --check",
+    "garp25:sbom:deploy": "node scripts/generate-cyclonedx-sbom.mjs --deploy",
+    "garp25:sbom:deploy:check": "node scripts/generate-cyclonedx-sbom.mjs --deploy --check",
     "garp25:sw": "node security/garp25/tools/check-sw-security-freeze.mjs dist/sw.js dist security/security-critical-assets.json",
     "garp25:sw:school": "node security/garp25/tools/check-sw-security-freeze.mjs dist-school-server/sw.js dist-school-server security/security-critical-assets.json",
     "garp25:leaks:public": "node security/garp25/tools/scan-deployment-leaks.mjs dist-deployment",
@@ -75,7 +75,15 @@
     "prepare:pages": "node scripts/create-pages-release-identity.mjs",
     "verify:release-chain": "node scripts/verify-release-chain.mjs",
     "verify:live-release": "node scripts/verify-live-release.mjs",
-    "test:studio-dispatch": "node scripts/test-ai-studio-dispatch.mjs"
+    "test:studio-dispatch": "node scripts/test-ai-studio-dispatch.mjs",
+    "qa:garp27:contracts": "node scripts/garp27/contract-gate.mjs",
+    "qa:garp27:architecture": "node scripts/garp27/architecture-integrity.mjs",
+    "qa:garp27:policy-mutations": "node scripts/garp27/policy-admission-mutations.mjs",
+    "qa:garp27:mutations": "node scripts/garp27/mutation-tests.mjs",
+    "qa:garp27:auto-patch": "node scripts/garp27/auto-patch-contract.mjs",
+    "qa:garp27:static": "npm run build:deployment && npm run qa:garp27:contracts && npm run qa:garp27:architecture && npm run qa:garp27:policy-mutations && npm run qa:garp27:mutations && npm run qa:garp27:auto-patch",
+    "qa:garp27": "npm run qa:garp27:static && npm run garp25:prep-static",
+    "qa:garp27:foundation": "node scripts/garp27/foundation-gate.mjs"
   },
   "engines": {
     "node": ">=18"

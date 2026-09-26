@@ -1,6 +1,12 @@
 # SORTIO changelog
 
-V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizací. Starší technická historie zůstává v samostatných `RELEASE-NOTES-*.md`.
+V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizací. Starší technická historie zůstává dohledatelná v Git historii; v kořeni repozitáře se udržují jen aktuální release notes a aktuální závěrečný audit.
+
+## 1.1.21 — 2026-09-25
+- Aktivní bezpečnostní autorita byla povýšena na GARP 2.7 r2/G-02; GARP 2.5.1/N5 zůstává zachován jako regresní baseline.
+- Přidány jsou aplikační GARP 2.7 policy/inventory kontrakty, připnutý referenční balík, architecture-integrity kontrola a negativní mutation testy.
+- Release identity i `app-updated` dispatch do AI Studia nyní deklarují `GARP-2.7`; školní serverový profil zůstává záměrně `DEFERRED/NOT_TESTED` a fail-closed.
+- Funkce aplikace, datový model a local-first provoz se nemění.
 
 ## 1.1.20 — 2026-09-20
 - Finální repository clean-up: odstraněn zastaralý ruční upload návod, kořenový 1.1.17 zdrojový ZIP a duplicitní legacy P3/P4 workflow entrypointy.
@@ -51,9 +57,3 @@ V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizac
 - Zasedací pořádek zůstává založený na pravidlech „Má sedět sám“ a „Má sedět vepředu“; případné dvojice učitel doladí ručním drag & drop prohozením.
 - Starší zálohy s dnes již nepoužívanými párovacími poli zůstávají načitatelné; při sanitizaci se tato pole zahodí.
 
-## 1.1.11 — 2026-09-08
-- Zjednodušené workflow zasedacího pořádku: pravidla „Má sedět sám“ a „Má sedět vepředu“ jsou rozbalovací vícenásobné seznamy.
-- Velký plán už není založený na rozbalovacích seznamech v každém místě; hlavní ruční úprava je drag & drop mezi místy, včetně přímého prohození dvou studentů.
-- Automatické rozsazení postupuje od tabule dozadu, takže běžná volná místa zůstávají v zadní části učebny. Výjimkou je volné druhé místo u studenta, který má sedět sám, a ručně uzamčené pozice.
-- Preference „Kluk + holka“ zůstává volitelná; párovací kategorie se nastavují výslovně v rozbalené sekci a nejsou odhadovány z jména.
-- Changelog v aplikaci i repozitáři je omezen na posledních 10 aktualizací.

@@ -32,11 +32,15 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
-      - name: Run P5 R2 CI gate
+      - name: Run P5 R2 + cumulative GARP 2.7 CI gate
         run: npm run qa:p5:ci
-      - name: Run full GARP 2.5.1 pre-production release gate
+        env:
+          GARP27_EXTERNAL_TRUST_SHA256: e0b379233bdfa7beaaeab1bd902403d58cc2191e01802812c25be081b02277a2
+      - name: Run full GARP 2.7 foundation gate
         if: github.event_name != 'pull_request'
-        run: npm run garp25:prep-static
+        run: npm run qa:garp27:foundation
+        env:
+          GARP27_EXTERNAL_TRUST_SHA256: e0b379233bdfa7beaaeab1bd902403d58cc2191e01802812c25be081b02277a2
       - name: Build and verify PREP exact release identity
         if: github.event_name != 'pull_request'
         env:

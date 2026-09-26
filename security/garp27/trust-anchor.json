@@ -1,0 +1,20 @@
+{
+  "schema": "garp27-app-trust-anchor-v1",
+  "garpVersion": "2.7",
+  "appId": "sortio",
+  "appVersion": "1.1.21",
+  "garp27VendorTreeSha256": "2c653aa771c16ce1b610492bf5bf9d57c37af4987c85109de6cbb7cf8aa9a2fb",
+  "garp27VendorFileCount": 64,
+  "garpPolicySha256": "9eded565471155232f83f4a3a8dcdcbdddc73747a86c7fe1840c60561f9dd3b1",
+  "capabilityInventorySha256": "1e77646ed69d977ac34b6eb165db9fa76f2ba71d2c0d5e165701b1fb724358d3",
+  "architecturePolicySha256": "ecf03fc8f052b29dda90ee6f19ec4f15e71c9f71907db3a9191f9a1a2b5b29a4",
+  "adapterToolSha256s": {
+    "scripts/garp27/contract-gate.mjs": "30cdbe2d8c2414c19f9814dbb8c1a16bba57cf686382a9792c354d987f6eeec1",
+    "scripts/garp27/architecture-integrity.mjs": "f169393bd4b8e4b214cdf596ae2961c7a020e317990b60f530f1cad7ce0bf74f",
+    "scripts/garp27/policy-admission-mutations.mjs": "0357ebf62fff871c232bdaf8af8d7d772930978a5c313d30a0ee2dbdc363ac24",
+    "scripts/garp27/mutation-tests.mjs": "135abce56efab9e4a71798708d59198d08d320f388a6d4ee75c3a787d4740a24",
+    "scripts/garp27/auto-patch-contract.mjs": "69aaa0278dae3cb2004eef50fb0c8081516b0e0f971a5863e998a02fd50f8c7a",
+    "scripts/garp27/foundation-gate.mjs": "d7a7830e8d3be530db8ee9a3d94935abd30a6c73ba5ed6e01fd8fef58aa97ea7"
+  },
+  "purpose": "Pin the exact GARP 2.7 r2/G-02 reference package and SORTIO adapter bytes. External CI must also pin this trust-anchor file."
+}
