@@ -50,7 +50,7 @@
     "sharedDeviceControls": true,
     "dataDeletion": true,
     "schoolServerConnected": false,
-    "liveServerValidationRequired": false
+    "liveServerValidationRequired": true
   },
   "appId": "sortio",
   "appBaseUrl": "/apps/sortio/",

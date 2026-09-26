@@ -96,7 +96,7 @@ runNode('security/garp25/tools/create-build-provenance.mjs', [studioManifestPath
   GHRAB_BUILD_STARTED_AT: process.env.GITHUB_RUN_STARTED_AT || createdAt,
   GHRAB_BUILD_FINISHED_AT: createdAt,
   GHRAB_LOCKFILE: path.join(root, 'package-lock.json'),
-  GHRAB_BUILD_PROFILE: 'GARP-2.5.1-SHIELD-PREP/P5-R2',
+  GHRAB_BUILD_PROFILE: 'GARP-2.7/P5-R2',
 });
 
 const sbomSha256 = sha256(sbomPath);
@@ -120,7 +120,7 @@ Object.assign(integrity, {
   releaseStage,
   status: 'GREEN',
   environment: 'github-pages',
-  garpProfile: 'GARP-2.5.1-SHIELD-PREP',
+  garpProfile: 'GARP-2.7',
   gate: 'P5-R2',
   manifestSha256,
   sbomSha256,
@@ -134,7 +134,7 @@ Object.assign(integrity, {
     runAttempt: String(runAttempt),
     sourceCommit: source,
   },
-  tooling: { garp: '2.5.1', platform: '1.1.2', node: process.version },
+  tooling: { garp: '2.7', legacyGarp: '2.5.1', platform: '1.1.2', node: process.version },
   signature: {
     algorithm: 'Ed25519',
     keyId: 'TRANSITIONAL-UNSIGNED',

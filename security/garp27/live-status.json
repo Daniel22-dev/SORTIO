@@ -1,0 +1,12 @@
+{
+  "schema": "garp27-live-status-v1",
+  "garpVersion": "2.7",
+  "appId": "sortio",
+  "appVersion": "1.1.21",
+  "overall": "NOT_TESTED",
+  "status": "NOT_TESTED",
+  "reason": "SCHOOL_SERVER_PHASE_DEFERRED_BY_OWNER_DECISION",
+  "environment": "school-server",
+  "controls": [],
+  "runtimeEvidence": []
+}

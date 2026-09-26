@@ -1,0 +1,25 @@
+{
+  "schema": "garp27-application-migration-profile-v1",
+  "garpVersion": "2.7",
+  "appId": "sortio",
+  "appVersion": "1.1.21",
+  "serverApproval": "DEFERRED_BY_OWNER_DECISION",
+  "requiredComponents": [
+    {"componentId": "AG-01", "required": true, "serverDependent": false},
+    {"componentId": "AG-02", "required": true, "serverDependent": false},
+    {"componentId": "AG-03", "required": true, "serverDependent": false},
+    {"componentId": "AG-04", "required": true, "serverDependent": true},
+    {"componentId": "AG-05", "required": true, "serverDependent": false},
+    {"componentId": "AG-06", "required": true, "serverDependent": false},
+    {"componentId": "AG-07", "required": true, "serverDependent": false},
+    {"componentId": "AG-08", "required": true, "serverDependent": true},
+    {"componentId": "AG-09", "required": true, "serverDependent": true},
+    {"componentId": "AG-10", "required": true, "serverDependent": true},
+    {"componentId": "AG-11", "required": true, "serverDependent": true},
+    {"componentId": "AG-12", "required": true, "serverDependent": true}
+  ],
+  "liveClaimsAllowed": false,
+  "liveStatus": "NOT_TESTED",
+  "legacyRegression": "GARP-2.5.1-SHIELD-PREP",
+  "notes": "No new server endpoints or infrastructure are introduced by this migration."
+}

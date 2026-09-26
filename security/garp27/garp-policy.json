@@ -1,0 +1,80 @@
+{
+  "schema": "garp27-policy-v1",
+  "garpVersion": "2.7",
+  "appId": "sortio",
+  "appVersion": "1.1.21",
+  "identity": {
+    "standaloneProfile": "signed-permit access gate",
+    "schoolProfile": "server-session; deployment deferred",
+    "roles": ["teacher"],
+    "controls": "main application remains teacher-oriented; future live-poll voter endpoint is anonymous and narrowly scoped"
+  },
+  "requestApiAi": {
+    "controls": [
+      "generative AI transport is not applicable",
+      "future live-poll client uses bounded same-origin API paths only"
+    ],
+    "operations": [
+      "local classroom organisation and projection",
+      "future anonymous live-poll and QR operations"
+    ],
+    "agentic": false,
+    "modelPolicy": "no generative model is invoked by SORTIO"
+  },
+  "egress": {
+    "standalone": [
+      "self",
+      "https://commons.wikimedia.org read-only API",
+      "https://upload.wikimedia.org image fetch"
+    ],
+    "school": [
+      "self",
+      "https://commons.wikimedia.org read-only API",
+      "https://upload.wikimedia.org image fetch",
+      "same-origin /api/v1 when future school profile is activated"
+    ],
+    "defaultDeny": true
+  },
+  "files": {
+    "currentBoundary": "browser-local SORTIO backup import; 5 MiB cap, JSON parsing, supported schema, checksum/envelope validation, identifier validation and sanitization",
+    "serverBoundary": "DEFERRED_BY_OWNER_DECISION",
+    "imports": ["sortio-backup-v1", "sortio-backup-v2", "sortio-backup-v3", "sortio-backup-v4"],
+    "maxBytes": 5242880
+  },
+  "dataLifecycle": {
+    "classification": "potentially personal classroom data including names, class structure and engagement history",
+    "storage": "localStorage under ghrab.sortio namespace with last-known-good and recovery snapshots",
+    "retention": "persistent until explicit deletion or suite end on shared devices",
+    "deletion": "suite-session end clears application content and migration recovery copies"
+  },
+  "release": {
+    "activeAuthority": "GARP-2.7",
+    "promotion": "Safe Promotion plus verified GitHub Pages release identity",
+    "publicAssurance": "ghrab-release-integrity-v2; transitional unsigned",
+    "rollback": "stable patch-only auto-promotion in AI Studio"
+  },
+  "inventory": {
+    "source": "security/garp27/capability-inventory.json",
+    "architecturePolicy": "security/garp27/architecture-policy.json",
+    "changeRule": "new AI, external egress, file parser, server capability or privileged path requires inventory and trust-anchor review"
+  },
+  "securityHealth": {
+    "localCi": [
+      "GARP 2.7 contracts",
+      "architecture-integrity",
+      "policy mutations",
+      "application mutations",
+      "legacy GARP 2.5.1 regressions"
+    ],
+    "live": "NOT_TESTED for school-server-dependent controls",
+    "failureMode": "fail closed for release and LIVE claims"
+  },
+  "incident": {
+    "current": "existing SORTIO error reporter, Safe Promotion, release evidence and local recovery remain active",
+    "future": "school-server incident workflow deferred until server phase"
+  },
+  "recovery": {
+    "current": "last-known-good local data, pre-import recovery snapshot, verified release chain, cache versioning and prior release history",
+    "future": "server restore and backup controls deferred until server phase"
+  }
+}
