@@ -2,7 +2,7 @@
   "schema": "garp27-policy-v1",
   "garpVersion": "2.7",
   "appId": "sortio",
-  "appVersion": "1.1.21",
+  "appVersion": "1.1.22",
   "identity": {
     "standaloneProfile": "signed-permit access gate",
     "schoolProfile": "server-session; deployment deferred",

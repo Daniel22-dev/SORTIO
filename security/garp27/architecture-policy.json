@@ -2,7 +2,7 @@
   "schema": "garp27-architecture-policy-v1",
   "garpVersion": "2.7",
   "appId": "sortio",
-  "appVersion": "1.1.21",
+  "appVersion": "1.1.22",
   "singleAuthority": "GARP-2.7",
   "requiredFiles": [
     "package.json",

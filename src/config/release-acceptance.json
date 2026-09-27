@@ -2,7 +2,7 @@
   "schema": "ghrab-release-acceptance-v1",
   "stage": "P5",
   "appId": "sortio",
-  "appVersion": "1.1.21",
+  "appVersion": "1.1.22",
   "releaseStatus": "source-attestation-for-live-release",
   "primaryRuntime": {
     "mode": "standalone-github-pages",
@@ -58,7 +58,7 @@
     "ecosystemSharedDeviceGate": "pending-wave-completion",
     "nativeBrowserTransportValidation": "pending-environment-capable-run"
   },
-  "note": "1.1.21 promotes GARP 2.7 r2/G-02 to the active security authority while preserving GARP 2.5.1/N5 as a regression baseline. Classroom behavior and the data model remain unchanged; school-server-dependent controls remain DEFERRED/NOT_TESTED.",
+  "note": "1.1.22 standardizes the public About section across the AI Studio ecosystem. Classroom behavior, the data model, security authority and school-server status remain unchanged; server-dependent controls remain DEFERRED/NOT_TESTED.",
   "publication": {
     "runtimeDistributed": true,
     "liveStatusAuthority": [

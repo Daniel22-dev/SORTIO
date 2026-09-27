@@ -2,6 +2,12 @@
 
 V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizací. Starší technická historie zůstává dohledatelná v Git historii; v kořeni repozitáře se udržují jen aktuální release notes a aktuální závěrečný audit.
 
+## 1.1.22 — 2026-09-27
+- Sekce **O aplikaci** byla sjednocena se standardem ostatních aplikací AI Studia: identita, autor a vývojový garant, školní projekt, přístup a určení a technický stav.
+- Přidán blok **Provozní zásady** a dosavadní samostatná karta ochrany dat byla nahrazena společnou strukturou standardu.
+- Posledních deset změn je nově uvnitř sbaleného **Katalogu změn**; samostatná historie mimo kartu nevzniká.
+- Funkce organizace třídy, Výukového panelu, datový model ani bezpečnostní hranice se nemění.
+
 ## 1.1.21 — 2026-09-25
 - Aktivní bezpečnostní autorita byla povýšena na GARP 2.7 r2/G-02; GARP 2.5.1/N5 zůstává zachován jako regresní baseline.
 - Přidány jsou aplikační GARP 2.7 policy/inventory kontrakty, připnutý referenční balík, architecture-integrity kontrola a negativní mutation testy.
@@ -51,9 +57,3 @@ V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizac
 - Opraveny rozbalovací seznamy pravidel „Má sedět sám“ a „Má sedět vepředu“: po změně checkboxu se zasedací pohled zbytečně nepřerenderuje a seznam zůstává otevřený pro vícenásobný výběr.
 - Přidána regresní kontrola, která hlídá persistenci preference bez překreslení zasedacího pohledu.
 - Changelog v aplikaci zůstává omezen na posledních 10 verzí; opravena také duplicita označení 1.1.12/1.1.11 v předchozím zobrazení.
-
-## 1.1.12 — 2026-09-08
-- Odstraněna celá funkce „Kluk + holka“ včetně UI, párovací logiky a ukládaných párovacích údajů.
-- Zasedací pořádek zůstává založený na pravidlech „Má sedět sám“ a „Má sedět vepředu“; případné dvojice učitel doladí ručním drag & drop prohozením.
-- Starší zálohy s dnes již nepoužívanými párovacími poli zůstávají načitatelné; při sanitizaci se tato pole zahodí.
-
