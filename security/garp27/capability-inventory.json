@@ -2,7 +2,7 @@
   "schema": "garp27-app-capability-inventory-v1",
   "garpVersion": "2.7",
   "appId": "sortio",
-  "appVersion": "1.1.21",
+  "appVersion": "1.1.22",
   "aiOperations": [],
   "providerTools": [],
   "agentic": false,

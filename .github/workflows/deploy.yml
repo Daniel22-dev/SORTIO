@@ -131,12 +131,12 @@ jobs:
       - name: Enforce P5 R2 + cumulative GARP 2.7 release gate
         run: npm run qa:p5:ci
         env:
-          GARP27_EXTERNAL_TRUST_SHA256: e0b379233bdfa7beaaeab1bd902403d58cc2191e01802812c25be081b02277a2
+          GARP27_EXTERNAL_TRUST_SHA256: dba5fbd35e5ae55c2aa426508b5688b51c96e9a313ef499535dd190fbdfd9ca3
 
       - name: Enforce cumulative GARP 2.7 foundation and legacy regressions
         run: npm run qa:garp27:foundation
         env:
-          GARP27_EXTERNAL_TRUST_SHA256: e0b379233bdfa7beaaeab1bd902403d58cc2191e01802812c25be081b02277a2
+          GARP27_EXTERNAL_TRUST_SHA256: dba5fbd35e5ae55c2aa426508b5688b51c96e9a313ef499535dd190fbdfd9ca3
 
       - name: Verify AI Studio dispatch credential
         shell: bash

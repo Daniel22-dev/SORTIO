@@ -57,7 +57,7 @@ SORTIO používá GHRAB Platform 1.1.2 a kontrakt `ghrab-suite-session-v1`. Při
 
 ## GARP 2.7
 
-SORTIO 1.1.21 používá GARP 2.7 r2/G-02 jako jedinou aktivní aplikační bezpečnostní autoritu. Konsolidovaný referenční balík je vendorizovaný a kryptograficky připnutý trust anchorem. Aplikační policy a capability inventory deklarují nulovou generativní AI/tool boundary, explicitní Wikimedia egress, 5MiB JSON backup boundary a budoucí same-origin poll API. Architecture-integrity a mutation testy ověřují, že se tyto hranice nedají tiše rozšířit.
+SORTIO 1.1.22 používá GARP 2.7 r2/G-02 jako jedinou aktivní aplikační bezpečnostní autoritu. Konsolidovaný referenční balík je vendorizovaný a kryptograficky připnutý trust anchorem. Aplikační policy a capability inventory deklarují nulovou generativní AI/tool boundary, explicitní Wikimedia egress, 5MiB JSON backup boundary a budoucí same-origin poll API. Architecture-integrity a mutation testy ověřují, že se tyto hranice nedají tiše rozšířit.
 
 Dosavadní GARP 2.5.1/N5 kontroly se neodstraňují; běží dál jako regresní baseline. School-server závislé kontroly jsou označeny `DEFERRED/NOT_TESTED` a live release claim je fail-closed, dokud nebude existovat skutečné serverové prostředí a runtime evidence.
 

@@ -1,6 +1,6 @@
 # SORTIO – Výukový panel
 
-**Aktuální verze:** 1.1.21  
+**Aktuální verze:** 1.1.22  
 **Platforma:** GHRAB Platform 1.1.2  
 **Bezpečnostní autorita:** GARP 2.7 r2/G-02 (GARP 2.5.1/N5 zachován jako regresní baseline)
 
@@ -69,4 +69,4 @@ Produkční změny se připravují ve větvi `candidate`. Po GREEN P5 vytvoří 
 
 `main` je chráněný rulesetem a přímý vývojový push do produkční cesty se nepoužívá.
 
-**AI Studio není součástí tohoto repozitáře.** SORTIO 1.1.21 používá GHRAB Platform 1.1.2, aktivní GARP 2.7 r2/G-02 a je zapojeno do ověřovaného auto-patch řetězce AI Studia. Školní serverová fáze zůstává DEFERRED/NOT_TESTED, dokud nebude reálně nasazena a ověřena.
+**AI Studio není součástí tohoto repozitáře.** SORTIO 1.1.22 používá GHRAB Platform 1.1.2, aktivní GARP 2.7 r2/G-02 a je zapojeno do ověřovaného auto-patch řetězce AI Studia. Školní serverová fáze zůstává DEFERRED/NOT_TESTED, dokud nebude reálně nasazena a ověřena.

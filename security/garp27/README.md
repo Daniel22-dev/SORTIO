@@ -1,4 +1,4 @@
-# SORTIO 1.1.21 — GARP 2.7 adapter
+# SORTIO 1.1.22 — GARP 2.7 adapter
 
 Aktivní aplikační bezpečnostní autorita je **GARP 2.7 r2/G-02**. Historický GARP 2.5.1/N5 zůstává zachován jako regresní baseline a release-integrity tooling, nikoli jako konkurenční autorita.
 
