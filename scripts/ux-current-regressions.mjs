@@ -26,6 +26,8 @@ const sw=read('src/sw.js');
 const changelog=read('CHANGELOG.md');
 const checks=[];
 function expect(name,ok){checks.push({name,ok:Boolean(ok)});console.log(`${ok?'PASS':'FAIL'} ${name}`)}
+expect('Moje skupiny is central-first with manual IS fallback',classes.includes('Načíst z Moje skupiny')&&classes.includes('Ruční import z IS')&&body.includes('id="centralGroupsDialog"'));
+expect('Moje skupiny sync is lazy-loaded and offline-cached',read('src/js/46-central-groups.js').includes('./lazy/central-groups.js')&&sw.includes('./lazy/central-groups.js'));
 expect('class chooser on overview',dashboard.includes('dashboardClassSelect')&&classes.includes("event.target.id==='dashboardClassSelect'"));
 expect('student search filters without rerender',classes.includes('filterStudentRows(event.target.value)')&&!/studentSearch[^\n]{0,120}renderSelectedClass\(\)/.test(classes));
 expect('draw result has no cycle status labels',!draw.includes('V cyklu zbývá')&&!draw.includes('Cyklus je dokončen')&&!draw.includes('ZBÝVÁ V CYKLU'));
@@ -70,8 +72,8 @@ expect('draw pen color updates immediately without board rerender',board.include
 expect('draw clear is immediate while full panel clear still confirms',board.includes("if(action==='draw-clear'){d.strokes=[];lessonBoardPersist('lesson_draw_clear');return true}")&&!board.includes("confirm('Smazat obsah této tabule?')")&&board.includes('function lessonBoardShowClearConfirm'));
 const uiChangelogCount=(body.match(/class="changelog-entry(?: current)?"/g)||[]).length;
 const mdChangelogCount=(changelog.match(/^## 1\.1\./gm)||[]).length;
-expect('about page keeps exactly last ten changelog updates',uiChangelogCount===10&&body.includes('<b>1.1.22</b>')&&body.includes('<b>1.1.13</b>')&&!body.includes('<b>1.1.12</b>'));
-expect('repository changelog keeps exactly last ten release updates',mdChangelogCount===10&&/^## 1\.1\.22\b/m.test(changelog)&&/^## 1\.1\.13\b/m.test(changelog)&&!/^## 1\.1\.12\b/m.test(changelog));
+expect('about page keeps exactly last ten changelog updates',uiChangelogCount===10&&body.includes('<b>1.1.23</b>')&&body.includes('<b>1.1.14</b>')&&!body.includes('<b>1.1.13</b>'));
+expect('repository changelog keeps exactly last ten release updates',mdChangelogCount===10&&/^## 1\.1\.23\b/m.test(changelog)&&/^## 1\.1\.14\b/m.test(changelog)&&!/^## 1\.1\.13\b/m.test(changelog));
 expect('timer uses compact start button',board.includes('timer-start-compact')&&!board.includes('class="timer-start-big'));
 expect('agenda edits inline without prompt',board.includes('data-board-agenda-title')&&!board.includes("prompt('Agenda"));
 const failed=checks.filter(item=>!item.ok);

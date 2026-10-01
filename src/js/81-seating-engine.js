@@ -41,7 +41,7 @@ function assignSeating(){
   const fixedDeskStudents=seatingOccupiedDeskStudents(fixed,classItem);for(const deskStudents of fixedDeskStudents.values())if(deskStudents.length>1&&deskStudents.some(student=>student.soloPreference))throw new Error('Uzamčené místo porušuje požadavek „má sedět sám“. Uvolněte druhé místo u této lavice nebo zrušte uzamčení.');
   let best=null;
   for(let trial=0;trial<1000;trial++){
-    const trialSeats=plan.seats.map(seat=>({...seat,studentId:seat.locked?seat.studentId:null})),reservedDesks=new Set();
+    const trialSeats=plan.seats.map(seat=>{const keepLocked=seat.locked&&seat.studentId&&students.some(student=>student.id===seat.studentId);return{...seat,locked:!!keepLocked,studentId:keepLocked?seat.studentId:null}}),reservedDesks=new Set();
     for(const seat of trialSeats){const student=studentById.get(seat.studentId);if(student?.soloPreference)reservedDesks.add(seatingDeskKey(seat))}
     let available=trialSeats.filter(seat=>!seat.blocked&&!seat.locked&&!reservedDesks.has(seatingDeskKey(seat)));let invalid=false;
     const solos=shuffle(remaining.filter(student=>student.soloPreference)).sort((a,b)=>Number(b.frontPreference)-Number(a.frontPreference));

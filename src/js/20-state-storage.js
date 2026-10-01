@@ -201,6 +201,7 @@ function sanitizeClass(item,{repairDuplicateIdentifiers=false}={}){
   }
   return{
     id:sanitizeIdentifier(item.id,'class'),name:String(item.name||'Třída bez názvu').slice(0,160),schoolYear:String(item.schoolYear||'').slice(0,40),archived:!!item.archived,demo:!!item.demo,createdAt:item.createdAt||nowIso(),updatedAt:item.updatedAt||nowIso(),students,
+    sourceGroupId:/^grp_[A-Za-z0-9-]{12,}$/.test(String(item.sourceGroupId||''))?String(item.sourceGroupId):null,lastSyncedRevision:Number.isInteger(item.lastSyncedRevision)&&item.lastSyncedRevision>0?item.lastSyncedRevision:null,lastSyncedAt:typeof item.lastSyncedAt==='string'&&item.lastSyncedAt?item.lastSyncedAt:null,
     drawState,drawHistory,engagementHistory,currentGroups,groupHistory,
     lastGroupConfig:sanitizeGroupConfig(item.lastGroupConfig),
     groupRules:{together:sanitizePairs(rules.together,ids,studentRefMap),apart:sanitizePairs(rules.apart,ids,studentRefMap),pins:sanitizePins(rules.pins,ids,studentRefMap)},
@@ -211,7 +212,7 @@ function sanitizeClass(item,{repairDuplicateIdentifiers=false}={}){
 function sanitizeStudent(item){
   if(!item||typeof item!=='object')return null;
   const firstName=titleCase(String(item.firstName||'').slice(0,80));const lastName=titleCase(String(item.lastName||'').slice(0,120));if(!firstName&&!lastName)return null;
-  return{id:sanitizeIdentifier(item.id,'student'),firstName,lastName,displayName:`${firstName} ${lastName}`.trim(),key:normalizeText(`${firstName} ${lastName}`),present:item.present!==false,archived:!!item.archived,groupLevel:['A','B','C'].includes(item.groupLevel)?item.groupLevel:'B',frontPreference:!!item.frontPreference,soloPreference:!!item.soloPreference,createdAt:item.createdAt||nowIso(),updatedAt:item.updatedAt||nowIso()};
+  return{id:sanitizeIdentifier(item.id,'student'),canonicalMemberId:/^mem_[A-Za-z0-9-]{12,}$/.test(String(item.canonicalMemberId||''))?String(item.canonicalMemberId):null,firstName,lastName,displayName:`${firstName} ${lastName}`.trim(),key:normalizeText(`${firstName} ${lastName}`),present:item.present!==false,archived:!!item.archived,groupLevel:['A','B','C'].includes(item.groupLevel)?item.groupLevel:'B',frontPreference:!!item.frontPreference,soloPreference:!!item.soloPreference,createdAt:item.createdAt||nowIso(),updatedAt:item.updatedAt||nowIso()};
 }
 function sanitizeGroup(group,ids,studentRefMap=null){
   if(!group||typeof group!=='object')return null;

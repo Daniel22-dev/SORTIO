@@ -2,7 +2,7 @@
   "schema": "ghrab-release-acceptance-v1",
   "stage": "P5",
   "appId": "sortio",
-  "appVersion": "1.1.22",
+  "appVersion": "1.1.23",
   "releaseStatus": "source-attestation-for-live-release",
   "primaryRuntime": {
     "mode": "standalone-github-pages",
@@ -58,7 +58,7 @@
     "ecosystemSharedDeviceGate": "pending-wave-completion",
     "nativeBrowserTransportValidation": "pending-environment-capable-run"
   },
-  "note": "1.1.22 standardizes the public About section across the AI Studio ecosystem. Classroom behavior, the data model, security authority and school-server status remain unchanged; server-dependent controls remain DEFERRED/NOT_TESTED.",
+  "note": "1.1.23 integrates SORTIO with AI Studio Moje skupiny through the official consumer-safe group service contract. SORTIO receives only canonical member identity, display name and status; e-mail is rejected, operational teaching data remains local, and manual IS import remains available. GARP 2.7, Platform 1.1.2 and server DEFERRED/NOT_TESTED status are unchanged.",
   "publication": {
     "runtimeDistributed": true,
     "liveStatusAuthority": [
