@@ -35,12 +35,12 @@ jobs:
       - name: Run P5 R2 + cumulative GARP 2.7 CI gate
         run: npm run qa:p5:ci
         env:
-          GARP27_EXTERNAL_TRUST_SHA256: dba5fbd35e5ae55c2aa426508b5688b51c96e9a313ef499535dd190fbdfd9ca3
+          GARP27_EXTERNAL_TRUST_SHA256: 4b033eefb70facfaca7b5f27a689bf04c960eeef0573037d2d0854b87087755e
       - name: Run full GARP 2.7 foundation gate
         if: github.event_name != 'pull_request'
         run: npm run qa:garp27:foundation
         env:
-          GARP27_EXTERNAL_TRUST_SHA256: dba5fbd35e5ae55c2aa426508b5688b51c96e9a313ef499535dd190fbdfd9ca3
+          GARP27_EXTERNAL_TRUST_SHA256: 4b033eefb70facfaca7b5f27a689bf04c960eeef0573037d2d0854b87087755e
       - name: Build and verify PREP exact release identity
         if: github.event_name != 'pull_request'
         env:
