@@ -78,7 +78,7 @@
     </section>
 
     <section class="view" data-view="classes" id="classes">
-      <div class="page-title"><div><span>TŘÍDY A DOCHÁZKA</span><h1>Jednou vložit, potom používat</h1><p>Seznamy se ukládají lokálně. E-mailové adresy jsou pouze dočasným vstupem pro rozpoznání jména a příjmení.</p></div><button class="primary-button" data-action="open-import">Importovat z IS</button></div>
+      <div class="page-title"><div><span>TŘÍDY A DOCHÁZKA</span><h1>Jednou vložit, potom používat</h1><p>Členství lze načíst z AI Studio „Moje skupiny“. SORTIO přebírá jen identitu a stav členů, bez e-mailů; vlastní výuková data zůstávají lokální.</p></div><div class="page-title-actions"><button class="primary-button" data-action="central-link">Načíst z Moje skupiny</button><button class="small-button" data-action="open-import">Ruční import z IS</button></div></div>
       <div class="classes-layout">
         <aside class="class-rail" id="classRail"></aside>
         <section class="class-workspace" id="classWorkspace"></section>
@@ -167,7 +167,8 @@
             <strong>Katalog změn</strong>
           </summary>
           <div class="about-changelog-body"><div class="changelog-list">
-              <article class="changelog-entry current"><header><b>1.1.22</b><span>27. 9. 2026</span></header><h3>Sjednocená karta O aplikaci</h3><p>Sjednocená identita, určení, provozní zásady a sbalený katalog posledních deseti změn.</p></article>
+              <article class="changelog-entry current"><header><b>1.1.23</b><span>1. 10. 2026</span></header><h3>Napojení na Moje skupiny</h3><p>Kanonické členství z AI Studia s náhledem změn, revision kontrolou a bez přenosu e-mailů. Provozní data SORTIO zůstávají lokální a ruční import z IS je dál dostupný.</p></article>
+              <article class="changelog-entry"><header><b>1.1.22</b><span>27. 9. 2026</span></header><h3>Sjednocená karta O aplikaci</h3><p>Sjednocená identita, určení, provozní zásady a sbalený katalog posledních deseti změn.</p></article>
               <article class="changelog-entry"><header><b>1.1.21</b><span>25. 9. 2026</span></header><h3>GARP 2.7 bezpečnostní autorita</h3><p>SORTIO používá GARP 2.7 r2/G-02 jako aktivní bezpečnostní autoritu. Přibyla připnutá referenční vrstva, policy a capability kontrakty, architecture-integrity a mutation brány; dosavadní GARP 2.5.1/N5 zůstává regresní baseline. Serverové kontroly jsou záměrně odložené a nejsou vydávány za otestované.</p></article>
               <article class="changelog-entry"><header><b>1.1.20</b><span>20. 9. 2026</span></header><h3>Finální technický úklid</h3><p>Repozitář a release metadata byla sjednocena s aktuálním Safe Promotion a auto-patch řetězcem. Odstraněny byly zastaralé ruční/legacy cesty a version-coupled QA názvy; funkce aplikace ani datový model se nemění.</p></article>
               <article class="changelog-entry"><header><b>1.1.19</b><span>20. 9. 2026</span></header><h3>Přesná Pages release identity</h3><p>Release-integrity už nezahrnuje interní marker <code>.nojekyll</code>, který GitHub Pages při publikaci spotřebuje a veřejně neposkytuje. AI Studio tak může nezávisle ověřit každý deklarovaný soubor a celý artifact digest bez oslabení fail-closed kontroly.</p></article>
@@ -176,7 +177,6 @@
               <article class="changelog-entry"><header><b>1.1.16</b><span>13. 9. 2026</span></header><h3>GARP deployment staging</h3><p>Interní testovací centrum zůstává součástí QA buildu, ale produkční veřejný i školní deployment se nyní vytváří deterministicky bez <code>tests/</code> a bez odkazu na testovací centrum. Leak scanner kontroluje přímo nasazovaný staging.</p></article>
               <article class="changelog-entry"><header><b>1.1.15</b><span>13. 9. 2026</span></header><h3>GARP 2.5.1 SHIELD</h3><p>Bezpečnostně autoritativní soubory už service worker neukládá do offline cache a načítá je pouze ze sítě bez cache. Doplněny jsou release-integrity, SBOM, provenance a auditní kontroly; funkce SORTIO a datový model se nemění.</p></article>
               <article class="changelog-entry"><header><b>1.1.14</b><span>9. 9. 2026</span></header><h3>Oprava tabule</h3><p>Volba barvy pera se okamžitě použije pro nové tahy bez překreslení ovládacího panelu. Tlačítko „Smazat“ vyčistí obsah tabule rovnou, bez potvrzovacího dialogu.</p></article>
-              <article class="changelog-entry"><header><b>1.1.13</b><span>9. 9. 2026</span></header><h3>Rychlejší výběr pravidel rozsazení</h3><p>Rozbalovací seznamy „má sedět sám“ a „má sedět vepředu“ zůstávají po zaškrtnutí otevřené, takže lze označit více studentů za sebou bez opakovaného rozbalování.</p></article>
             </div>
           </div>
         </details>
@@ -195,6 +195,17 @@
     <label>Školní rok<input id="schoolYearInput" placeholder="2026/2027"></label>
     <footer><button type="button" class="secondary-button" data-action="close-dialog">Zrušit</button><button type="submit" class="primary-button">Uložit třídu</button></footer>
   </form>
+</dialog>
+
+<dialog id="centralGroupsDialog" class="sortio-dialog central-groups-dialog">
+  <div class="dialog-content">
+    <header><div><span>AI STUDIO · MOJE SKUPINY</span><h2>Napojit centrální skupinu</h2></div><button type="button" data-action="close-dialog" aria-label="Zavřít">×</button></header>
+    <p class="central-service-state" id="centralGroupServiceState" aria-live="polite">Připravuji připojení…</p>
+    <label>Centrální skupina<select id="centralGroupSelect" aria-label="Vyberte centrální skupinu"></select></label>
+    <div class="central-privacy-note"><b>Datová minimalizace</b><span>SORTIO žádá pouze metadata skupiny a projekci memberId + jméno + stav. E-mail se do aplikace nepřenáší.</span></div>
+    <div id="centralGroupPreview" class="central-group-preview" aria-live="polite"></div>
+    <footer><button type="button" class="small-button" data-action="central-preview">Obnovit náhled</button><button type="button" class="primary-button" id="applyCentralGroup" data-action="central-apply" disabled>Potvrdit synchronizaci</button></footer>
+  </div>
 </dialog>
 
 <dialog id="importDialog" class="sortio-dialog import-dialog">

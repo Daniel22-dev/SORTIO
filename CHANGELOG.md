@@ -2,6 +2,12 @@
 
 V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizací. Starší technická historie zůstává dohledatelná v Git historii; v kořeni repozitáře se udržují jen aktuální release notes a aktuální závěrečný audit.
 
+## 1.1.23 — 2026-10-01
+- SORTIO se nově bezpečně napojuje na AI Studio **Moje skupiny** jako kanonický zdroj členství třídy; výběr skupiny používá consumer-safe metadata API a roster projekci pro `sortio`.
+- Do SORTIO se z centrální vrstvy přenáší pouze `groupId`, revize, `memberId`, zobrazované jméno a stav člena; e-mailová pole jsou fail-closed odmítnuta.
+- Synchronizace používá náhled změn, kontrolu revize a nedestruktivní archivaci/obnovu, přičemž docházka, historie losování, skupinová pravidla, role, zasedací pořádek, locky, engagement, skóre a Výukový panel zůstávají lokální doménou SORTIO.
+- Ruční import z IS zůstává jako fallback a existující lokální třídu lze pouze explicitním potvrzením jednorázově migrovat do centrálních Moje skupiny.
+
 ## 1.1.22 — 2026-09-27
 - Sekce **O aplikaci** byla sjednocena se standardem ostatních aplikací AI Studia: identita, autor a vývojový garant, školní projekt, přístup a určení a technický stav.
 - Přidán blok **Provozní zásady** a dosavadní samostatná karta ochrany dat byla nahrazena společnou strukturou standardu.
@@ -52,8 +58,3 @@ V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizac
 - Opravena volba barvy pera ve widgetu Tabule: změna barvy se ukládá okamžitě přes `input` i `change`, bez překreslení widgetu, takže následující tah používá skutečně vybranou barvu.
 - Tlačítko „Smazat“ ve widgetu Tabule nyní rovnou vyčistí všechny tahy bez potvrzovacího dialogu. Potvrzení pro „Vyčistit panel“ zůstává zachované.
 - Přidány regresní kontroly pro změnu barvy pera a okamžité mazání tabule.
-
-## 1.1.13 — 2026-09-09
-- Opraveny rozbalovací seznamy pravidel „Má sedět sám“ a „Má sedět vepředu“: po změně checkboxu se zasedací pohled zbytečně nepřerenderuje a seznam zůstává otevřený pro vícenásobný výběr.
-- Přidána regresní kontrola, která hlídá persistenci preference bez překreslení zasedacího pohledu.
-- Changelog v aplikaci zůstává omezen na posledních 10 verzí; opravena také duplicita označení 1.1.12/1.1.11 v předchozím zobrazení.

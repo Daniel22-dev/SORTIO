@@ -57,7 +57,7 @@ SORTIO používá GHRAB Platform 1.1.2 a kontrakt `ghrab-suite-session-v1`. Při
 
 ## GARP 2.7
 
-SORTIO 1.1.22 používá GARP 2.7 r2/G-02 jako jedinou aktivní aplikační bezpečnostní autoritu. Konsolidovaný referenční balík je vendorizovaný a kryptograficky připnutý trust anchorem. Aplikační policy a capability inventory deklarují nulovou generativní AI/tool boundary, explicitní Wikimedia egress, 5MiB JSON backup boundary a budoucí same-origin poll API. Architecture-integrity a mutation testy ověřují, že se tyto hranice nedají tiše rozšířit.
+SORTIO 1.1.23 používá GARP 2.7 r2/G-02 jako jedinou aktivní aplikační bezpečnostní autoritu. Konsolidovaný referenční balík je vendorizovaný a kryptograficky připnutý trust anchorem. Aplikační policy a capability inventory deklarují nulovou generativní AI/tool boundary, explicitní Wikimedia egress, 5MiB JSON backup boundary a budoucí same-origin poll API. Architecture-integrity a mutation testy ověřují, že se tyto hranice nedají tiše rozšířit.
 
 Dosavadní GARP 2.5.1/N5 kontroly se neodstraňují; běží dál jako regresní baseline. School-server závislé kontroly jsou označeny `DEFERRED/NOT_TESTED` a live release claim je fail-closed, dokud nebude existovat skutečné serverové prostředí a runtime evidence.
 
@@ -80,3 +80,8 @@ Rozšíření 1.1 zvyšuje velikost klientského balíku. Kontrolované rozpočt
 - `85-projection.js` – bezpečná projekce;
 - `92-production-tools.js` – demo, kontrola a diagnostický export;
 - `95-diagnostics.js` – anonymizovaný technický snímek.
+
+
+## Centrální Moje skupiny
+
+Od 1.1.23 je identita členství volitelně navázána na oficiální group service AI Studia. Lokální třída ukládá sourceGroupId, lastSyncedRevision a lastSyncedAt; student může mít canonicalMemberId. Consumer projekce neobsahuje e-mail. Provozní výuková data zůstávají výhradně v SORTIO a synchronizace odebrané členy archivuje nedestruktivně.
