@@ -9,6 +9,7 @@ let CENTRAL_GROUPS_SERVICE_PROMISE=null;
 let CENTRAL_GROUPS_UNSUBSCRIBE=null;
 
 function centralGroupsError(code,message){const error=new Error(message||code);error.code=code;return error}
+function setCentralTrustedHtml(node,html){if(node)node.innerHTML=html}
 function centralGroupsStudioBaseUrl(){
   const configured=globalThis.__GHRAB_DEPLOYMENT_CONFIG__?.studioBaseUrl||globalThis.__GHRAB_STUDIO_URL__||'/AI-Studio-GHRAB/';
   const url=new URL(String(configured),globalThis.location?.href||'http://localhost/');
@@ -156,19 +157,19 @@ function centralSyncCounts(plan){return{added:plan.added.length,linked:plan.link
 function renderCentralGroupOptions(groups,selected=''){return groups.map(group=>`<option value="${escapeHtml(group.groupId)}" ${group.groupId===selected?'selected':''}>${escapeHtml(group.displayName)} · rev. ${group.revision}${group.status==='archived'?' · archivována':''}</option>`).join('')}
 function renderCentralSyncPreview(plan,projection){
   const root=$('#centralGroupPreview');const apply=$('#applyCentralGroup');if(!root||!apply)return;
-  if(!plan||!projection){root.innerHTML='<div class="central-preview-placeholder">Vyberte skupinu a načtěte náhled změn.</div>';apply.disabled=true;return}
+  if(!plan||!projection){setCentralTrustedHtml(root,'<div class="central-preview-placeholder">Vyberte skupinu a načtěte náhled změn.</div>');apply.disabled=true;return}
   const counts=centralSyncCounts(plan);const rows=[];
   const add=(items,label,kind)=>items.slice(0,12).forEach(item=>rows.push(`<div class="central-diff-row ${kind}"><b>${escapeHtml(label)}</b><span>${escapeHtml(item.name||'Technický konflikt')}</span></div>`));
   add(plan.added,'Přidat','positive');add(plan.linked,'Napojit existujícího','info');add(plan.renamed,'Přejmenovat','info');add(plan.restored,'Obnovit','positive');add(plan.archived,'Archivovat','warning');add(plan.missing,'Archivovat chybějící','warning');add(plan.localOnly,'Archivovat lokálního','warning');add(plan.conflicts,'Konflikt','danger');
   const hidden=Math.max(0,plan.added.length+plan.linked.length+plan.renamed.length+plan.restored.length+plan.archived.length+plan.missing.length+plan.localOnly.length+plan.conflicts.length-rows.length);
-  root.innerHTML=`<div class="central-preview-summary"><span>Revize <b>${projection.group.revision}</b></span><span>Aktivní ${projection.members.filter(m=>m.status==='active').length}</span><span>Archivovaní ${projection.members.filter(m=>m.status==='archived').length}</span></div>${projection.group.status==='archived'?'<div class="central-sync-warning">Centrální skupina je archivována. SORTIO ji nepřepíše ani nesmaže; lze ji pouze načíst jako zmrazený zdroj nebo odpojit.</div>':''}${rows.length?`<div class="central-diff-list">${rows.join('')}${hidden?`<small>… a dalších ${hidden} změn</small>`:''}</div>`:'<div class="central-preview-ok">Členství se od poslední synchronizace nezměnilo.</div>'}${counts.conflicts?'<div class="central-sync-warning danger">Konflikt je nutné vyřešit v lokální třídě (typicky duplicitní stejné jméno), než půjde synchronizaci potvrdit.</div>':''}`;
+  setCentralTrustedHtml(root,`<div class="central-preview-summary"><span>Revize <b>${projection.group.revision}</b></span><span>Aktivní ${projection.members.filter(m=>m.status==='active').length}</span><span>Archivovaní ${projection.members.filter(m=>m.status==='archived').length}</span></div>${projection.group.status==='archived'?'<div class="central-sync-warning">Centrální skupina je archivována. SORTIO ji nepřepíše ani nesmaže; lze ji pouze načíst jako zmrazený zdroj nebo odpojit.</div>':''}${rows.length?`<div class="central-diff-list">${rows.join('')}${hidden?`<small>… a dalších ${hidden} změn</small>`:''}</div>`:'<div class="central-preview-ok">Členství se od poslední synchronizace nezměnilo.</div>'}${counts.conflicts?'<div class="central-sync-warning danger">Konflikt je nutné vyřešit v lokální třídě (typicky duplicitní stejné jméno), než půjde synchronizaci potvrdit.</div>:''}`);
   apply.disabled=counts.conflicts>0;
 }
 async function loadCentralGroupMetadata({selectedGroupId=null}={}){
   const service=await resolveCentralGroupsService();
   const groups=validateCentralGroupList(service.listGroupMetadata(CENTRAL_GROUPS_CONSUMER_ID,{status:'all'}));
   App.ui.centralGroups.groups=groups;
-  const select=$('#centralGroupSelect');if(select){select.innerHTML=groups.length?renderCentralGroupOptions(groups,selectedGroupId):'<option value="">Žádná skupina není dostupná</option>';select.disabled=!groups.length}
+  const select=$('#centralGroupSelect');if(select){setCentralTrustedHtml(select,groups.length?renderCentralGroupOptions(groups,selectedGroupId):'<option value="">Žádná skupina není dostupná</option>');select.disabled=!groups.length}
   return{service,groups};
 }
 async function fetchCentralProjection(groupId){const service=await resolveCentralGroupsService();let projection;try{projection=service.getRosterProjection(groupId,CENTRAL_GROUPS_CONSUMER_ID)}catch(error){if(String(error?.message||'').includes('GROUP_NOT_FOUND'))throw centralGroupsError('CENTRAL_GROUP_NOT_FOUND','Centrální skupina už neexistuje nebo není dostupná. Lokální data SORTIO zůstala beze změny.');throw error}return validateCentralProjection(projection,groupId)}
@@ -179,8 +180,8 @@ async function previewSelectedCentralGroup(){
 }
 async function openCentralGroupsDialog({groupId=null}={}){
   const dialog=$('#centralGroupsDialog');if(!dialog)return;
-  App.ui.centralGroups.preview=null;$('#centralGroupPreview').innerHTML='<div class="central-preview-placeholder">Načítám bezpečný seznam skupin…</div>';$('#applyCentralGroup').disabled=true;$('#centralGroupServiceState').textContent='Připojuji oficiální group service…';dialog.showModal();
-  try{const selected=groupId||getSelectedClass()?.sourceGroupId||null;const{groups}=await loadCentralGroupMetadata({selectedGroupId:selected});$('#centralGroupServiceState').textContent=groups.length?'Dostupné skupiny načteny bez e-mailových adres.':'V AI Studiu zatím není žádná skupina.';if(groups.length){if(selected&&groups.some(g=>g.groupId===selected))$('#centralGroupSelect').value=selected;await previewSelectedCentralGroup()}}catch(error){$('#centralGroupServiceState').textContent=error.message;$('#centralGroupPreview').innerHTML='<div class="central-sync-warning danger">Centrální služba není bezpečně dostupná. Použijte zatím ruční import z IS.</div>';App.ui.centralGroups.error=error.code||'CENTRAL_GROUPS_UNAVAILABLE'}
+  App.ui.centralGroups.preview=null;setCentralTrustedHtml($('#centralGroupPreview'),'<div class="central-preview-placeholder">Načítám bezpečný seznam skupin…</div>');$('#applyCentralGroup').disabled=true;$('#centralGroupServiceState').textContent='Připojuji oficiální group service…';dialog.showModal();
+  try{const selected=groupId||getSelectedClass()?.sourceGroupId||null;const{groups}=await loadCentralGroupMetadata({selectedGroupId:selected});$('#centralGroupServiceState').textContent=groups.length?'Dostupné skupiny načteny bez e-mailových adres.':'V AI Studiu zatím není žádná skupina.';if(groups.length){if(selected&&groups.some(g=>g.groupId===selected))$('#centralGroupSelect').value=selected;await previewSelectedCentralGroup()}}catch(error){$('#centralGroupServiceState').textContent=error.message;setCentralTrustedHtml($('#centralGroupPreview'),'<div class="central-sync-warning danger">Centrální služba není bezpečně dostupná. Použijte zatím ruční import z IS.</div>');App.ui.centralGroups.error=error.code||'CENTRAL_GROUPS_UNAVAILABLE'}
 }
 async function applySelectedCentralGroup(){
   let preview=App.ui.centralGroups.preview;
