@@ -1,5 +1,6 @@
 const GHRAB_SW_CONTRACT='ghrab-service-worker-v1';
 /* GHRAB service-worker contract v1 · update activation is user-controlled. */
+/* HOTFIX 2026-10-01: refresh cached assets after My Groups lazy-module fix; P5 now gates central-groups regressions. */
 const APP_VERSION = '__APP_VERSION__';
 const CACHE_NAME = "ghrab-sortio-v1.1.23";
 const CACHE_PREFIXES = ["ghrab-sortio-v", "sortio-v"];
