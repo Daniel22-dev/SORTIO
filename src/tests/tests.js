@@ -22,7 +22,7 @@ const groups=[
  ['duplicate',async()=>fakeParse('alex.novak@example.com alex.novak@example.com').length===1?'Duplicitní adresa byla odstraněna.':false],
  ['invalid',async()=>fakeParse('neplatna-adresa, alex.novak@example.com').length===1?'Neplatná položka byla odmítnuta.':false],
  ['no-real-data',async()=>appText().then(t=>!t.includes('@ghrabuvka.cz')&&!t.includes('tobias.baran')?'Build neobsahuje skutečný studentský seznam.':false)],
- ['email-not-stored',async()=>appText().then(t=>{const sanitize=t.match(/function sanitizeStudent\\(item\\)\\{([\\s\\S]*?)function sanitizeGroup/);return t.includes('emailDataStored:false')&&t.includes('const student=makeStudent(row.firstName,row.lastName)')&&!!sanitize&&!/\\bschoolEmail\\b/.test(sanitize[1])?'Import ukládá pouze jméno a příjmení; e-mail není součástí uloženého modelu.':false})]
+ ['email-not-stored',async()=>appText().then(t=>{const start=t.indexOf('function sanitizeStudent(item){');const end=start>=0?t.indexOf('function sanitizeGroup',start):-1;const sanitize=start>=0&&end>start?t.slice(start,end):'';return t.includes('emailDataStored:false')&&t.includes('const student=makeStudent(row.firstName,row.lastName)')&&!!sanitize&&!sanitize.includes('schoolEmail')?'Import ukládá pouze jméno a příjmení; e-mail není součástí uloženého modelu.':false})]
 ]},
 {id:'organisation',title:'Losování, skupiny, role a místa',tests:[
  ['balanced-lengths',async()=>{const x=groupLengths(31,'size',4);return Math.max(...x)-Math.min(...x)<=1&&x.reduce((a,b)=>a+b,0)===31?'31 studentů se rozdělí rovnoměrně.':false}],
