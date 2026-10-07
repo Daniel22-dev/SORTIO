@@ -231,7 +231,7 @@ else {
     "npm run qa:combinatorial",
     "npm run test:headless",
   ];
-  const deterministicCiCommands = [
+  const deterministicBaseCommands = [
     "node scripts/verify-structure.mjs",
     "node scripts/domain-tests.mjs",
     "node scripts/package3-runtime-tests.mjs",
@@ -239,19 +239,38 @@ else {
     "node scripts/package5-runtime-tests.mjs",
     "node scripts/package5-internal-tests.mjs",
     "node scripts/build.mjs",
-    "node scripts/qa-technical.mjs",
-    "node scripts/qa-security.mjs",
-    "node scripts/qa-pwa.mjs",
-    "node scripts/qa-combinatorial.mjs",
+  ];
+  const deterministicQaCommands = [
+    "scripts/qa-technical.mjs",
+    "scripts/qa-security.mjs",
+    "scripts/qa-pwa.mjs",
+    "scripts/qa-combinatorial.mjs",
   ];
   const hasReleaseWrapper = /npm run qa:release/.test(all);
   const hasExplicitReleaseSuite = explicitCiCommands.every((command) =>
     all.includes(command),
   );
   const deterministicMode = /SORTIO_CI_MODE:\s*deterministic/.test(all);
+  const directDeterministicQa = deterministicQaCommands.every((script) =>
+    all.includes(`node ${script}`),
+  );
+  const deployQaOrchestratorPath = path.join(
+    ROOT,
+    "scripts",
+    "run-deploy-qa-parallel.mjs",
+  );
+  const deployQaOrchestrator = (await exists(deployQaOrchestratorPath))
+    ? await readFile(deployQaOrchestratorPath, "utf8")
+    : "";
+  const orchestratedDeterministicQa =
+    all.includes("node scripts/run-deploy-qa-parallel.mjs") &&
+    deterministicQaCommands.every((script) =>
+      deployQaOrchestrator.includes(script),
+    );
   const hasDeterministicSuite =
     deterministicMode &&
-    deterministicCiCommands.every((command) => all.includes(command));
+    deterministicBaseCommands.every((command) => all.includes(command)) &&
+    (directDeterministicQa || orchestratedDeterministicQa);
   if (!hasReleaseWrapper && !hasExplicitReleaseSuite && !hasDeterministicSuite)
     f.push(
       finding(
