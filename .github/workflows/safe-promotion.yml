@@ -6,6 +6,7 @@ on:
   workflow_run:
     workflows: ["P5 R2 pre-production release gate"]
     types: [completed]
+    branches: [candidate]
 
 permissions:
   contents: read

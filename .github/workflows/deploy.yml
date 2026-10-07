@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows: ["P5 R2 pre-production release gate"]
     types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -17,8 +18,8 @@ env:
   SORTIO_CI_MODE: deterministic
 
 concurrency:
-  group: pages-${{ github.event.workflow_run.head_branch || github.ref_name }}
-  cancel-in-progress: true
+  group: pages-production
+  queue: max
 
 jobs:
   release-build:
