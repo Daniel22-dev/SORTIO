@@ -81,7 +81,7 @@
     "qa:garp27:policy-mutations": "node scripts/garp27/policy-admission-mutations.mjs",
     "qa:garp27:mutations": "node scripts/garp27/mutation-tests.mjs",
     "qa:garp27:auto-patch": "node scripts/garp27/auto-patch-contract.mjs",
-    "qa:garp27:static": "npm run build:deployment && npm run qa:garp27:contracts && npm run qa:garp27:architecture && npm run qa:garp27:policy-mutations && npm run qa:garp27:mutations && npm run qa:garp27:auto-patch",
+    "qa:garp27:static": "npm run build:deployment && node scripts/garp27/static-parallel.mjs",
     "qa:garp27": "npm run qa:garp27:static && npm run garp25:prep-static",
     "qa:garp27:foundation": "node scripts/garp27/foundation-gate.mjs",
     "test:central-groups": "node scripts/central-groups-regressions.mjs"
