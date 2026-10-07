@@ -34,11 +34,11 @@ if(exists(wf)){
   const provisioner=exists(provisionerPath)?await fsp.readFile(provisionerPath,'utf8'):'';
   check(
     'ci.browser-install',
-    /provision-playwright-chromium\.mjs/.test(t)&&
+    t.includes('provision-playwright-chromium.mjs')&&
     /actions\/cache@[0-9a-f]{40}/i.test(t)&&
-    /playwright-\\\$\{\{ runner\.os \}\}-\\\$\{\{ runner\.arch \}\}-1\.61\.1-/.test(t)&&
-    /EXPECTED_PLAYWRIGHT_VERSION\s*=\s*['"]1\.61\.1['"]/.test(provisioner)&&
-    /playwright['"],\s*['"]install['"],\s*['"]--with-deps['"],\s*['"]chromium['"]/.test(provisioner),
+    t.includes("key: playwright-${{ runner.os }}-${{ runner.arch }}-1.61.1-${{ hashFiles('package-lock.json') }}")&&
+    provisioner.includes("EXPECTED_PLAYWRIGHT_VERSION = '1.61.1'")&&
+    provisioner.includes("['playwright', 'install', '--with-deps', 'chromium']"),
     'pinned cache + launch probe + original --with-deps fallback'
   );
   check('ci.p5-gate',/npm run qa:p5:ci/.test(t));
