@@ -96,8 +96,12 @@ jobs:
       github.event.workflow_run.event == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      merge_sha: ${{ steps.merge.outputs.merge_sha }}
+      checked_sha: ${{ steps.merge.outputs.checked_sha }}
     steps:
       - name: Merge only verified candidate to protected main
+        id: merge
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.SAFE_PROMOTION_TOKEN }}
@@ -163,5 +167,58 @@ jobs:
           if [ "$(jq -r '.merged' <<<"$result")" != "true" ]; then echo "::error::GitHub refused merge: $(jq -r '.message // "unknown"' <<<"$result")"; exit 1; fi
           merge_sha="$(jq -r '.sha' <<<"$result")"
           if [ -z "$merge_sha" ] || [ "$merge_sha" = "null" ]; then echo "::error::Merge SHA missing."; exit 1; fi
-          gh api --method PATCH "repos/${REPOSITORY}/git/refs/heads/candidate" -f sha="$merge_sha" -F force=false >/dev/null
-          echo "Safe Promotion merged PR #${pr_number} and fast-forwarded candidate to ${merge_sha}."
+          echo "merge_sha=$merge_sha" >> "$GITHUB_OUTPUT"
+          echo "checked_sha=$CHECKED_SHA" >> "$GITHUB_OUTPUT"
+          echo "Safe Promotion merged PR #${pr_number} to protected main at ${merge_sha}."
+
+  sync-candidate-after-merge:
+    needs: merge-promotion-pr
+    if: >-
+      needs.merge-promotion-pr.result == 'success' &&
+      needs.merge-promotion-pr.outputs.merge_sha != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Fast-forward candidate without recursive CI
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          MERGE_SHA: ${{ needs.merge-promotion-pr.outputs.merge_sha }}
+          CHECKED_SHA: ${{ needs.merge-promotion-pr.outputs.checked_sha }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$MERGE_SHA" =~ ^[0-9a-fA-F]{40}$ ]]; then
+            echo "::error::Invalid merge SHA."
+            exit 1
+          fi
+          if ! [[ "$CHECKED_SHA" =~ ^[0-9a-fA-F]{40}$ ]]; then
+            echo "::error::Invalid checked candidate SHA."
+            exit 1
+          fi
+
+          remote_main="$(gh api "repos/${REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$remote_main" != "$MERGE_SHA" ]; then
+            echo "::error::main advanced before candidate sync; refusing stale synchronization."
+            exit 1
+          fi
+
+          remote_candidate="$(gh api "repos/${REPOSITORY}/git/ref/heads/candidate" --jq '.object.sha')"
+          if [ "$remote_candidate" = "$MERGE_SHA" ]; then
+            echo "candidate already synchronized to ${MERGE_SHA}; safe NO-OP."
+            exit 0
+          fi
+          if [ "$remote_candidate" != "$CHECKED_SHA" ]; then
+            echo "::error::candidate moved after verified merge; refusing to overwrite ${remote_candidate}."
+            exit 1
+          fi
+
+          gh api --method PATCH "repos/${REPOSITORY}/git/refs/heads/candidate" -f sha="$MERGE_SHA" -F force=false >/dev/null
+          synced_candidate="$(gh api "repos/${REPOSITORY}/git/ref/heads/candidate" --jq '.object.sha')"
+          if [ "$synced_candidate" != "$MERGE_SHA" ]; then
+            echo "::error::candidate synchronization verification failed."
+            exit 1
+          fi
+          echo "candidate synchronized to verified main merge ${MERGE_SHA} via GITHUB_TOKEN; recursive Actions trigger suppressed."
