@@ -25,7 +25,24 @@ if(consumer.appId!=='ai-studio'){check('source.no-src-platform',!exists(path.joi
 const manifestFiles=(await walk(dist)).filter(p=>/manifest(?:\.webmanifest|\.json)$/i.test(p));const webmanifest=manifestFiles.find(p=>p.endsWith('.webmanifest'));check('pwa.manifest',Boolean(webmanifest),webmanifest?path.relative(dist,webmanifest):'missing');if(webmanifest){const m=await readJson(webmanifest);check('pwa.id',typeof m.id==='string'&&m.id.length>0,m.id);check('pwa.start-url-stable',typeof m.start_url==='string'&&!/[?&](?:v|version)=/i.test(m.start_url),m.start_url);check('pwa.scope',typeof m.scope==='string'&&m.scope.length>0,m.scope)}
 const sw=(await walk(dist)).find(p=>/(^|\/)(?:sw|service-worker)\.js$/i.test(p.split(path.sep).join('/')));check('pwa.service-worker',Boolean(sw),sw?path.relative(dist,sw):'missing');if(sw){const s=await fsp.readFile(sw,'utf8');check('pwa.no-install-skipwaiting',!/addEventListener\s*\(\s*['"]install['"][\s\S]{0,1600}?skipWaiting\s*\(/.test(s));check('pwa.no-store-aware',/no-store|request\.cache/.test(s))}
 const sourceFiles=(await walk(root)).filter(p=>!p.includes(`${path.sep}node_modules${path.sep}`)&&!p.includes(`${path.sep}dist${path.sep}`)&&!p.includes(`${path.sep}dist-school-server${path.sep}`));const forbidden=sourceFiles.filter(p=>/(^|\/)(?:\.env(?!\.example$)(?:\..*)?|id_rsa|server\.key|private-key\.pem)$/i.test(p.split(path.sep).join('/')));check('secrets.no-forbidden-files',forbidden.length===0,forbidden.map(p=>path.relative(root,p)).join(','));
-const wf=path.join(root,'.github','workflows','p5-release-gate.yml');check('ci.p5-workflow',exists(wf));if(exists(wf)){const t=await fsp.readFile(wf,'utf8');check('ci.clean-install',/npm ci/.test(t));check('ci.browser-install',/playwright install --with-deps chromium/.test(t));check('ci.p5-gate',/npm run qa:p5:ci/.test(t))}
+const wf=path.join(root,'.github','workflows','p5-release-gate.yml');
+check('ci.p5-workflow',exists(wf));
+if(exists(wf)){
+  const t=await fsp.readFile(wf,'utf8');
+  check('ci.clean-install',/npm ci/.test(t));
+  const provisionerPath=path.join(root,'scripts','provision-playwright-chromium.mjs');
+  const provisioner=exists(provisionerPath)?await fsp.readFile(provisionerPath,'utf8'):'';
+  check(
+    'ci.browser-install',
+    t.includes('provision-playwright-chromium.mjs')&&
+    /actions\/cache@[0-9a-f]{40}/i.test(t)&&
+    t.includes("key: playwright-${{ runner.os }}-${{ runner.arch }}-1.61.1-${{ hashFiles('package-lock.json') }}")&&
+    provisioner.includes("EXPECTED_PLAYWRIGHT_VERSION = '1.61.1'")&&
+    provisioner.includes("['playwright', 'install', '--with-deps', 'chromium']"),
+    'pinned cache + launch probe + original --with-deps fallback'
+  );
+  check('ci.p5-gate',/npm run qa:p5:ci/.test(t));
+}
 if(consumer.appId==='ai-studio'){const app=await fsp.readFile(path.join(root,'src','app.js'),'utf8');const guard=await fsp.readFile(path.join(root,'src','access','app-guard.js'),'utf8');check('studio.reporter.called',/startErrorReporterBestEffort\(["']ai-studio["']/.test(app));check('studio.reporter.implementation',/export function startErrorReporterBestEffort/.test(guard));}
 if(consumer.appId==='lesson-hub'){const security=await fsp.readFile(path.join(root,'server','lib','security.mjs'),'utf8');const serverApp=await fsp.readFile(path.join(root,'server','app.mjs'),'utf8');check('lesson-hub.async-scrypt-export',/export async function hashPasswordAsync/.test(security)&&/export async function verifyPasswordAsync/.test(security));check('lesson-hub.async-scrypt-request-path',/await verifyPasswordAsync/.test(serverApp)&&/await hashPasswordAsync/.test(serverApp));}
 if(consumer.appId==='ludus'){const registry=await readJson(path.join(root,'media','registry.json'));check('ludus.public-default-unofficial',registry.policy?.defaultBuildProfile==='unofficial',registry.policy?.defaultBuildProfile||'missing');check('ludus.private-official-command',Boolean(pkg.scripts?.['build:official-private']),pkg.scripts?.['build:official-private']||'missing');const forbiddenMedia=['media/hogwarts/official/intro.mp4','media/hogwarts/official/soundtrack.mp3'];for(const rel of forbiddenMedia)check(`ludus.public-dist-excludes.${path.basename(rel)}`,!exists(path.join(dist,rel)),rel)}

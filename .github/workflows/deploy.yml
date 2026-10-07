@@ -159,11 +159,16 @@ jobs:
       - name: Run internal regression suite
         run: node scripts/package5-internal-tests.mjs
 
-      - name: Install pinned Playwright Chromium
+      - name: Restore pinned Playwright Chromium cache
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-1.61.1-${{ hashFiles('package-lock.json') }}
+
+      - name: Provision pinned Playwright Chromium
         shell: bash
-        run: |
-          npx playwright install --with-deps chromium
-          node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+        run: node scripts/provision-playwright-chromium.mjs
 
       - name: Run unified error reporter regression
         run: npm run test:reporter
