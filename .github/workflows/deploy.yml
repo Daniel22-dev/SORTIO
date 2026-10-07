@@ -59,6 +59,50 @@ jobs:
           fi
           echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
 
+      - name: Download exact P5 certification evidence
+        if: github.event_name == 'workflow_run'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          P5_RUN_ID: ${{ github.event.workflow_run.id }}
+          P5_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          SOURCE_SHA: ${{ steps.release-source.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+          artifact_name="p5-r2-${SOURCE_SHA}"
+          artifacts_json="$(gh api "repos/${REPOSITORY}/actions/runs/${P5_RUN_ID}/artifacts?name=${artifact_name}")"
+          count="$(jq '[.artifacts[] | select(.name == $name and .expired == false)] | length' --arg name "$artifact_name" <<<"$artifacts_json")"
+          if [ "$count" != "1" ]; then
+            echo "::error::Expected exactly one non-expired P5 certification artifact named ${artifact_name}; found ${count}."
+            exit 1
+          fi
+          artifact_id="$(jq -r '.artifacts[] | select(.name == $name and .expired == false) | .id' --arg name "$artifact_name" <<<"$artifacts_json")"
+          artifact_digest="$(jq -r '.artifacts[] | select(.name == $name and .expired == false) | .digest // empty' --arg name "$artifact_name" <<<"$artifacts_json")"
+          artifact_head_sha="$(jq -r '.artifacts[] | select(.name == $name and .expired == false) | .workflow_run.head_sha // empty' --arg name "$artifact_name" <<<"$artifacts_json")"
+          if [ "$artifact_head_sha" != "$SOURCE_SHA" ]; then
+            echo "::error::P5 certification artifact source SHA mismatch."
+            exit 1
+          fi
+          cert_zip="$RUNNER_TEMP/p5-certification.zip"
+          cert_dir="$RUNNER_TEMP/p5-certification"
+          mkdir -p "$cert_dir"
+          gh api "repos/${REPOSITORY}/actions/artifacts/${artifact_id}/zip" > "$cert_zip"
+          if [[ "$artifact_digest" =~ ^sha256:[0-9a-fA-F]{64}$ ]]; then
+            expected="${artifact_digest#sha256:}"
+            actual="$(sha256sum "$cert_zip" | awk '{print $1}')"
+            if [ "$actual" != "$expected" ]; then
+              echo "::error::Downloaded P5 certification artifact digest mismatch."
+              exit 1
+            fi
+          else
+            echo "::error::GitHub did not provide a valid SHA-256 artifact digest."
+            exit 1
+          fi
+          unzip -q "$cert_zip" -d "$cert_dir"
+          echo "P5_CERTIFICATION_DIR=$cert_dir" >> "$GITHUB_ENV"
+          echo "P5_RUN_ATTEMPT=$P5_RUN_ATTEMPT" >> "$GITHUB_ENV"
+
       - name: Checkout verified source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -74,6 +118,15 @@ jobs:
 
       - name: Install locked dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+
+      - name: Verify exact-SHA P5 certification handoff
+        if: github.event_name == 'workflow_run'
+        env:
+          GHRAB_EXPECTED_SOURCE_SHA: ${{ steps.release-source.outputs.source_sha }}
+          GHRAB_EXPECTED_REPOSITORY: ${{ github.repository }}
+          GHRAB_EXPECTED_RUN_ID: ${{ github.event.workflow_run.id }}
+          GHRAB_EXPECTED_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        run: node scripts/verify-p5-certification.mjs "$P5_CERTIFICATION_DIR"
 
       - name: Verify production structure
         run: node scripts/verify-structure.mjs
@@ -129,12 +182,14 @@ jobs:
       - name: Verify GHRAB Platform P3 conformance
         run: npm run qa:platform
 
-      - name: Enforce P5 R2 + cumulative GARP 2.7 release gate
+      - name: Enforce P5 R2 + cumulative GARP 2.7 release gate for manual deploy
+        if: github.event_name == 'workflow_dispatch'
         run: npm run qa:p5:ci
         env:
           GARP27_EXTERNAL_TRUST_SHA256: 4b033eefb70facfaca7b5f27a689bf04c960eeef0573037d2d0854b87087755e
 
-      - name: Enforce cumulative GARP 2.7 foundation and legacy regressions
+      - name: Enforce cumulative GARP 2.7 foundation and legacy regressions for manual deploy
+        if: github.event_name == 'workflow_dispatch'
         run: npm run qa:garp27:foundation
         env:
           GARP27_EXTERNAL_TRUST_SHA256: 4b033eefb70facfaca7b5f27a689bf04c960eeef0573037d2d0854b87087755e
