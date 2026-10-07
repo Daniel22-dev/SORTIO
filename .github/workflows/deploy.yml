@@ -145,8 +145,8 @@ jobs:
           node scripts/package4-runtime-tests.mjs
           node scripts/package5-runtime-tests.mjs
 
-      - name: Build production files
-        run: node scripts/build.mjs
+      - name: Build production deployment profile
+        run: npm run build:deployment
         env:
           GHRAB_SOURCE_REPOSITORY: ${{ github.repository }}
           GHRAB_SOURCE_COMMIT: ${{ steps.release-source.outputs.source_sha }}
