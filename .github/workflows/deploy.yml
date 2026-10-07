@@ -170,17 +170,8 @@ jobs:
         shell: bash
         run: node scripts/provision-playwright-chromium.mjs
 
-      - name: Run unified error reporter regression
-        run: npm run test:reporter
-
-      - name: Run deterministic QA gates
-        shell: bash
-        run: |
-          set -euo pipefail
-          node scripts/qa-technical.mjs
-          node scripts/qa-security.mjs
-          node scripts/qa-pwa.mjs
-          node scripts/qa-combinatorial.mjs
+      - name: Run reporter and deterministic QA gates
+        run: node scripts/run-deploy-qa-parallel.mjs
 
       - name: Verify prepared build
         shell: bash
