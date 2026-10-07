@@ -27,11 +27,16 @@ jobs:
         run: |
           node -e "const p=require('./node_modules/axe-core/package.json'); if(p.version!=='4.12.1') process.exit(1)"
           node -e "const p=require('./node_modules/playwright/package.json'); if(p.version!=='1.61.1') process.exit(1)"
-      - name: Install pinned Playwright Chromium
+      - name: Restore pinned Playwright Chromium cache
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-1.61.1-${{ hashFiles('package-lock.json') }}
+
+      - name: Provision pinned Playwright Chromium
         shell: bash
-        run: |
-          npx playwright install --with-deps chromium
-          node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+        run: node scripts/provision-playwright-chromium.mjs
       - name: Run P5 R2 + cumulative GARP 2.7 CI gate
         run: npm run qa:p5:ci
         env:
