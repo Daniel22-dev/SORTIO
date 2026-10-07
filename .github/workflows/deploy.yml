@@ -299,6 +299,7 @@ jobs:
 
   notify-ai-studio:
     needs: [release-build, deploy]
+    if: ${{ !cancelled() && needs.release-build.result == 'success' && needs.deploy.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
