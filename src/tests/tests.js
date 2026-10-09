@@ -44,7 +44,7 @@ const groups=[
  ['diagnostics-privacy',async()=>appText().then(t=>t.includes('diagnosticContainsStudentNames:false')&&t.includes('diagnosticReport')?'Diagnostika deklaruje výstup bez jmen.':false)],
  ['demo',async()=>appText().then(t=>t.includes('createDemoClass')&&t.includes('Ukázková třída 2.A')?'Anonymní ukázková třída je dostupná.':false)],
  ['keyboard',async()=>appText().then(t=>t.includes('bindKeyboardShortcuts')&&t.includes('keyboardDialog')?'Klávesové zkratky jsou aktivní.':false)],
- ['manual-entry',async()=>appText().then(t=>t.includes('id="manualBtn"')&&t.includes('href="./manual/"')&&t.includes('target="_blank"')&&t.includes('rel="noopener"')?'Interaktivní manuál je dostupný přímo z horní lišty.':false)],
+ ['manual-entry',async()=>appText().then(t=>t.includes('id="manualBtn"')&&t.includes('href="./manual/?from=app"')&&t.includes('target="_blank"')&&t.includes('rel="noopener"')?'Interaktivní manuál je dostupný přímo z horní lišty.':false)],
  ['skip-link',async()=>appText().then(t=>t.includes('class="skip-link"')&&t.includes('id="mainContent"')?'Je dostupný odkaz pro přeskočení navigace.':false)],
  ['reduced-motion',async()=>appText().then(t=>t.includes('prefers-reduced-motion')?'Systémová preference omezení pohybu je respektována.':false)],
  ['manual',async()=>text('../manual/index.html').then(t=>t.includes('Produkční provoz')&&t.includes('Datový trezor v5')?'Finální manuál 1.0 je dostupný.':false)]
