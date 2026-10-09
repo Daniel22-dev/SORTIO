@@ -2,7 +2,8 @@ const allowed = () => document.documentElement.dataset.ghrabAccess === "granted"
 function refreshPdfControl() {
   const old = document.querySelector("#manual-pdf");
   const status = document.querySelector("#manual-pdf-status");
-  if (!allowed()) {
+  if (!allowed() || window.parent !== window ||
+      window.GHRAB_MANUAL_DOC_INFO?.reviewStatus !== "verified") {
     old?.remove();
     status?.remove();
     return;
