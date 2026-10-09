@@ -38,6 +38,11 @@ function fail(error){
 }
 function activatePage(){
   document.documentElement.dataset.ghrabAccess='granted';
+  window.GHRAB_MANUAL_DOC_INFO=Object.freeze({
+    appId:'sortio', appVersion:'1.1.23', docRevision:'D-2026-10-09',
+    lastReviewedAt:null, reviewStatus:'review-required',
+    pdfContentContract:'static-complete-sections-v1'
+  });
   document.body.style.visibility='visible';
   for(const source of [...document.querySelectorAll('script[type="application/ghrab-protected"]')]){
     const executable=document.createElement('script');
