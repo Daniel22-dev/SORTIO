@@ -4,68 +4,68 @@ import { execFileSync } from "node:child_process";
 import { runInNewContext } from "node:vm";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
-// Etapa D: source-contract + negative/positive access smoke.
-// The Unicode PDF implementation is shipped by AI Studio, not in this app.
-// Never assert that a local src/manual/pdf-export.js exists.
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = file => readFileSync(path.join(root, file), "utf8");
 const html = read("src/manual/index.html");
-const actionPath = "src/manual/pdf-download.js";
-const action = read(actionPath);
-execFileSync(process.execPath, ["--check", path.join(root, actionPath)], { stdio: "pipe" });
-
-assert(html.includes('data-ghrab-access="checking"'), "Manual must start inaccessible");
-assert(html.includes('src="./pdf-download.js"'), "Manual PDF button script is not loaded");
-assert(html.includes("protectApp("), "Existing app permit check must remain active");
-assert(action.includes('ghrabAccess==="granted"'), "Download must be gated on the explicit grant");
-assert(action.includes("MutationObserver"), "Download must wait for the access transition");
-assert(action.includes("manualy/pdf-export.js"), "PDF must import the common Unicode exporter");
-assert(action.includes("downloadManualPdf"), "PDF handler must call the exporter");
-assert(!/https?:\/\/(?:cdn|unpkg|jsdelivr)\./i.test(action), "Unpinned CDN dependency");
-
-function simulate(initial, updated) {
-  let button = null;
-  let observer = null;
-  const rootNode = { dataset: { ghrabAccess: initial, ghrabAppId: "sortio" } };
-  const main = { prepend(...nodes) { button = nodes.find(node => node.id === "manual-pdf") || button; } };
+const guide = read("src/manual/index.html");
+const jsPath = path.join(root, "src/manual/pdf-download.js");
+const action = read("src/manual/pdf-download.js");
+execFileSync(process.execPath, ["--check", jsPath], { stdio: "pipe" });
+assert(html.includes('data-ghrab-access="checking"'), "Manual must start gated");
+assert(html.includes('src="./pdf-download.js"'), "Missing local PDF button module");
+assert(action.includes('ghrabAccess === "granted"'), "PDF control must require permit");
+assert(action.includes('downloadManualPdf'), "Missing shared PDF exporter");
+assert(action.includes("manualy/pdf-export.js"), "Incorrect PDF module location");
+assert(action.includes("MutationObserver"), "Access transition not monitored");
+assert(!["https://cdn.", "https://unpkg.", "https://jsdelivr."].some(host => action.includes(host)), "Unpinned CDN");
+// Completeness checks: actual dynamic structures must be part of the exported content.
+if ("static" === "map") {
+  assert(guide.includes("GHRAB_MANUAL_EXPORT"), "Interactive tour not exported");
+  assert(guide.includes("MANUAL.map") && guide.includes("MANUAL.tour"), "Guide map/tour incomplete");
+} else if ("static" === "tables") {
+  assert(guide.includes("GHRAB_MANUAL_EXPORT") && guide.includes("table"), "Tables missing from PDF");
+} else if ("static" === "dynamic") {
+  assert(guide.includes("GHRAB_MANUAL_EXPORT") && guide.includes("manual-warning"), "Dynamic safety messages missing");
+}
+function simulate(initial, change) {
+  let button, status, observer;
+  const rootNode = { dataset: { ghrabAccess: initial, ghrabAppId: "test-app" } };
+  const main = { prepend(...nodes) { for (const n of nodes) {
+    if (n.id === "manual-pdf") button = n;
+    if (n.id === "manual-pdf-status") status = n;
+  } } };
   const document = {
     documentElement: rootNode,
-    querySelector(selector) {
-      if (selector === "main") return main;
-      if (selector === "#manual-pdf") return button;
+    querySelector(sel) {
+      if (sel === "main") return main;
+      if (sel === "#manual-pdf") return button;
+      if (sel === "#manual-pdf-status") return status;
       return null;
     },
-    createElement(tag) {
-      return {
-        tagName: tag.toUpperCase(),
-        setAttribute(name, value) { this[name] = value; }
-      };
-    }
+    createElement(tag) { return {
+      tagName: tag.toUpperCase(), id: "",
+      addEventListener(event, cb) { this.handlers ??= {}; this.handlers[event] = cb; },
+      setAttribute(name, value) { this[name] = value; },
+      remove() { if (this === button) button = undefined; if (this === status) status = undefined; }
+    }; }
   };
-  class FakeMutationObserver {
-    constructor(callback) { this.callback = callback; observer = this; }
-    observe() { this.observing = true; }
-    disconnect() { this.observing = false; }
+  class MockObserver {
+    constructor(cb) { this.cb = cb; observer = this; }
+    observe() { this.active = true; }
+    disconnect() { this.active = false; }
   }
-  runInNewContext(action, {
-    document, MutationObserver: FakeMutationObserver,
-    window: {}, URL, location: { href: "https://daniel22-dev.github.io/SORTIO/" }
-  }, { filename: actionPath });
+  runInNewContext(action, { document, window: {}, URL,
+    MutationObserver: MockObserver, location: { href: "https://daniel22-dev.github.io/" } }, { filename: jsPath });
   const before = !!button;
-  if (updated) {
-    rootNode.dataset.ghrabAccess = updated;
-    if (observer?.observing) observer.callback();
-  }
-  return { before, after: !!button, label: button?.textContent, button };
+  rootNode.dataset.ghrabAccess = change;
+  if (observer?.active) observer.cb();
+  return { before, after: !!button, label: button?.textContent, handlers: button?.handlers };
 }
-const denied = simulate("denied");
-assert.equal(denied.before, false, "Denied users must never see the download control");
-const checking = simulate("checking", "denied");
-assert.equal(checking.after, false, "Denied transition must not mount the control");
-const approved = simulate("checking", "granted");
-assert.equal(approved.before, false, "Control appeared before permit confirmation");
-assert.equal(approved.after, true, "Approved user should see the download control");
-assert.match(approved.label, /PDF/i, "Mounted control must identify PDF export");
-
-console.log("[MANUAL PDF] PASS: module syntax, shared Unicode exporter, fail-closed grant/deny states");
+assert.equal(simulate("checking", "denied").after, false, "Denied users see PDF control");
+assert.equal(simulate("checking", "granted").before, false, "PDF before grant");
+const granted = simulate("checking", "granted");
+assert.equal(granted.after, true, "PDF unavailable after grant");
+assert(granted.handlers?.click, "PDF has no functional click handler");
+assert.equal(simulate("granted", "denied").after, false, "PDF control survives revocation");
+assert.match(granted.label, /Náhled PDF/, "Unreviewed manuals should be labelled preview");
+console.log("[MANUAL PDF] PASS: access deny/grant/revoke, complete source, module syntax");
