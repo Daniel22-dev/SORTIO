@@ -4,9 +4,9 @@ const embedded = window.parent !== window;
 const fromStudio = new URLSearchParams(location.search).get("from") === "studio";
 const back = [...document.querySelectorAll("a")].find(a => /Zpět do aplikace/.test(a.textContent || ""));
 if (embedded) {
-  if (back) back.hidden = true;
+  if (back) { back.hidden = true; back.style.display = 'none'; }
   // The parent viewer owns PDF actions; never show a second print-to-PDF shortcut.
-  document.querySelectorAll('button[onclick*="window.print"],button[title*="Vytisknout"]').forEach(b => b.hidden = true);
+  document.querySelectorAll('button[onclick*="window.print"],button[title*="Vytisknout"]').forEach(b => { b.hidden = true; b.style.display = 'none'; });
 } else if (fromStudio && back) {
   back.href = studioUrl + "manualy/";
   back.title = "Vrátit se do centra manuálů";
