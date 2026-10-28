@@ -33,17 +33,16 @@ jobs:
       - name: Rehearse protected-style P5 and exact-source release chain without publication
         shell: bash
         env:
-          GHRAB_SOURCE_COMMIT: d0114c008c426c6dcbdf4dae9adfc5adcb4db3ef
-          GHRAB_SOURCE_REPOSITORY: Daniel22-dev/SORTIO
-          GHRAB_RELEASE_STAGE: PREP-VALIDATION
           GARP27_EXTERNAL_TRUST_SHA256: c36546657182c19e9d9a6bfee25856dbfd676f0fa391c2a8cddfc3d953b296c0
         run: |
           set -euo pipefail
           export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
-          npm run build:deployment
+          # Keep source-identity variables ABSENT during GARP negative selftests.
+          # Set them only for artefact construction/provenance, never as a bypass.
+          GHRAB_SOURCE_COMMIT=d0114c008c426c6dcbdf4dae9adfc5adcb4db3ef GHRAB_SOURCE_REPOSITORY=Daniel22-dev/SORTIO GHRAB_RELEASE_STAGE=PREP-VALIDATION npm run build:deployment
           npm run qa:p5:ci
-          npm run prepare:pages
-          npm run verify:release-chain
+          GHRAB_SOURCE_COMMIT=d0114c008c426c6dcbdf4dae9adfc5adcb4db3ef GHRAB_SOURCE_REPOSITORY=Daniel22-dev/SORTIO GHRAB_RELEASE_STAGE=PREP-VALIDATION npm run prepare:pages
+          GHRAB_SOURCE_COMMIT=d0114c008c426c6dcbdf4dae9adfc5adcb4db3ef GHRAB_SOURCE_REPOSITORY=Daniel22-dev/SORTIO GHRAB_RELEASE_STAGE=PREP-VALIDATION npm run verify:release-chain
           echo 'RELEASE CHAIN CHECKED - TRANSITIONAL UNSIGNED - NO DEPLOY - NONCERTIFYING'
       - name: Check source checkout did not move to production
         shell: bash
