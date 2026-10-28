@@ -3,3 +3,4 @@
 vendor/ghrab-platform-*/*.js text eol=lf
 vendor/ghrab-platform-*/*.css text eol=lf
 vendor/ghrab-platform-*/*.json text eol=lf
+security/sbom/sortio-*.cdx.json text eol=lf
