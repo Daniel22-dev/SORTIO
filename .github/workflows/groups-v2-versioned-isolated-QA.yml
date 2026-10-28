@@ -1,0 +1,92 @@
+name: 1.1.24 Groups v2 release identity isolated QA (NONCERTIFYING NO DEPLOY)
+on:
+  push:
+    branches:
+      - qa/groups-v2-release-1.1.24-20261028
+permissions:
+  contents: read
+jobs:
+  portable-versioned-source:
+    name: versioned source contracts on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    steps:
+      - name: Checkout exact reviewed versioned source instead of QA branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 002a9d8869d82a39f6921420df93f9ec5a6d496a
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Use Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Verify source SHA and release identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "002a9d8869d82a39f6921420df93f9ec5a6d496a"
+          test "$(node -p 'require("./package.json").version')" = "1.1.24"
+          test "$(node -p 'require("./package-lock.json").version')" = "1.1.24"
+          test "$(node -p 'require("./ghrab-platform.consumer.json").appVersion')" = "1.1.24"
+          test "$(node -p 'require("./qa/qa-manifest.json").appVersion')" = "1.1.24"
+          test "$(node -p 'require("./reporter-test.config.json").version')" = "1.1.24"
+          echo "VERSIONED_SOURCE=002a9d8869d82a39f6921420df93f9ec5a6d496a; QA_EVENT_SHA=$GITHUB_SHA; NONCERTIFYING"
+      - name: Locked install
+        shell: bash
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Canonical Groups regressions and real no-deploy build
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check src/lazy/central-groups.js
+          npm run test:central-groups
+          npm run build
+  full-source-admission:
+    name: full GARP and P5 on pinned Ubuntu source (NONCERTIFYING)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - name: Checkout exact versioned source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 002a9d8869d82a39f6921420df93f9ec5a6d496a
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Use pinned Node major
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Verify source and use fresh locked packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "002a9d8869d82a39f6921420df93f9ec5a6d496a"
+          npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+          node -e "const p=require('./node_modules/playwright/package.json');const a=require('./node_modules/axe-core/package.json');if(p.version!=='1.61.1'||a.version!=='4.12.1')process.exit(1)"
+      - name: Install pinned Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/provision-playwright-chromium.mjs
+          node -e "console.log('CHROMIUM_PATH='+require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Run complete existing P5 CI suite without publication
+        shell: bash
+        env:
+          GARP27_EXTERNAL_TRUST_SHA256: 4b033eefb70facfaca7b5f27a689bf04c960eeef0573037d2d0854b87087755e
+        run: |
+          set -euo pipefail
+          npm run qa:p5:ci
+      - name: Run GARP 2.7 foundation admission (no deployment)
+        shell: bash
+        env:
+          GARP27_EXTERNAL_TRUST_SHA256: 4b033eefb70facfaca7b5f27a689bf04c960eeef0573037d2d0854b87087755e
+        run: |
+          set -euo pipefail
+          npm run qa:garp27:foundation
+      - name: Preserve preproduction status
+        run: echo 'NO MERGE / NO DEPLOY / NONCERTIFYING / LIVE SSO AND PHYSICAL DEVICES UNTESTED'
