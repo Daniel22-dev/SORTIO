@@ -1,5 +1,11 @@
 # SORTIO changelog
 
+## 1.1.24 — 2026-10-28 (předprodukční návrh, nenasazeno)
+
+- Příprava koordinované integrace Moje skupiny v2: oddělený ověřený přístup jednotlivých učitelů, bez automatického převzetí historických v1 dat.
+- Sjednocena vydávací identita, QA metadata, manifesty a PWA cache; pravidla SHA-256/GARP/P5 ani oprávnění k produkci se nemění.
+- **DRAFT / NO DEPLOY:** změna je určená pouze ke kontrole. Skutečné školní přihlášení, převod vlastnictví dat, mobilní UAT a finální certifikace dosud nejsou schváleny.
+
 V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizací. Starší technická historie zůstává dohledatelná v Git historii; v kořeni repozitáře se udržují jen aktuální release notes a aktuální závěrečný audit.
 
 ## 1.1.23 — 2026-10-01
