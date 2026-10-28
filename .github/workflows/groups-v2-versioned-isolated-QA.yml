@@ -18,7 +18,7 @@ jobs:
       - name: Checkout exact reviewed versioned source instead of QA branch
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 002a9d8869d82a39f6921420df93f9ec5a6d496a
+          ref: fa15e7825e4e5ac4d228d6402a0c6005f2300f2a
           persist-credentials: false
           fetch-depth: 0
       - name: Use Node 22
@@ -29,13 +29,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "002a9d8869d82a39f6921420df93f9ec5a6d496a"
+          test "$(git rev-parse HEAD)" = "fa15e7825e4e5ac4d228d6402a0c6005f2300f2a"
           test "$(node -p 'require("./package.json").version')" = "1.1.24"
           test "$(node -p 'require("./package-lock.json").version')" = "1.1.24"
           test "$(node -p 'require("./ghrab-platform.consumer.json").appVersion')" = "1.1.24"
           test "$(node -p 'require("./qa/qa-manifest.json").appVersion')" = "1.1.24"
           test "$(node -p 'require("./reporter-test.config.json").version')" = "1.1.24"
-          echo "VERSIONED_SOURCE=002a9d8869d82a39f6921420df93f9ec5a6d496a; QA_EVENT_SHA=$GITHUB_SHA; NONCERTIFYING"
+          echo "VERSIONED_SOURCE=fa15e7825e4e5ac4d228d6402a0c6005f2300f2a; QA_EVENT_SHA=$GITHUB_SHA; NONCERTIFYING"
       - name: Locked install
         shell: bash
         run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
@@ -54,7 +54,7 @@ jobs:
       - name: Checkout exact versioned source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 002a9d8869d82a39f6921420df93f9ec5a6d496a
+          ref: fa15e7825e4e5ac4d228d6402a0c6005f2300f2a
           persist-credentials: false
           fetch-depth: 0
       - name: Use pinned Node major
@@ -65,7 +65,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "002a9d8869d82a39f6921420df93f9ec5a6d496a"
+          test "$(git rev-parse HEAD)" = "fa15e7825e4e5ac4d228d6402a0c6005f2300f2a"
           npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
           node -e "const p=require('./node_modules/playwright/package.json');const a=require('./node_modules/axe-core/package.json');if(p.version!=='1.61.1'||a.version!=='4.12.1')process.exit(1)"
       - name: Install pinned Chromium
@@ -77,14 +77,14 @@ jobs:
       - name: Run complete existing P5 CI suite without publication
         shell: bash
         env:
-          GARP27_EXTERNAL_TRUST_SHA256: 4b033eefb70facfaca7b5f27a689bf04c960eeef0573037d2d0854b87087755e
+          GARP27_EXTERNAL_TRUST_SHA256: c36546657182c19e9d9a6bfee25856dbfd676f0fa391c2a8cddfc3d953b296c0
         run: |
           set -euo pipefail
           npm run qa:p5:ci
       - name: Run GARP 2.7 foundation admission (no deployment)
         shell: bash
         env:
-          GARP27_EXTERNAL_TRUST_SHA256: 4b033eefb70facfaca7b5f27a689bf04c960eeef0573037d2d0854b87087755e
+          GARP27_EXTERNAL_TRUST_SHA256: c36546657182c19e9d9a6bfee25856dbfd676f0fa391c2a8cddfc3d953b296c0
         run: |
           set -euo pipefail
           npm run qa:garp27:foundation
