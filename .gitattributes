@@ -1,0 +1,5 @@
+# Keep attested platform runtime/source bytes identical on Linux and Windows.
+# The platform postprocessor checks these vendor files against immutable SHA-256 pins.
+vendor/ghrab-platform-*/*.js text eol=lf
+vendor/ghrab-platform-*/*.css text eol=lf
+vendor/ghrab-platform-*/*.json text eol=lf
