@@ -18,7 +18,7 @@ jobs:
       - name: Checkout immutable VERSION source, not temporary QA branch
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 06bee0b5b109e1e0d0a13ca7d96aa3f32afda115
+          ref: f3bd4568bfc68f841592cd12f2b034a33ec60516
           fetch-depth: 0
           persist-credentials: false
       - name: Set up pinned Node
@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "06bee0b5b109e1e0d0a13ca7d96aa3f32afda115"
+          test "$(git rev-parse HEAD)" = "f3bd4568bfc68f841592cd12f2b034a33ec60516"
           test "$(node -p 'require("./package.json").version')" = "1.1.24"
           test ! -e .github/workflows/groups-v2-version-audit.yml
       - name: Install locked npm dependencies
@@ -49,7 +49,7 @@ jobs:
       - name: Checkout exact version source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 06bee0b5b109e1e0d0a13ca7d96aa3f32afda115
+          ref: f3bd4568bfc68f841592cd12f2b034a33ec60516
           fetch-depth: 0
           persist-credentials: false
       - name: Pinned Node 22
@@ -61,7 +61,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "06bee0b5b109e1e0d0a13ca7d96aa3f32afda115"
+          test "$(git rev-parse HEAD)" = "f3bd4568bfc68f841592cd12f2b034a33ec60516"
           test ! -e .github/workflows/groups-v2-version-audit.yml
           echo 'Diagnostic QA event SHA is not the reviewed version release SHA'
       - name: Install independently locked tools
@@ -74,7 +74,7 @@ jobs:
       - name: Execute actual full P5 and GARP foundation
         shell: bash
         env:
-          GARP27_EXTERNAL_TRUST_SHA256: 4b033eefb70facfaca7b5f27a689bf04c960eeef0573037d2d0854b87087755e
+          GARP27_EXTERNAL_TRUST_SHA256: c36546657182c19e9d9a6bfee25856dbfd676f0fa391c2a8cddfc3d953b296c0
         run: |
           set -euo pipefail
           npm run qa:p5:ci
