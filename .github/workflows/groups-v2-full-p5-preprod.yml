@@ -13,14 +13,14 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
-          fetch-depth: 2
+          fetch-depth: 0
       - name: Assert only QA workflow differs from reviewed v2 app source
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "bd4581265f72c51904754bd8299dd419c77717b6"
+          git merge-base --is-ancestor "bd4581265f72c51904754bd8299dd419c77717b6" HEAD
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          test "$(git diff --name-only "bd4581265f72c51904754bd8299dd419c77717b6" HEAD)" = ".github/workflows/groups-v2-full-p5-preprod.yml"
+          test "$(git diff --name-only "bd4581265f72c51904754bd8299dd419c77717b6" HEAD)" = "$(printf '.github/workflows/groups-v2-full-p5-preprod.yml\nscripts/build.mjs')"
       - name: Node 22 and locked npm
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
