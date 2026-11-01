@@ -191,13 +191,13 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         run: npm run qa:p5:ci
         env:
-          GARP27_EXTERNAL_TRUST_SHA256: 4b033eefb70facfaca7b5f27a689bf04c960eeef0573037d2d0854b87087755e
+          GARP27_EXTERNAL_TRUST_SHA256: c36546657182c19e9d9a6bfee25856dbfd676f0fa391c2a8cddfc3d953b296c0
 
       - name: Enforce cumulative GARP 2.7 foundation and legacy regressions for manual deploy
         if: github.event_name == 'workflow_dispatch'
         run: npm run qa:garp27:foundation
         env:
-          GARP27_EXTERNAL_TRUST_SHA256: 4b033eefb70facfaca7b5f27a689bf04c960eeef0573037d2d0854b87087755e
+          GARP27_EXTERNAL_TRUST_SHA256: c36546657182c19e9d9a6bfee25856dbfd676f0fa391c2a8cddfc3d953b296c0
 
       - name: Verify AI Studio dispatch credential
         shell: bash

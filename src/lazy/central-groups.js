@@ -6,6 +6,7 @@ const CENTRAL_TEACHING_GROUP_SCHEMA='ghrab-teaching-group-v1';
 const CENTRAL_GROUP_ID_RE=/^grp_[A-Za-z0-9-]{12,}$/;
 const CENTRAL_MEMBER_ID_RE=/^mem_[A-Za-z0-9-]{12,}$/;
 let CENTRAL_GROUPS_SERVICE_PROMISE=null;
+let CENTRAL_GROUPS_LEGACY_PENDING=false;
 let CENTRAL_GROUPS_UNSUBSCRIBE=null;
 
 function centralGroupsError(code,message){const error=new Error(message||code);error.code=code;return error}
@@ -24,14 +25,27 @@ async function resolveCentralGroupsService({force=false}={}){
   if(force)CENTRAL_GROUPS_SERVICE_PROMISE=null;
   if(CENTRAL_GROUPS_SERVICE_PROMISE)return CENTRAL_GROUPS_SERVICE_PROMISE;
   CENTRAL_GROUPS_SERVICE_PROMISE=(async()=>{
-    const existing=globalThis.GHRAB_GROUPS;
-    if(centralGroupsServiceCompatible(existing))return existing;
+    if(globalThis.document?.documentElement?.dataset?.ghrabAccess!=='granted')
+      throw centralGroupsError('CENTRAL_ACCESS_DENIED','Nejprve ověř oprávnění pro SORTIO přes AI Studio.');
     const base=centralGroupsStudioBaseUrl();
-    const moduleUrl=new URL('groups/group-service.js',base);
+    const moduleUrl=new URL('groups/verified-client.js',base);
+    if(moduleUrl.origin!==globalThis.location?.origin||!moduleUrl.pathname.startsWith(base.pathname))
+      throw centralGroupsError('CENTRAL_GROUPS_PATH_DENIED','Neplatná cesta ke skupinám.');
     let module;
-    try{module=await import(moduleUrl.href)}catch(error){throw centralGroupsError('CENTRAL_GROUPS_UNAVAILABLE','Centrální službu Moje skupiny se nepodařilo načíst. Ruční import z IS zůstává dostupný.')}
-    const service=typeof module.createGroupsService==='function'?module.createGroupsService():null;
-    if(!centralGroupsServiceCompatible(service))throw centralGroupsError('CENTRAL_GROUPS_CONTRACT_OLD','AI Studio má starší kontrakt Moje skupiny. Pro bezpečné napojení SORTIO je potřeba metadata-only consumer API.');
+    try{module=await import(moduleUrl.href)}catch(error){throw centralGroupsError('CENTRAL_GROUPS_UNAVAILABLE','Ověřený klient Moje skupiny není dostupný. Ruční import z IS zůstává dostupný.')}
+    if(typeof module.openVerifiedGroupsV2!=='function')
+      throw centralGroupsError('CENTRAL_V2_REQUIRED','AI Studio zatím neposkytuje ověřeného klienta skupin v2.');
+    const verified=await module.openVerifiedGroupsV2('sortio');
+    if(globalThis.document?.documentElement?.dataset?.ghrabAccess!=='granted')
+      throw centralGroupsError('CENTRAL_ACCESS_DENIED','Přístup ke skupinám byl ukončen.');
+    if(verified?.schema!=='ghrab-groups-verified-consumer-v2'||
+       verified.consumerAppId!==CENTRAL_GROUPS_CONSUMER_ID||
+       typeof verified.legacyStorePresent!=='boolean')
+      throw centralGroupsError('CENTRAL_V2_CONTRACT_INVALID','Ověřený klient skupin má neplatný kontrakt.');
+    const service=verified.service;
+    if(!centralGroupsServiceCompatible(service))
+      throw centralGroupsError('CENTRAL_GROUPS_CONTRACT_OLD','Klient nemá kompatibilní služby kanonických skupin.');
+    CENTRAL_GROUPS_LEGACY_PENDING=verified.legacyStorePresent;
     return service;
   })().catch(error=>{CENTRAL_GROUPS_SERVICE_PROMISE=null;throw error});
   return CENTRAL_GROUPS_SERVICE_PROMISE;
@@ -168,6 +182,8 @@ function renderCentralSyncPreview(plan,projection){
 async function loadCentralGroupMetadata({selectedGroupId=null}={}){
   const service=await resolveCentralGroupsService();
   const groups=validateCentralGroupList(service.listGroupMetadata(CENTRAL_GROUPS_CONSUMER_ID,{status:'all'}));
+  if(!groups.length&&CENTRAL_GROUPS_LEGACY_PENDING)
+    throw centralGroupsError('CENTRAL_LEGACY_MIGRATION_REQUIRED','Staré skupiny v prohlížeči nejsou přiřazeny žádnému ověřenému účtu. Je nutná kontrolovaná migrace; lokální třídy SORTIO zůstávají zachovány.');
   App.ui.centralGroups.groups=groups;
   const select=$('#centralGroupSelect');if(select){setCentralTrustedHtml(select,groups.length?renderCentralGroupOptions(groups,selectedGroupId):'<option value="">Žádná skupina není dostupná</option>');select.disabled=!groups.length}
   return{service,groups};

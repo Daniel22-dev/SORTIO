@@ -84,6 +84,10 @@ writeFileSync(
 );
 rmSync(join(DIST, "studio-manifest.template.json"));
 
+// Source-only school-server example is not a browser runtime asset.
+// Keep it in src/ for administrators, but never ship it in public dist/.
+rmSync(join(DIST, "config", "deployment.school-server.example.json"), { force: true });
+
 const sw = readFileSync(join(DIST, "sw.js"), "utf8").replaceAll(
   "__APP_VERSION__",
   pkg.version,

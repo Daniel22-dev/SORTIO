@@ -9,6 +9,13 @@ const wrappedSource=fs.readFileSync(path.join(root,'src/lazy/central-groups.js')
 const source=wrappedSource.replace(/^\(\(\)=>\{\n?/, '').replace(/\n\}\)\(\);\s*$/, '');
 assert.ok(!source.includes('ghrab.ai-studio.groups.v1')&&!loader.includes('ghrab.ai-studio.groups.v1'),'SORTIO nesmí znát raw storage key AI Studia');
 assert.ok(!/localStorage\s*[.(\[]/.test(source+loader),'SORTIO central sync nesmí číst localStorage');
+assert.ok(source.includes("openVerifiedGroupsV2('sortio')"),'SORTIO musí používat ověřený principal scoped v2');
+assert.ok(source.includes('groups/verified-client.js'),'Povinný podpisově ověřený klient');
+assert.ok(!source.includes('groups/group-service.js'),'Nepovolený návrat do starého shared v1');
+assert.ok(!source.includes('globalThis.GHRAB_GROUPS'),'Nesmí používat cizí nepřihlášenou službu na window');
+assert.ok(!source.includes('module.createGroupsService'),'Nesmí načíst raw shared provider');
+assert.ok(source.includes('CENTRAL_LEGACY_MIGRATION_REQUIRED'),'Staré skupiny se nesmí tiše přenést');
+
 assert.ok(source.includes('listGroupMetadata'),'consumer používá metadata-only seznam');
 assert.ok(loader.includes('./lazy/central-groups.js'),'consumer sync je načítán on-demand mimo kritický bundle');
 assert.ok(source.includes("getRosterProjection(groupId,CENTRAL_GROUPS_CONSUMER_ID)"),'roster používá oficiální consumer projection');

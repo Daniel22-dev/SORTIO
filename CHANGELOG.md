@@ -2,6 +2,11 @@
 
 V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizací. Starší technická historie zůstává dohledatelná v Git historii; v kořeni repozitáře se udržují jen aktuální release notes a aktuální závěrečný audit.
 
+## 1.1.24 — 2026-10-28
+- Připraveno předprodukční vydání ověřené čtečky **Moje skupiny v2** se skupinami oddělenými podle identity učitele; staré neověřené úložiště se nepřebírá automaticky.
+- Sjednoceno označení verze 1.1.24 v aplikaci, manifestech a PWA cache; ověřování integrity vendorizovaných souborů zůstává aktivní.
+- Před školním nasazením se vyžaduje nová kompletní certifikace, ověření školního přihlášení, řízená migrace a schválení správce dat.
+
 ## 1.1.23 — 2026-10-01
 - SORTIO se nově bezpečně napojuje na AI Studio **Moje skupiny** jako kanonický zdroj členství třídy; výběr skupiny používá consumer-safe metadata API a roster projekci pro `sortio`.
 - Do SORTIO se z centrální vrstvy přenáší pouze `groupId`, revize, `memberId`, zobrazované jméno a stav člena; e-mailová pole jsou fail-closed odmítnuta.
@@ -53,8 +58,3 @@ V aplikaci i v tomto souboru se drží pouze posledních 10 vydaných aktualizac
 - GARP 2.5.1 SHIELD-PREP: security-critical runtime resources jsou v service workeru network-only/no-store a nejsou precachovány.
 - Doplněny release-integrity nástroje, CycloneDX SBOM, provenance, evidence manifest, supply-chain a negative-control kontroly.
 - Funkční workflow SORTIO a datový model zůstávají beze změny.
-
-## 1.1.14 — 2026-09-09
-- Opravena volba barvy pera ve widgetu Tabule: změna barvy se ukládá okamžitě přes `input` i `change`, bez překreslení widgetu, takže následující tah používá skutečně vybranou barvu.
-- Tlačítko „Smazat“ ve widgetu Tabule nyní rovnou vyčistí všechny tahy bez potvrzovacího dialogu. Potvrzení pro „Vyčistit panel“ zůstává zachované.
-- Přidány regresní kontroly pro změnu barvy pera a okamžité mazání tabule.
