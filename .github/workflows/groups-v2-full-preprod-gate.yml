@@ -37,8 +37,8 @@ jobs:
           cache: npm
       - name: Install audited lockfile, without lifecycle scripts
         run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
-      - name: Install real Chromium for browser gates
-        run: npx playwright install --with-deps chromium
+      - name: Provision and smoke-test pinned Chromium (sets CHROMIUM_PATH)
+        run: node scripts/provision-playwright-chromium.mjs
       - name: Full existing final-SHA P5 / GARP CI chain (read-only)
         run: npm run qa:p5:ci
         env:
