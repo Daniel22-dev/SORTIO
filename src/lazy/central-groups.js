@@ -19,7 +19,7 @@ function centralGroupsStudioBaseUrl(){
 }
 function centralGroupsServiceCompatible(service){
   return !!service&&service.schema===CENTRAL_GROUPS_SERVICE_SCHEMA&&Number(service.contractVersion)>=1&&
-    ['listGroupMetadata','getRosterProjection','getRevision','subscribe','createGroup','importRoster','parseRoster'].every(name=>typeof service[name]==='function');
+    ['listGroupMetadata','getRosterProjection','getRevision','subscribe','createGroup','importRoster','parseRoster','withWriteLock','createGroupWithRoster'].every(name=>typeof service[name]==='function');
 }
 async function resolveCentralGroupsService({force=false}={}){
   if(force)CENTRAL_GROUPS_SERVICE_PROMISE=null;
@@ -218,8 +218,17 @@ async function migrateSelectedClassToCentral(){
   const nameKeys=new Map();for(const student of active){const key=normalizeText(student.displayName);nameKeys.set(key,(nameKeys.get(key)||0)+1)}if([...nameKeys.values()].some(count=>count>1))throw centralGroupsError('MIGRATION_AMBIGUOUS_NAMES','Třída obsahuje více studentů se stejným jménem. Před migrací je rozlište, aby šlo vytvořit stabilní mapování.');
   if(!confirm(`Vytvořit v AI Studiu novou skupinu „${classItem.name}“ a jednorázově do ní přenést ${active.length} jmen? E-maily ani provozní data SORTIO se nepřenášejí.`))return false;
   const service=await resolveCentralGroupsService();const rawText=active.map(student=>student.displayName).join('\n');const parsed=service.parseRoster(rawText);if(!parsed||parsed.entries?.length!==active.length||parsed.invalid?.length)throw centralGroupsError('MIGRATION_PARSE_FAILED','Centrální parser nedokázal bezpečně převést všechna jména. Migrace nebyla spuštěna.');
-  const created=service.createGroup({displayName:classItem.name,schoolYear:classItem.schoolYear||suggestSchoolYear()});
-  let imported;try{imported=service.importRoster({groupId:created.groupId,rawText,replace:true,expectedRevision:created.revision})}catch(error){throw centralGroupsError('MIGRATION_IMPORT_FAILED','Skupina byla v AI Studiu vytvořena, ale seznam se nepodařilo dokončit. Otevřete Moje skupiny a zkontrolujte novou prázdnou skupinu.');}
+  let imported;
+  try {
+    imported=await service.withWriteLock(tx=>tx.createGroupWithRoster({
+      input:{displayName:classItem.name,schoolYear:classItem.schoolYear||suggestSchoolYear()},
+      rawText,
+    }));
+  } catch(error) {
+    throw centralGroupsError('MIGRATION_IMPORT_FAILED',
+      'Skupinu se seznamem se nepodařilo bezpečně vytvořit. Zkontrolujte stav skupin a zkuste to znovu.');
+  }
+  const created=imported.group;
   const projection=validateCentralProjection(service.getRosterProjection(created.groupId,CENTRAL_GROUPS_CONSUMER_ID),created.groupId);const plan=buildCentralSyncPreview(classItem,projection);if(plan.conflicts.length)throw centralGroupsError('MIGRATION_MAPPING_FAILED','Skupina vznikla, ale automatické mapování na lokální studenty má konflikt. Lokální data nebyla přepsána.');applyCentralSyncProjection(classItem,projection,plan);saveData({event:'central_group_migrate'});toast(`Třída byla bezpečně přenesena do Moje skupiny (revize ${imported.group.revision}).`,'success');return true;
 }
 function bindCentralGroupsUi(){

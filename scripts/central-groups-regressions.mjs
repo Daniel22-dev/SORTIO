@@ -10,6 +10,9 @@ const source=wrappedSource.replace(/^\(\(\)=>\{\n?/, '').replace(/\n\}\)\(\);\s*
 assert.ok(!source.includes('ghrab.ai-studio.groups.v1')&&!loader.includes('ghrab.ai-studio.groups.v1'),'SORTIO nesmí znát raw storage key AI Studia');
 assert.ok(!/localStorage\s*[.(\[]/.test(source+loader),'SORTIO central sync nesmí číst localStorage');
 assert.ok(source.includes("openVerifiedGroupsV2('sortio')"),'SORTIO musí používat ověřený principal scoped v2');
+assert.ok(source.includes('await service.withWriteLock(tx=>tx.createGroupWithRoster({'),'Migrace SORTIO musí skupinu se seznamem zapsat jediným zápisem pod Web Lock.');
+assert.ok(!source.includes('tx.importRoster({groupId:created.groupId'),'Migrace nesmí provést druhý oddělený zápis.');
+assert.ok(source.includes("'withWriteLock','createGroupWithRoster'"),'SORTIO musí odmítnout starý kontrakt centrálních skupin.');
 assert.ok(source.includes('groups/verified-client.js'),'Povinný podpisově ověřený klient');
 assert.ok(!source.includes('groups/group-service.js'),'Nepovolený návrat do starého shared v1');
 assert.ok(!source.includes('globalThis.GHRAB_GROUPS'),'Nesmí používat cizí nepřihlášenou službu na window');
@@ -35,8 +38,12 @@ const context={
 };
 context.globalThis=context;context.window=context;
 vm.createContext(context);
-vm.runInContext(source+'\n;globalThis.__centralTest={validateCentralProjection,validateCentralGroupList,buildCentralSyncPreview,applyCentralSyncProjection,centralGroupLinkedClasses};',context,{filename:'46-central-groups.js'});
+vm.runInContext(source+'\n;globalThis.__centralTest={validateCentralProjection,validateCentralGroupList,buildCentralSyncPreview,applyCentralSyncProjection,centralGroupLinkedClasses,centralGroupsServiceCompatible};',context,{filename:'46-central-groups.js'});
 const api=context.__centralTest;
+const oldService={schema:'ghrab-groups-service-v1',contractVersion:1};
+for(const name of ['listGroupMetadata','getRosterProjection','getRevision','subscribe','createGroup','importRoster','parseRoster'])oldService[name]=()=>{};
+assert.equal(api.centralGroupsServiceCompatible(oldService),false,'starý kontrakt nesmí být přijat');
+assert.equal(api.centralGroupsServiceCompatible({...oldService,withWriteLock(){},createGroupWithRoster(){}}),true,'nový kontrakt musí být přijat');
 
 const gid='grp_000000000001';
 const m1='mem_000000000001',m2='mem_000000000002',m3='mem_000000000003',m4='mem_000000000004';
@@ -82,4 +89,4 @@ assert.throws(()=>api.validateCentralProjection(projection(9,[...many,{memberId:
 context.App.data.classes=[{id:'a',sourceGroupId:gid},{id:'b',sourceGroupId:gid},{id:'c',sourceGroupId:null}];
 assert.equal(api.centralGroupLinkedClasses(gid,{excludeClassId:'a'}).length,1);
 
-console.log(JSON.stringify({schema:'sortio-central-groups-regressions-v1',checks:32,status:'passed'},null,2));
+console.log(JSON.stringify({schema:'sortio-central-groups-regressions-v1',checks:37,status:'passed'},null,2));
