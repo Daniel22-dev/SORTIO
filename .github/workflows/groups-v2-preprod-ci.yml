@@ -1,0 +1,43 @@
+name: SORTIO Groups v2 preproduction contract CI (NO DEPLOY)
+
+on:
+  pull_request:
+    branches: [preprod/groups-v2-clean-20261028]
+    paths:
+      - 'src/lazy/central-groups.js'
+      - 'scripts/central-groups-regressions.mjs'
+      - 'src/js/46-central-groups.js'
+      - 'package.json'
+      - '.github/workflows/groups-v2-preprod-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sortio-groups-v2-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  groups-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Read-only checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Pinned Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.22.2
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Validate source syntax and build
+        run: |
+          node --check src/lazy/central-groups.js
+          node --check scripts/central-groups-regressions.mjs
+          npm run build
+      - name: Run canonical Groups contract and migration regressions
+        run: npm run test:central-groups
