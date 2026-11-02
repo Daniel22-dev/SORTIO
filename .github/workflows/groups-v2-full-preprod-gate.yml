@@ -41,5 +41,7 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Full existing final-SHA P5 / GARP CI chain (read-only)
         run: npm run qa:p5:ci
+        env:
+          GARP27_EXTERNAL_TRUST_SHA256: c36546657182c19e9d9a6bfee25856dbfd676f0fa391c2a8cddfc3d953b296c0
 
 # Intentional NO-DEPLOY: no publish, promotion, merge, Pages or upload of school data.
