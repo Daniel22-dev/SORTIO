@@ -2,8 +2,8 @@
   "schema": "ghrab-release-acceptance-v1",
   "stage": "P5",
   "appId": "sortio",
-  "appVersion": "1.1.23",
-  "releaseStatus": "source-attestation-for-live-release",
+  "appVersion": "1.1.24",
+  "releaseStatus": "ecosystem-wave-candidate",
   "primaryRuntime": {
     "mode": "standalone-github-pages",
     "serverRequired": false,
@@ -14,7 +14,7 @@
   },
   "github": {
     "status": "safe-promotion-gated",
-    "uploadDeferredUntilEcosystemComplete": false,
+    "uploadDeferredUntilEcosystemComplete": true,
     "postUploadValidationRequired": true,
     "deploymentBranch": "main",
     "candidateBranch": "candidate",
@@ -49,7 +49,7 @@
     "required": true,
     "scriptsExecuted": true,
     "transport": "source-side acceptance metadata; live state attested by release-integrity.json and AI Studio release-wave",
-    "note": "This file is not the authority for live deployment state."
+    "note": "Historical source-side acceptance does not certify 1.1.24 as live. Final exact-SHA release chain, school owner approval and coordinated consumer wave remain pending."
   },
   "suiteSession": {
     "contract": "ghrab-suite-session-v1",
@@ -58,9 +58,9 @@
     "ecosystemSharedDeviceGate": "pending-wave-completion",
     "nativeBrowserTransportValidation": "pending-environment-capable-run"
   },
-  "note": "1.1.23 integrates SORTIO with AI Studio Moje skupiny through the official consumer-safe group service contract. SORTIO receives only canonical member identity, display name and status; e-mail is rejected, operational teaching data remains local, and manual IS import remains available. GARP 2.7, Platform 1.1.2 and server DEFERRED/NOT_TESTED status are unchanged.",
+  "note": "1.1.24 integrates SORTIO with AI Studio Moje skupiny through the official consumer-safe group service contract. SORTIO receives only canonical member identity, display name and status; e-mail is rejected, operational teaching data remains local, and manual IS import remains available. GARP 2.7, Platform 1.1.2 and server DEFERRED/NOT_TESTED status are unchanged.",
   "publication": {
-    "runtimeDistributed": true,
+    "runtimeDistributed": false,
     "liveStatusAuthority": [
       "release-integrity.json",
       "AI Studio release-wave"
