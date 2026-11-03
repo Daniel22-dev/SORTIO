@@ -35,7 +35,16 @@ for (const rel of ["manual/index.html", "tests/index.html"]) {
 }
 
 const tpl = readFileSync(join(DIST, "index.template.html"), "utf8");
-const css = readFileSync(join(DIST, "styles.css"), "utf8");
+const cssSource = readFileSync(join(DIST, "styles.css"), "utf8");
+// Section headings are source-documentation comments, not CSS behavior.
+// Strip exactly reviewed "SORTIO ..." banner comments from the HTML payload,
+// preserving the original source file and every CSS declaration.
+const sourceBannerComments = [...cssSource.matchAll(/\/\* SORTIO [^*]*\*\//g)];
+if (sourceBannerComments.length !== 9 ||
+    sourceBannerComments.reduce((n, match) => n + match[0].length, 0) < 500) {
+  throw new Error("SORTIO CSS BANNER INVENTORY DRIFT");
+}
+const css = cssSource.replace(/\/\* SORTIO [^*]*\*\//g, "");
 const body = readFileSync(join(DIST, "body.html"), "utf8");
 const jsFiles = readdirSync(join(DIST, "js"))
   .filter((name) => name.endsWith(".js"))
@@ -83,6 +92,10 @@ writeFileSync(
   `${JSON.stringify(studioManifest, null, 2)}\n`,
 );
 rmSync(join(DIST, "studio-manifest.template.json"));
+
+// Source-only school-server example is not a browser runtime asset.
+// Keep it in src/ for administrators, but never ship it in public dist/.
+rmSync(join(DIST, "config", "deployment.school-server.example.json"), { force: true });
 
 const sw = readFileSync(join(DIST, "sw.js"), "utf8").replaceAll(
   "__APP_VERSION__",

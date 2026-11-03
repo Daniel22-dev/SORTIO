@@ -1,0 +1,28 @@
+name: SORTIO v2 canonical groups draft QA (NO DEPLOY)
+on:
+  push:
+    branches:
+      - feature/central-groups-v2-20261027
+
+permissions:
+  contents: read
+
+jobs:
+  groups-v2-compat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Verify exact synthetic SORTIO group-contract source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          node --check src/lazy/central-groups.js
+          node --check scripts/central-groups-regressions.mjs
+          npm run test:central-groups

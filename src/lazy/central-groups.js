@@ -6,6 +6,7 @@ const CENTRAL_TEACHING_GROUP_SCHEMA='ghrab-teaching-group-v1';
 const CENTRAL_GROUP_ID_RE=/^grp_[A-Za-z0-9-]{12,}$/;
 const CENTRAL_MEMBER_ID_RE=/^mem_[A-Za-z0-9-]{12,}$/;
 let CENTRAL_GROUPS_SERVICE_PROMISE=null;
+let CENTRAL_GROUPS_LEGACY_PENDING=false;
 let CENTRAL_GROUPS_UNSUBSCRIBE=null;
 
 function centralGroupsError(code,message){const error=new Error(message||code);error.code=code;return error}
@@ -24,14 +25,27 @@ async function resolveCentralGroupsService({force=false}={}){
   if(force)CENTRAL_GROUPS_SERVICE_PROMISE=null;
   if(CENTRAL_GROUPS_SERVICE_PROMISE)return CENTRAL_GROUPS_SERVICE_PROMISE;
   CENTRAL_GROUPS_SERVICE_PROMISE=(async()=>{
-    const existing=globalThis.GHRAB_GROUPS;
-    if(centralGroupsServiceCompatible(existing))return existing;
+    if(globalThis.document?.documentElement?.dataset?.ghrabAccess!=='granted')
+      throw centralGroupsError('CENTRAL_ACCESS_DENIED','Nejprve ověř oprávnění pro SORTIO přes AI Studio.');
     const base=centralGroupsStudioBaseUrl();
-    const moduleUrl=new URL('groups/group-service.js',base);
+    const moduleUrl=new URL('groups/verified-client.js',base);
+    if(moduleUrl.origin!==globalThis.location?.origin||!moduleUrl.pathname.startsWith(base.pathname))
+      throw centralGroupsError('CENTRAL_GROUPS_PATH_DENIED','Neplatná cesta ke skupinám.');
     let module;
-    try{module=await import(moduleUrl.href)}catch(error){throw centralGroupsError('CENTRAL_GROUPS_UNAVAILABLE','Centrální službu Moje skupiny se nepodařilo načíst. Ruční import z IS zůstává dostupný.')}
-    const service=typeof module.createGroupsService==='function'?module.createGroupsService():null;
-    if(!centralGroupsServiceCompatible(service))throw centralGroupsError('CENTRAL_GROUPS_CONTRACT_OLD','AI Studio má starší kontrakt Moje skupiny. Pro bezpečné napojení SORTIO je potřeba metadata-only consumer API.');
+    try{module=await import(moduleUrl.href)}catch(error){throw centralGroupsError('CENTRAL_GROUPS_UNAVAILABLE','Ověřený klient Moje skupiny není dostupný. Ruční import z IS zůstává dostupný.')}
+    if(typeof module.openVerifiedGroupsV2!=='function')
+      throw centralGroupsError('CENTRAL_V2_REQUIRED','AI Studio zatím neposkytuje ověřeného klienta skupin v2.');
+    const verified=await module.openVerifiedGroupsV2('sortio');
+    if(globalThis.document?.documentElement?.dataset?.ghrabAccess!=='granted')
+      throw centralGroupsError('CENTRAL_ACCESS_DENIED','Přístup ke skupinám byl ukončen.');
+    if(verified?.schema!=='ghrab-groups-verified-consumer-v2'||
+       verified.consumerAppId!==CENTRAL_GROUPS_CONSUMER_ID||
+       typeof verified.legacyStorePresent!=='boolean')
+      throw centralGroupsError('CENTRAL_V2_CONTRACT_INVALID','Ověřený klient skupin má neplatný kontrakt.');
+    const service=verified.service;
+    if(!centralGroupsServiceCompatible(service))
+      throw centralGroupsError('CENTRAL_GROUPS_CONTRACT_OLD','Klient nemá kompatibilní služby kanonických skupin.');
+    CENTRAL_GROUPS_LEGACY_PENDING=verified.legacyStorePresent;
     return service;
   })().catch(error=>{CENTRAL_GROUPS_SERVICE_PROMISE=null;throw error});
   return CENTRAL_GROUPS_SERVICE_PROMISE;
@@ -84,6 +98,9 @@ function centralGroupLinkedClasses(groupId,{excludeClassId=null}={}){return(App.
 function buildCentralSyncPreview(classItem,projection){
   validateCentralProjection(projection);
   const localStudents=classItem?.students||[];
+  if(classItem?.sourceGroupId===projection.group.groupId&&Number.isInteger(classItem.lastSyncedRevision)&&projection.group.revision<classItem.lastSyncedRevision)throw centralGroupsError('CENTRAL_REVISION_ROLLBACK','Centrální skupina má starší revizi než poslední synchronizovaná. Synchronizace je zablokována.');
+  const sourceNameCounts=new Map();
+  for(const member of projection.members){const key=normalizeText(member.name);sourceNameCounts.set(key,(sourceNameCounts.get(key)||0)+1)}
   const mapping=new Map();const duplicateMappings=[];
   for(const student of localStudents){if(!student.canonicalMemberId)continue;if(mapping.has(student.canonicalMemberId))duplicateMappings.push(student.canonicalMemberId);else mapping.set(student.canonicalMemberId,student)}
   const usedLocalIds=new Set();
@@ -102,7 +119,9 @@ function buildCentralSyncPreview(classItem,projection){
       continue;
     }
     if(member.status==='archived'){plan.ignoredArchived.push({memberId:member.memberId,name:member.name});continue}
-    const candidates=(unmappedByName.get(normalizeText(member.name))||[]).filter(student=>!usedLocalIds.has(student.id));
+    const nameKey=normalizeText(member.name);
+    const candidates=(unmappedByName.get(nameKey)||[]).filter(student=>!usedLocalIds.has(student.id));
+    if(candidates.length&&sourceNameCounts.get(nameKey)>1){plan.conflicts.push({type:'source-duplicate-name',memberId:member.memberId,name:member.name,count:sourceNameCounts.get(nameKey)});continue}
     if(candidates.length===1){const localMatch=candidates[0];usedLocalIds.add(localMatch.id);plan.linked.push({memberId:member.memberId,studentId:localMatch.id,name:member.name,wasArchived:!!localMatch.archived});continue}
     if(candidates.length>1){plan.conflicts.push({type:'ambiguous-name',memberId:member.memberId,name:member.name,count:candidates.length});continue}
     plan.added.push({memberId:member.memberId,name:member.name});
@@ -168,6 +187,8 @@ function renderCentralSyncPreview(plan,projection){
 async function loadCentralGroupMetadata({selectedGroupId=null}={}){
   const service=await resolveCentralGroupsService();
   const groups=validateCentralGroupList(service.listGroupMetadata(CENTRAL_GROUPS_CONSUMER_ID,{status:'all'}));
+  if(!groups.length&&CENTRAL_GROUPS_LEGACY_PENDING)
+    throw centralGroupsError('CENTRAL_LEGACY_MIGRATION_REQUIRED','Staré skupiny v prohlížeči nejsou přiřazeny žádnému ověřenému účtu. Je nutná kontrolovaná migrace; lokální třídy SORTIO zůstávají zachovány.');
   App.ui.centralGroups.groups=groups;
   const select=$('#centralGroupSelect');if(select){setCentralTrustedHtml(select,groups.length?renderCentralGroupOptions(groups,selectedGroupId):'<option value="">Žádná skupina není dostupná</option>');select.disabled=!groups.length}
   return{service,groups};
@@ -188,7 +209,7 @@ async function applySelectedCentralGroup(){
   if(!preview){await previewSelectedCentralGroup();preview=App.ui.centralGroups.preview;}
   const currentClass=getSelectedClass();
   if(!preview||preview.classId!==(currentClass?.id||null)){await previewSelectedCentralGroup();throw centralGroupsError('CENTRAL_SYNC_CONTEXT_CHANGED','Výběr třídy se změnil. Náhled byl obnoven; zkontrolujte jej a potvrďte znovu.');}
-  const fresh=await fetchCentralProjection(preview.projection.group.groupId);if(fresh.group.revision!==preview.projection.group.revision){const plan=buildCentralSyncPreview(currentClass,fresh);App.ui.centralGroups.preview={projection:fresh,plan,classId:currentClass?.id||null};renderCentralSyncPreview(plan,fresh);throw centralGroupsError('CENTRAL_SYNC_STALE','Centrální skupina se mezitím změnila. Náhled byl obnoven; zkontrolujte jej a potvrďte znovu.');}
+  const fresh=await fetchCentralProjection(preview.projection.group.groupId);if(fresh.group.revision!==preview.projection.group.revision||JSON.stringify(fresh)!==JSON.stringify(preview.projection)){const plan=buildCentralSyncPreview(currentClass,fresh);App.ui.centralGroups.preview={projection:fresh,plan,classId:currentClass?.id||null};renderCentralSyncPreview(plan,fresh);throw centralGroupsError('CENTRAL_SYNC_STALE','Centrální skupina se mezitím změnila. Náhled byl obnoven; zkontrolujte jej a potvrďte znovu.');}
   if(fresh.group.status==='archived'&&!currentClass?.sourceGroupId)throw centralGroupsError('CENTRAL_GROUP_ARCHIVED','Archivovanou centrální skupinu nelze nově napojit. Obnovte ji nejprve v AI Studiu.');
   let target=currentClass;
   if(!target)target=createClass({name:fresh.group.displayName,schoolYear:fresh.group.schoolYear,students:[]});
@@ -201,9 +222,15 @@ async function migrateSelectedClassToCentral(){
   const active=classStudents(classItem);if(!active.length)throw centralGroupsError('CLASS_EMPTY','Prázdnou třídu není co migrovat.');
   const nameKeys=new Map();for(const student of active){const key=normalizeText(student.displayName);nameKeys.set(key,(nameKeys.get(key)||0)+1)}if([...nameKeys.values()].some(count=>count>1))throw centralGroupsError('MIGRATION_AMBIGUOUS_NAMES','Třída obsahuje více studentů se stejným jménem. Před migrací je rozlište, aby šlo vytvořit stabilní mapování.');
   if(!confirm(`Vytvořit v AI Studiu novou skupinu „${classItem.name}“ a jednorázově do ní přenést ${active.length} jmen? E-maily ani provozní data SORTIO se nepřenášejí.`))return false;
-  const service=await resolveCentralGroupsService();const rawText=active.map(student=>student.displayName).join('\n');const parsed=service.parseRoster(rawText);if(!parsed||parsed.entries?.length!==active.length||parsed.invalid?.length)throw centralGroupsError('MIGRATION_PARSE_FAILED','Centrální parser nedokázal bezpečně převést všechna jména. Migrace nebyla spuštěna.');
-  const created=service.createGroup({displayName:classItem.name,schoolYear:classItem.schoolYear||suggestSchoolYear()});
-  let imported;try{imported=service.importRoster({groupId:created.groupId,rawText,replace:true,expectedRevision:created.revision})}catch(error){throw centralGroupsError('MIGRATION_IMPORT_FAILED','Skupina byla v AI Studiu vytvořena, ale seznam se nepodařilo dokončit. Otevřete Moje skupiny a zkontrolujte novou prázdnou skupinu.');}
+  const service=await resolveCentralGroupsService();const rawText=active.map(student=>student.displayName).join('\n');const parsed=service.parseRoster(rawText);if(!parsed||parsed.entries?.length!==active.length||parsed.invalid?.length||parsed.duplicates?.length||parsed.truncated)throw centralGroupsError('MIGRATION_PARSE_FAILED','Centrální parser nedokázal bezpečně převést všechna jména. Migrace nebyla spuštěna.');
+  // Groups v2 mandates a Web Lock and one durable canonical write for creation + roster.
+  // Never create an empty remote group and rely on a second import to finish.
+  if(typeof service.withWriteLock!=='function'||typeof service.createGroupWithRoster!=='function')throw centralGroupsError('MIGRATION_ATOMIC_SERVICE_REQUIRED','Ověřený klient Moje skupiny nepodporuje bezpečný atomický převod.');
+  let imported;
+  try{imported=await service.withWriteLock(tx=>tx.createGroupWithRoster({input:{displayName:classItem.name,schoolYear:classItem.schoolYear||suggestSchoolYear()},rawText}))}
+  catch(error){throw centralGroupsError('MIGRATION_IMPORT_FAILED','Bezpečný převod nebyl potvrzen. Zkontrolujte stav Moje skupiny; lokální třída nebyla změněna.');}
+  const created=imported?.group;
+  if(!created||!CENTRAL_GROUP_ID_RE.test(String(created.groupId||''))||!Number.isInteger(created.revision))throw centralGroupsError('MIGRATION_ATOMIC_RESULT_INVALID','Služba nevrátila ověřitelný výsledek převodu; zkontrolujte skupiny před dalším pokusem.');
   const projection=validateCentralProjection(service.getRosterProjection(created.groupId,CENTRAL_GROUPS_CONSUMER_ID),created.groupId);const plan=buildCentralSyncPreview(classItem,projection);if(plan.conflicts.length)throw centralGroupsError('MIGRATION_MAPPING_FAILED','Skupina vznikla, ale automatické mapování na lokální studenty má konflikt. Lokální data nebyla přepsána.');applyCentralSyncProjection(classItem,projection,plan);saveData({event:'central_group_migrate'});toast(`Třída byla bezpečně přenesena do Moje skupiny (revize ${imported.group.revision}).`,'success');return true;
 }
 function bindCentralGroupsUi(){

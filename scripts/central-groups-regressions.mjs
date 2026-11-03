@@ -9,6 +9,13 @@ const wrappedSource=fs.readFileSync(path.join(root,'src/lazy/central-groups.js')
 const source=wrappedSource.replace(/^\(\(\)=>\{\n?/, '').replace(/\n\}\)\(\);\s*$/, '');
 assert.ok(!source.includes('ghrab.ai-studio.groups.v1')&&!loader.includes('ghrab.ai-studio.groups.v1'),'SORTIO nesmí znát raw storage key AI Studia');
 assert.ok(!/localStorage\s*[.(\[]/.test(source+loader),'SORTIO central sync nesmí číst localStorage');
+assert.ok(source.includes("openVerifiedGroupsV2('sortio')"),'SORTIO musí používat ověřený principal scoped v2');
+assert.ok(source.includes('groups/verified-client.js'),'Povinný podpisově ověřený klient');
+assert.ok(!source.includes('groups/group-service.js'),'Nepovolený návrat do starého shared v1');
+assert.ok(!source.includes('globalThis.GHRAB_GROUPS'),'Nesmí používat cizí nepřihlášenou službu na window');
+assert.ok(!source.includes('module.createGroupsService'),'Nesmí načíst raw shared provider');
+assert.ok(source.includes('CENTRAL_LEGACY_MIGRATION_REQUIRED'),'Staré skupiny se nesmí tiše přenést');
+
 assert.ok(source.includes('listGroupMetadata'),'consumer používá metadata-only seznam');
 assert.ok(loader.includes('./lazy/central-groups.js'),'consumer sync je načítán on-demand mimo kritický bundle');
 assert.ok(source.includes("getRosterProjection(groupId,CENTRAL_GROUPS_CONSUMER_ID)"),'roster používá oficiální consumer projection');
@@ -28,7 +35,7 @@ const context={
 };
 context.globalThis=context;context.window=context;
 vm.createContext(context);
-vm.runInContext(source+'\n;globalThis.__centralTest={validateCentralProjection,validateCentralGroupList,buildCentralSyncPreview,applyCentralSyncProjection,centralGroupLinkedClasses};',context,{filename:'46-central-groups.js'});
+vm.runInContext(source+'\n;globalThis.__centralTest={validateCentralProjection,validateCentralGroupList,buildCentralSyncPreview,applyCentralSyncProjection,centralGroupLinkedClasses,migrateSelectedClassToCentral,setService:(value)=>{CENTRAL_GROUPS_SERVICE_PROMISE=Promise.resolve(value);}};',context,{filename:'46-central-groups.js'});
 const api=context.__centralTest;
 
 const gid='grp_000000000001';
@@ -75,4 +82,90 @@ assert.throws(()=>api.validateCentralProjection(projection(9,[...many,{memberId:
 context.App.data.classes=[{id:'a',sourceGroupId:gid},{id:'b',sourceGroupId:gid},{id:'c',sourceGroupId:null}];
 assert.equal(api.centralGroupLinkedClasses(gid,{excludeClassId:'a'}).length,1);
 
-console.log(JSON.stringify({schema:'sortio-central-groups-regressions-v1',checks:32,status:'passed'},null,2));
+
+// R16: same displayed name can represent two different canonical member IDs.
+// With just one same-name local student, neither canonical identity may be guessed.
+const duplicateSourceClass=classroom();
+const duplicateSourceBefore=structuredClone(duplicateSourceClass);
+const duplicateSource=projection(10,[
+  {memberId:m1,name:'Alice Novak',status:'active'},
+  {memberId:m3,name:'Alice Novak',status:'active'},
+  {memberId:m2,name:'Boris Svoboda',status:'active'},
+]);
+const duplicateSourcePlan=api.buildCentralSyncPreview(duplicateSourceClass,duplicateSource);
+assert.ok(duplicateSourcePlan.conflicts.some(c=>c.type==='source-duplicate-name'),'same-name canonical identities need an explicit resolution');
+assert.equal(duplicateSourcePlan.linked.filter(x=>x.name==='Alice Novak').length,0,'never bind a historical pupil to the first matching source entry');
+assert.throws(()=>api.applyCentralSyncProjection(duplicateSourceClass,duplicateSource,duplicateSourcePlan),/konflikty/i);
+assert.deepEqual(duplicateSourceClass,duplicateSourceBefore,'ambiguous mapping must not mutate history, student ID or class membership');
+
+// Once a canonical member ID is already linked, a second same-name pupil may
+// be added without hijacking the previously linked local history.
+const knownIdentity=classroom();
+knownIdentity.students[0].canonicalMemberId=m1;knownIdentity.sourceGroupId=gid;knownIdentity.lastSyncedRevision=9;
+const knownPlan=api.buildCentralSyncPreview(knownIdentity,duplicateSource);
+assert.equal(knownPlan.conflicts.length,0);
+assert.equal(knownPlan.added.filter(x=>x.memberId===m3).length,1);
+api.applyCentralSyncProjection(knownIdentity,duplicateSource,knownPlan);
+assert.equal(knownIdentity.students.find(x=>x.id==='s1').canonicalMemberId,m1);
+assert.equal(knownIdentity.students.find(x=>x.canonicalMemberId===m3).id.startsWith('student-'),true);
+assert.equal(knownIdentity.drawHistory.length,1);
+const rollbackClass=classroom();rollbackClass.sourceGroupId=gid;rollbackClass.lastSyncedRevision=11;
+assert.throws(()=>api.buildCentralSyncPreview(rollbackClass,duplicateSource),/starší revizi/i,'a stale source must not roll back a previously synchronized group');
+
+// The real scoped v2 contract requires Web Locks. The old two-step createGroup
+// followed by importRoster must never be called by SORTIO.
+const migrationBody=source.slice(source.indexOf('async function migrateSelectedClassToCentral()'),source.indexOf('function bindCentralGroupsUi()'));
+assert.ok(migrationBody.includes('tx.createGroupWithRoster'), 'one atomic group+roster commit is mandatory');
+assert.ok(migrationBody.includes('service.withWriteLock('), 'the write transaction must hold the scoped lock');
+assert.ok(!migrationBody.includes('service.createGroup(')&&!migrationBody.includes('service.importRoster('), 'no two-step partial-creation path');
+
+const migrateClass=classroom();context.getSelectedClass=()=>migrateClass;context.App.data.classes=[migrateClass];
+let activeLock=false,acquiredLocks=0,remoteCommits=0,legacyCalls=0;
+const parseRoster=(rawText)=>({entries:rawText.split('\n').map(name=>({name})),invalid:[],duplicates:[],truncated:false});
+const remoteProjection=projection(2,[{memberId:m1,name:'Alice Novak',status:'active'},{memberId:m2,name:'Boris Svoboda',status:'active'}]);
+const safeService={
+  parseRoster,
+  createGroup(){legacyCalls++;throw new Error('Legacy createGroup must not be invoked')},
+  importRoster(){legacyCalls++;throw new Error('Legacy importRoster must not be invoked')},
+  async withWriteLock(action){
+    assert.equal(activeLock,false);activeLock=true;acquiredLocks++;
+    try{return await action(this)}finally{activeLock=false}
+  },
+  createGroupWithRoster({input,rawText}){
+    assert.equal(activeLock,true,'remote commit must occur under v2 Web Lock');
+    assert.equal(input.displayName,'3A4 local');
+    assert.equal(rawText,'Alice Novak\nBoris Svoboda');
+    remoteCommits++;
+    return {group:{groupId:gid,revision:2},parsed:parseRoster(rawText)};
+  },
+  getRosterProjection(id,consumer){
+    assert.equal(id,gid);assert.equal(consumer,'sortio');
+    return remoteProjection;
+  },
+};
+api.setService(safeService);
+assert.equal(await api.migrateSelectedClassToCentral(),true);
+assert.equal(remoteCommits,1);assert.equal(acquiredLocks,1);assert.equal(legacyCalls,0);
+assert.equal(migrateClass.sourceGroupId,gid);
+assert.equal(migrateClass.students.find(x=>x.id==='s1').canonicalMemberId,m1);
+assert.equal(migrateClass.students.find(x=>x.id==='s2').canonicalMemberId,m2);
+assert.equal(migrateClass.drawHistory.length,1,'local drawing history must remain intact');
+
+const failedClass=classroom(),failureBefore=structuredClone(failedClass);
+context.getSelectedClass=()=>failedClass;context.App.data.classes=[failedClass];
+api.setService({
+  parseRoster,
+  async withWriteLock(){throw new Error('GROUP_STORAGE_WRITE_FAILED')},
+  createGroupWithRoster(){throw new Error('WRITE_LOCK_BYPASS')},
+  createGroup(){legacyCalls++;throw new Error('legacy forbidden')},
+  importRoster(){legacyCalls++;throw new Error('legacy forbidden')},
+});
+await assert.rejects(api.migrateSelectedClassToCentral(),error=>error.code==='MIGRATION_IMPORT_FAILED');
+assert.deepEqual(failedClass,failureBefore,'failed atomic remote write cannot touch the local class');
+assert.equal(legacyCalls,0,'write failure must never fall back to a legacy two-step mutation');
+
+// Same revision with changed content must be re-previewed, not applied.
+assert.ok(source.includes('JSON.stringify(fresh)!==JSON.stringify(preview.projection)'),
+  'preview apply must detect same-revision content tampering');
+
+console.log(JSON.stringify({schema:'sortio-central-groups-regressions-v2',checks:44,status:'passed'},null,2));
